@@ -1,9 +1,15 @@
 # Test page
 
-Hi xNAMEx,
+Hi,
 
 this page is here to check if variables behave the way I expect them to do.
 So it may look very chaotic ;)
+
+Variable | Value
+---|---
+TEST | `xTESTx`
+LINK | [xLINKx](xLINKx)
+
 
 ## Intersecting variables
 

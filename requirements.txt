@@ -1,2 +1,2 @@
-# Older versions are probably supported, but this is the oldest version I have tried
 mkdocs==1.3.0
+mkdocs-badges=0.3.2

@@ -1,4 +1,10 @@
 site_name: MkDocs Placeholder Plugin
 plugins:
 - placeholder
+- badges
 - search
+nav:
+- index.md
+- usage.md
+- demo.md
+- tests.md
