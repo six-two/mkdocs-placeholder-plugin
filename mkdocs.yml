@@ -1,1 +1,4 @@
 site_name: MkDocs Placeholder Plugin
+plugins:
+- placeholder
+- search
