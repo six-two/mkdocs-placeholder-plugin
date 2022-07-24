@@ -1,2 +1,2 @@
 mkdocs==1.3.0
-mkdocs-badges=0.3.2
+mkdocs-badges==0.3.2
