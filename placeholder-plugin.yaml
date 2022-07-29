@@ -2,3 +2,9 @@ TEST: 123
 LINK: https://www.example.com
 Bad_Name Format: please do not use a variable name like this
 #BAD_VALUE: [1, 2, 3] # This should cause an error if uncommented
+
+# HTML contents in variables should be escaped, since otherwise reflected Cross-Site Scripting would be possible
+XSS_ONE: <img src=fail onerror=alert(1)> # For embedding in HTML
+XSS_TWO: '"+alert(2)+"' # For embedding in JS/JSON
+XSS_THREE: "</input><script>confirm(3)</script>" # Similar to first
+

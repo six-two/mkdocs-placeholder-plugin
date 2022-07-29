@@ -13,7 +13,7 @@ import yaml # this should be included as an dependency of mkdocs: pip show mkdoc
 # local files
 from . import warning
 from .assets import PLACEHOLDER_JS, copy_asset_if_target_file_does_not_exist, replace_text_in_file
-from .utils import load_placeholder_data
+from .utils import load_placeholder_data, search_for_invalid_variable_names_in_input_field_targets
 
 
 DEFAULT_JS_PATH = "assets/javascripts/placeholder-plugin.js"
@@ -84,5 +84,8 @@ class PlaceholderPlugin(BasePlugin):
         # replace placeholder in template with the actual data JSON
         full_custom_js_path = os.path.join(output_dir, custom_js_path)
         replace_text_in_file(full_custom_js_path, "__MKDOCS_PLACEHOLDER_PLUGIN_JSON__", placeholder_data_json)
+
+        valid_variable_names = list(placeholder_data.keys())
+        search_for_invalid_variable_names_in_input_field_targets(output_dir, valid_variable_names)
 
 
