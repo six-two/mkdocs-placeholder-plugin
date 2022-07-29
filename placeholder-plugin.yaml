@@ -1,2 +1,4 @@
 TEST: 123
 LINK: https://www.example.com
+Bad_Name Format: please do not use a variable name like this
+#BAD_VALUE: [1, 2, 3] # This should cause an error if uncommented

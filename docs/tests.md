@@ -38,3 +38,6 @@ xTESTx
 
 xTEST TESTx XTESTX xTSTx x TEST x
 
+## Bad practices
+
+Bad name format: xBad_Name Formatx

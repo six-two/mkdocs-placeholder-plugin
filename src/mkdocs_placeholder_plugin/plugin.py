@@ -1,5 +1,7 @@
+from functools import wraps
 import json
 import os
+from typing import Callable
 # pip dependency
 import mkdocs
 from mkdocs.config.config_options import Type
@@ -11,9 +13,19 @@ import yaml # this should be included as an dependency of mkdocs: pip show mkdoc
 # local files
 from . import warning
 from .assets import PLACEHOLDER_JS, copy_asset_if_target_file_does_not_exist, replace_text_in_file
+from .utils import load_placeholder_data
 
 
 DEFAULT_JS_PATH = "assets/javascripts/placeholder-plugin.js"
+
+def convert_exceptions(function: Callable) -> Callable:
+    @wraps(function)
+    def wrap(*args, **kwargs):
+        try:
+            return function(*args, **kwargs)
+        except Exception as ex:
+            raise mkdocs.exceptions.PluginError(str(ex))
+    return wrap
 
 class PlaceholderPlugin(BasePlugin):
     config_scheme = (
@@ -25,6 +37,7 @@ class PlaceholderPlugin(BasePlugin):
 
     )
 
+    @convert_exceptions
     def on_config(self, config: Config, **kwargs) -> Config:
         """
         Called once when the config is loaded.
@@ -52,28 +65,24 @@ class PlaceholderPlugin(BasePlugin):
     #     return markdown
 
 
+    @convert_exceptions
     def on_post_build(self, config: Config) -> None:
         """
         Copy the default files if the user hasn't supplied his/her own version
         """
         placeholder_file = self.config["placeholder_file"]
-        if not os.path.exists(placeholder_file):
-            raise mkdocs.exceptions.PluginError(f"Placeholder data file '{placeholder_file}' does not exist")
-        try:
-            # copy over template
-            output_dir = config["site_dir"]
-            custom_js_path = self.config["placeholder_js"]
-            copy_asset_if_target_file_does_not_exist(output_dir, custom_js_path, PLACEHOLDER_JS)
-
-            # load data
-            with open(placeholder_file, "rb") as f:
-                placeholder_data = yaml.safe_load(f)
-            placeholder_data_json = json.dumps(placeholder_data, indent=None, sort_keys=False)
             
-            # replace placeholder in template with the actual data JSON
-            full_custom_js_path = os.path.join(output_dir, custom_js_path)
-            replace_text_in_file(full_custom_js_path, "__MKDOCS_PLACEHOLDER_PLUGIN_JSON__", placeholder_data_json)
-        except Exception as error:
-            raise mkdocs.exceptions.PluginError(str(error))
+        # copy over template
+        output_dir = config["site_dir"]
+        custom_js_path = self.config["placeholder_js"]
+        copy_asset_if_target_file_does_not_exist(output_dir, custom_js_path, PLACEHOLDER_JS)
+
+        # load data
+        placeholder_data = load_placeholder_data(placeholder_file)
+        placeholder_data_json = json.dumps(placeholder_data, indent=None, sort_keys=False)
+        
+        # replace placeholder in template with the actual data JSON
+        full_custom_js_path = os.path.join(output_dir, custom_js_path)
+        replace_text_in_file(full_custom_js_path, "__MKDOCS_PLACEHOLDER_PLUGIN_JSON__", placeholder_data_json)
 
 
