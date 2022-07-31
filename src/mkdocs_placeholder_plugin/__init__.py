@@ -5,8 +5,17 @@ from mkdocs.utils import warning_filter
 LOGGER = logging.getLogger("mkdocs.plugins.placeholder")
 LOGGER.addFilter(warning_filter)
 
+_WARNINGS_ENABLED = True
+
+
+def set_warnings_enabled(value: bool) -> None:
+    global _WARNINGS_ENABLED
+    _WARNINGS_ENABLED = value
+
+
 def warning(message: str) -> None:
-    LOGGER.warning(f"[placeholder] {message}")
+    if _WARNINGS_ENABLED:
+        LOGGER.warning(f"[placeholder] {message}")
 
 # Import local files in the correct order
 from .plugin import PlaceholderPlugin

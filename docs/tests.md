@@ -38,6 +38,13 @@ xTESTx
 
 xTEST TESTx XTESTX xTSTx x TEST x xTestx xTeSTx
 
+## Combined variable
+
+- <input data-input-for="COMB_FIRST_NAME">
+- <input data-input-for="COMB_SURNAME">
+- <input data-input-for="COMB_DOMAIN">
+- Combined email address: xCOMB_EMAILx
+
 ## Bad practices
 
 Bad name format: xBad_Name Formatx

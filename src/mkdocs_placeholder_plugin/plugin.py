@@ -10,7 +10,7 @@ from mkdocs.config.base import Config
 # local files
 from .assets import PLACEHOLDER_JS, copy_asset_if_target_file_does_not_exist, replace_text_in_file
 from .utils import load_placeholder_data, search_for_invalid_variable_names_in_input_field_targets
-
+from . import set_warnings_enabled
 
 DEFAULT_JS_PATH = "assets/javascripts/placeholder-plugin.js"
 
@@ -25,7 +25,7 @@ def convert_exceptions(function: Callable) -> Callable:
 
 class PlaceholderPlugin(BasePlugin):
     config_scheme = (
-        ("enable_dynamic", Type(bool, default=True)),
+        ("show_warnings", Type(bool, default=True)),
         ("static_pages", Type(list, default=[])),
         ("placeholder_file", Type(str, default="placeholder-plugin.yaml")),
         # Output loaction for the custom JS file
@@ -39,6 +39,8 @@ class PlaceholderPlugin(BasePlugin):
         Called once when the config is loaded.
         It will make modify the config and initialize this plugin.
         """
+        set_warnings_enabled(self.config["show_warnings"])
+
         # Make sure that the custom JS is included on every page
         custom_js_path = self.config["placeholder_js"]
         extra_js = config["extra_javascript"]
