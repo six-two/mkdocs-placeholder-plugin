@@ -18,3 +18,11 @@ The documentation is also available in the `docs` folder of the source code and 
 ## TODOs
 
 - What about the search entries? Can I hook into them for the normal MkDocs and the MkDocs for material plugins?
+
+## Notable changes
+
+### Version 0.1.1
+
+- Show a warning if an `input` element references a non-existent variable
+- Show a warning if a variable name does not match the recommended format
+- Perform type checks/conversions when loading placeholder data from the data file

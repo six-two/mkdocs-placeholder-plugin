@@ -39,6 +39,7 @@ RANDOM: 5
 Ideally you only use capital letters and underscores in your placeholders.
 Other characters may be interpreted as markdown syntax or lead to syntax highlighting splitting the placeholder.
 If that happens, the placeholder replacement will fail.
+Leading and trailing underscores should not be used, since they are reserved for future features.
 
 ## Using placeholders
 

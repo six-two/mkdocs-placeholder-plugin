@@ -7,11 +7,7 @@ import mkdocs
 from mkdocs.config.config_options import Type
 from mkdocs.plugins import BasePlugin
 from mkdocs.config.base import Config
-from mkdocs.structure.pages import Page
-from mkdocs.structure.files import Files
-import yaml # this should be included as an dependency of mkdocs: pip show mkdocs | grep -i yaml
 # local files
-from . import warning
 from .assets import PLACEHOLDER_JS, copy_asset_if_target_file_does_not_exist, replace_text_in_file
 from .utils import load_placeholder_data, search_for_invalid_variable_names_in_input_field_targets
 
@@ -49,11 +45,6 @@ class PlaceholderPlugin(BasePlugin):
         if custom_js_path not in extra_js:
             extra_js.append(custom_js_path)
 
-        # # Load the install badge data from the data file
-        # current_dir = os.path.dirname(__file__)
-        # install_badge_data_path = self.config["install_badge_data"] or INSTALL_BADGE_DATA
-        # self.install_badge_manager = InstallBadgeManager(install_badge_data_path)
-
         return config
 
     # def on_page_markdown(self, markdown: str, page: Page, config: Config, files: Files) -> str:
@@ -85,6 +76,7 @@ class PlaceholderPlugin(BasePlugin):
         full_custom_js_path = os.path.join(output_dir, custom_js_path)
         replace_text_in_file(full_custom_js_path, "__MKDOCS_PLACEHOLDER_PLUGIN_JSON__", placeholder_data_json)
 
+        # Check the variable names linked to input fields
         valid_variable_names = list(placeholder_data.keys())
         search_for_invalid_variable_names_in_input_field_targets(output_dir, valid_variable_names)
 

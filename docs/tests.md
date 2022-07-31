@@ -42,7 +42,7 @@ xTEST TESTx XTESTX xTSTx x TEST x xTestx xTeSTx
 
 Bad name format: xBad_Name Formatx
 
-<input data-input-for="VARIABLE_DOES_NOT_EXIST">
+This should cause a warning at build time: <input data-input-for="VARIABLE_DOES_NOT_EXIST">
 
 ## Test for Cross-Site Scripting
 
