@@ -1,8 +1,6 @@
 # Test page
 
-Hi,
-
-this page is here to check if variables behave the way I expect them to do.
+This page exists to check if variables behave the way I expect them to do.
 So it may look very chaotic ;)
 
 Variable | Value
@@ -10,6 +8,9 @@ Variable | Value
 TEST | `xTESTx`
 LINK | [xLINKx](xLINKx)
 
+Other test pages:
+
+- [Static replacement test](static_replacements.md)
 
 ## Intersecting variables
 

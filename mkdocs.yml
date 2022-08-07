@@ -2,6 +2,8 @@ site_name: MkDocs Placeholder Plugin
 plugins:
 - placeholder:
     show_warnings: true
+    static_pages:
+    - "static_replacements/*.html"
 - badges
 - search
 nav:

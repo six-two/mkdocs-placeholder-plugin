@@ -7,9 +7,11 @@ import mkdocs
 from mkdocs.config.config_options import Type
 from mkdocs.plugins import BasePlugin
 from mkdocs.config.base import Config
+
 # local files
 from .assets import PLACEHOLDER_JS, copy_asset_if_target_file_does_not_exist, replace_text_in_file
 from .utils import load_placeholder_data, search_for_invalid_variable_names_in_input_field_targets
+from .static_replacer import StaticReplacer
 from . import set_warnings_enabled
 
 DEFAULT_JS_PATH = "assets/javascripts/placeholder-plugin.js"
@@ -26,11 +28,11 @@ def convert_exceptions(function: Callable) -> Callable:
 class PlaceholderPlugin(BasePlugin):
     config_scheme = (
         ("show_warnings", Type(bool, default=True)),
+        # files to perform static replacements for:
         ("static_pages", Type(list, default=[])),
         ("placeholder_file", Type(str, default="placeholder-plugin.yaml")),
         # Output loaction for the custom JS file
         ("placeholder_js", Type(str, default=DEFAULT_JS_PATH)),
-
     )
 
     @convert_exceptions
@@ -81,5 +83,12 @@ class PlaceholderPlugin(BasePlugin):
         # Check the variable names linked to input fields
         valid_variable_names = list(placeholder_data.keys())
         search_for_invalid_variable_names_in_input_field_targets(output_dir, valid_variable_names)
+
+        # Replace placeholders in files marked for static replacements
+        replacement_list = self.config["static_pages"]
+        if replacement_list:
+            static_replacer = StaticReplacer(placeholder_data, replacement_list)
+            static_replacer.process_output_folder(output_dir)
+
 
 
