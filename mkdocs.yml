@@ -1,4 +1,5 @@
 site_name: MkDocs Placeholder Plugin
+theme: material
 plugins:
 - placeholder:
     show_warnings: true
@@ -12,4 +13,17 @@ nav:
 - advanced-configuration.md
 - advanced-usage.md
 - demo.md
-- tests.md
+- "Tests":
+  - tests/basic.md
+  - tests/mermaid_diagrams.md
+  - tests/static_replacements.md
+
+markdown_extensions:
+  # Message/error/warning boxes
+  - admonition
+  # For mermaid diagrams
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format

@@ -17,6 +17,7 @@ The documentation is also available in the `docs` folder of the source code and 
 
 ## TODOs
 
+- Make placeholders in Mermaid diagrams work
 - What about the search entries? Can I hook into them for the normal MkDocs and the MkDocs for material plugins?
 
 ## Notable changes

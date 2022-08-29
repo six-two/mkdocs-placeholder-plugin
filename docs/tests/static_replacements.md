@@ -1,5 +1,4 @@
-# Static replacements
-
+# Tests: Static replacements
 
 The following inputs should be disabled:
 
