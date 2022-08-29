@@ -1,10 +1,11 @@
 import glob
+import html
 import os
 import re
 # local files
 from . import warning
 
-PLACEHOLDER_INPUT_FIELD_REGEX = re.compile(r"(<input(?:\s+[^<>]*?)?)\s+data-input-for=")
+PLACEHOLDER_INPUT_FIELD_REGEX = re.compile(r'(<input(?:\s+[^<>]*?)?)\s+data-input-for="([^"]*)"')
 
 class StaticReplacer:
     def __init__(self, placeholders: dict[str, str], replace_file_pattern_list: list[str]) -> None:
@@ -14,9 +15,12 @@ class StaticReplacer:
     def process_output_folder(self, folder_path: str) -> None:
         file_processed = False
         for pattern in self.replace_file_pattern_list:
-            for file in glob.iglob(pattern, root_dir=folder_path, recursive=True):
+            # the iglob(root_dir=...) parameter was only introduced in 3.10, so we can not rely on it
+            path_pattern = os.path.join(folder_path, pattern)
+            for file_path in glob.iglob(path_pattern, recursive=True):
+                file_path = os.path.relpath(file_path, folder_path)
                 file_processed = True
-                full_path = os.path.join(folder_path, file)
+                full_path = os.path.join(folder_path, file_path)
                 self.process_file(full_path)
 
         if not file_processed:
@@ -52,7 +56,11 @@ class StaticReplacer:
         # Iterate in reverse order to not screw up the indices used when replacing text
         for match in reversed(matches):
             tag_start = match.group(1)
-            new_tag = tag_start + " disabled data-input-for="
+            placeholder_name = match.group(2)
+            placeholder_value = self.placeholders[placeholder_name]
+            print(placeholder_name, placeholder_value)
+            # Remove the "data-input-for" attribute (since JS may override the value) and insert a static value
+            new_tag = tag_start + f' value="{html.escape(placeholder_value)}" disabled'
             start, end = match.span()
             text = text[:start] + new_tag + text[end:]
 

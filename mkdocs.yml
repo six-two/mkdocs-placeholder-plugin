@@ -4,7 +4,7 @@ plugins:
 - placeholder:
     show_warnings: true
     static_pages:
-    - "static_replacements/*.html"
+    - "tests/static_replacements/index.html"
 - badges
 - search
 nav:

@@ -35,6 +35,11 @@ If you know what you are doing and these warinings annoy you, you can disable th
 
 Pages where placeholders will be replaced at build time by the predefined values.
 Input fields for variables will be disabled on these pages.
+It takes a list of glob placeholders, so something like `relative/path/**/*.html` should also work.
+
+!!! warning
+    This code is run after the pages are processed, so the path you need to specify is not the same as the one of the markdown file.
+    So `page.md` will either be `page.html` or `page/index.html`.
 
 ### placeholder_file
 
