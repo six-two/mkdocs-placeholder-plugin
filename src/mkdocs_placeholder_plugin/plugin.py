@@ -33,6 +33,8 @@ class PlaceholderPlugin(BasePlugin):
         ("placeholder_file", Type(str, default="placeholder-plugin.yaml")),
         # Output loaction for the custom JS file
         ("placeholder_js", Type(str, default=DEFAULT_JS_PATH)),
+        # Replace delay millis
+        ("replace_delay_millis", Type(int, default=0)),
     )
 
     @convert_exceptions
@@ -50,14 +52,6 @@ class PlaceholderPlugin(BasePlugin):
             extra_js.append(custom_js_path)
 
         return config
-
-    # def on_page_markdown(self, markdown: str, page: Page, config: Config, files: Files) -> str:
-    #     """
-    #     The page_markdown event is called after the page's markdown is loaded from file and can be used to alter the Markdown source text. The meta- data has been stripped off and is available as page.meta at this point.
-    #     See: https://www.mkdocs.org/dev-guide/plugins/#on_page_markdown
-    #     """
-    #     warning("TODO")
-    #     return markdown
 
 
     @convert_exceptions
@@ -78,7 +72,10 @@ class PlaceholderPlugin(BasePlugin):
         
         # replace placeholder in template with the actual data JSON
         full_custom_js_path = os.path.join(output_dir, custom_js_path)
-        replace_text_in_file(full_custom_js_path, "__MKDOCS_PLACEHOLDER_PLUGIN_JSON__", placeholder_data_json)
+        replace_text_in_file(full_custom_js_path, {
+            "__MKDOCS_PLACEHOLDER_PLUGIN_JSON__": placeholder_data_json,
+            "__MKDOCS_REPLACE_TRIGGER_DELAY_MILLIS__": str(self.config["replace_delay_millis"]),
+        })
 
         # Check the variable names linked to input fields
         valid_variable_names = list(placeholder_data.keys())

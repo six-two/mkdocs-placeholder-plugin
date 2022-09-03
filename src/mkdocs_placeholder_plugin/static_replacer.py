@@ -58,7 +58,6 @@ class StaticReplacer:
             tag_start = match.group(1)
             placeholder_name = match.group(2)
             placeholder_value = self.placeholders[placeholder_name]
-            print(placeholder_name, placeholder_value)
             # Remove the "data-input-for" attribute (since JS may override the value) and insert a static value
             new_tag = tag_start + f' value="{html.escape(placeholder_value)}" disabled'
             start, end = match.span()

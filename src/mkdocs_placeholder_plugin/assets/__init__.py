@@ -26,13 +26,14 @@ def copy_asset_if_target_file_does_not_exist(output_dir: str, target_path_in_out
         asset_path = get_resource_path(asset_name)
         shutil.copyfile(asset_path, target_path)
 
-def replace_text_in_file(file_path: str, old_text: str, new_text: str) -> None:
+def replace_text_in_file(file_path: str, replacements: dict[str, str]) -> None:
     # read file contents
     with open(file_path, "r") as f:
         text = f.read()
 
     # do the replacing
-    text = text.replace(old_text, new_text)
+    for old, new in replacements.items():
+        text = text.replace(old, new)
 
     # write back the results
     with open(file_path, "w") as f:
