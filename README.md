@@ -22,6 +22,11 @@ The documentation is also available in the `docs` folder of the source code and 
 
 ## Notable changes
 
+### Version 0.1.2
+
+- Implemented static replacements for user-selected pages
+- Added timing options. This should  make it possible to use with MermaidJS diagrams, but may not always work
+
 ### Version 0.1.1
 
 - Show a warning if an `input` element references a non-existent variable
