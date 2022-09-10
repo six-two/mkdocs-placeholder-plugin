@@ -22,6 +22,11 @@ The documentation is also available in the `docs` folder of the source code and 
 
 ## Notable changes
 
+### HEAD
+
+- Placeholder config: Placeholders can now have attributes (like `description`)
+- Stack traces for fatal exceptions can now be seen with the `-v` flag (`mkdocs serve -v`)
+
 ### Version 0.1.2
 
 - Implemented static replacements for user-selected pages

@@ -1,39 +1,98 @@
 from html.parser import HTMLParser
+import json
 import os
 import re
+from typing import NamedTuple, Any
 # pip packages
+import mkdocs
 import yaml
 # local
-from . import warning
+from . import warning, debug
 
 VARIABLE_NAME_REGEX = re.compile("^[A-Z_]+$")
 
-def load_placeholder_data(path: str) -> dict[str, str]:
+class Placeholder(NamedTuple):
+    # The name of the placeholder. For example "TEST"
+    name: str
+    # The default value of the placeholder. For example "123"
+    default_value: str
+    # The description to show when generating the input table
+    description: str
+    # Whether the placeholder should be protected from users editing it.
+    # Use true to have hidden convenience variables. Example "COMB_EMAIL: xCOMB_FIRST_NAMEx.xCOMB_SURNAMEx@xCOMB_DOMAINx"
+    read_only: bool
+
+
+def load_placeholder_data(path: str) -> dict[str, Placeholder]:
     """
     Load placeholder data from a file and run some checks on the parsed contents
     """
     if os.path.exists(path):
         with open(path, "rb") as f:
             data = yaml.safe_load(f)
+
+        placeholders: dict[str,Placeholder] = {}
         
         if type(data) != dict:
-            raise Exception(f"Expected 'dict', but got '{type(data)}'")
+            raise mkdocs.exceptions.PluginError(f"[placeholder] Config file error: Expected root element of type 'dict', but got '{type(data).__name__}'")
         for key, value in data.items():
             # Make sure that values are strings (or convert them to strings if possible)
-            if type(value) != str:
-                if type(value) in [list, dict]:
-                    raise Exception(f"Expected a single value for key '{key}', but got type {type(value)}")
-                else:
-                    # Probably something like int, float, bool, etc
-                    data[key] = str(value)
+            if isinstance(value, dict):
+                # New style entry with attributes
+                debug(f"dict: {value}")
+                placeholders[key] = parse_placeholder_dict(key, value)
+            elif type(value) in [bool, float, int, str]:
+                # Old config style, will only set name and default_value
+                # For consistency's sake, we also parse it wit the parse_palceholder_dict() function
+                debug(f"primitive: {value}")
+                placeholders[key] = parse_placeholder_dict(key, {"default": value})
+            else:
+                raise mkdocs.exceptions.PluginError(f"Expected a single value or object for key '{key}', but got type {type(value).__name__}")
             
             # Check that the variable name matches expected format
             if not VARIABLE_NAME_REGEX.match(key):
                 warning(f"Potentially problematic variable name: '{key}'. A valid name should only contain capital letters and underscores.")
         
-        return data
+        return placeholders
     else:
-        raise Exception(f"Placeholder data file '{path}' does not exist")
+        raise mkdocs.exceptions.PluginError(f"Placeholder data file '{path}' does not exist")
+
+
+def parse_placeholder_dict(name: str, data: dict[str,Any]) -> Placeholder:
+    # default (default_value) is required
+    try:
+        default_value = str(data["default"])
+    except KeyError:
+        raise mkdocs.exceptions.PluginError(f"Missing key 'default' in placeholder '{name}'")
+
+    # Readonly is optional, defaults to False
+    read_only = data.get("read_only", False)
+    if type(read_only) != bool:
+        raise mkdocs.exceptions.PluginError(f"Wrong type for key 'read_only' in placeholder '{name}': Expected 'bool', got '{type(read_only).__name__}'")
+
+    # Description is optional, defaults to "No description available"
+    description = str(data.get("description", "No description available"))
+
+    return Placeholder(
+        name=name,
+        default_value=default_value,
+        description=description,
+        read_only=read_only,
+    )
+
+
+def placeholders_to_simple_json(placeholders: dict[str, Placeholder]) -> str:
+    """
+    Convert the placeholders to a simple JSON sting.
+    Format: {"name":"value", "another-name":"another-value", [...]}
+    """
+    # Convert to simple name -> value mapping
+    simple_dict = {}
+    for placeholder in placeholders.values():
+        simple_dict[placeholder.name] = placeholder.default_value
+    
+    # Convert dict to JSON string
+    return json.dumps(simple_dict, indent=None, sort_keys=False)
 
 
 class InvalidVariableInputFieldSearcher(HTMLParser):

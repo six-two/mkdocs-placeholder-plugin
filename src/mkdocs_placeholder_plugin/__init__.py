@@ -17,6 +17,10 @@ def warning(message: str) -> None:
     if _WARNINGS_ENABLED:
         LOGGER.warning(f"[placeholder] {message}")
 
+def debug(message: str) -> None:
+    LOGGER.debug(f"[placeholder] {message}")
+
+
 # Import local files in the correct order
 from .plugin import PlaceholderPlugin
 

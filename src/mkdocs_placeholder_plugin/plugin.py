@@ -1,6 +1,6 @@
 from functools import wraps
-import json
 import os
+import traceback
 from typing import Callable
 # pip dependency
 import mkdocs
@@ -10,9 +10,9 @@ from mkdocs.config.base import Config
 
 # local files
 from .assets import PLACEHOLDER_JS, copy_asset_if_target_file_does_not_exist, replace_text_in_file
-from .utils import load_placeholder_data, search_for_invalid_variable_names_in_input_field_targets
+from .utils import load_placeholder_data, placeholders_to_simple_json, search_for_invalid_variable_names_in_input_field_targets
 from .static_replacer import StaticReplacer
-from . import set_warnings_enabled
+from . import set_warnings_enabled, debug
 
 DEFAULT_JS_PATH = "assets/javascripts/placeholder-plugin.js"
 
@@ -22,7 +22,12 @@ def convert_exceptions(function: Callable) -> Callable:
         try:
             return function(*args, **kwargs)
         except Exception as ex:
-            raise mkdocs.exceptions.PluginError(str(ex))
+            debug(f"Fatal exception occurred, stack trace:\n{traceback.format_exc()}")
+            if isinstance(ex, mkdocs.exceptions.PluginError):
+                raise mkdocs.exceptions.PluginError(f"[placeholder] {ex}")
+            else:
+                # Add the information, that it is a normal uncaught excaption
+                raise mkdocs.exceptions.PluginError(f"[placeholder] Uncaught exception: {ex}")
     return wrap
 
 class PlaceholderPlugin(BasePlugin):
@@ -51,6 +56,11 @@ class PlaceholderPlugin(BasePlugin):
         if custom_js_path not in extra_js:
             extra_js.append(custom_js_path)
 
+        # Immediatley parse the placeholder file, so that all following methods can use the information
+        placeholder_file = self.config["placeholder_file"]
+        self.placeholders = load_placeholder_data(placeholder_file)
+        print(self.placeholders)
+
         return config
 
 
@@ -59,32 +69,29 @@ class PlaceholderPlugin(BasePlugin):
         """
         Copy the default files if the user hasn't supplied his/her own version
         """
-        placeholder_file = self.config["placeholder_file"]
             
         # copy over template
         output_dir = config["site_dir"]
         custom_js_path = self.config["placeholder_js"]
         copy_asset_if_target_file_does_not_exist(output_dir, custom_js_path, PLACEHOLDER_JS)
 
-        # load data
-        placeholder_data = load_placeholder_data(placeholder_file)
-        placeholder_data_json = json.dumps(placeholder_data, indent=None, sort_keys=False)
         
         # replace placeholder in template with the actual data JSON
         full_custom_js_path = os.path.join(output_dir, custom_js_path)
+        placeholder_data_json = placeholders_to_simple_json(self.placeholders)
         replace_text_in_file(full_custom_js_path, {
             "__MKDOCS_PLACEHOLDER_PLUGIN_JSON__": placeholder_data_json,
             "__MKDOCS_REPLACE_TRIGGER_DELAY_MILLIS__": str(self.config["replace_delay_millis"]),
         })
 
         # Check the variable names linked to input fields
-        valid_variable_names = list(placeholder_data.keys())
+        valid_variable_names = list(self.placeholders.keys())
         search_for_invalid_variable_names_in_input_field_targets(output_dir, valid_variable_names)
 
         # Replace placeholders in files marked for static replacements
         replacement_list = self.config["static_pages"]
         if replacement_list:
-            static_replacer = StaticReplacer(placeholder_data, replacement_list)
+            static_replacer = StaticReplacer(self.placeholders, replacement_list)
             static_replacer.process_output_folder(output_dir)
 
 

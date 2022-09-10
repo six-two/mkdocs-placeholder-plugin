@@ -1,5 +1,9 @@
-TEST: 123
-LINK: https://www.example.com
+TEST: 
+  description: An test value, by default '123'
+  default: 123
+  read_only: true
+LINK: 
+  default: https://www.example.com/test/page
 
 # This should cause an warning:
 Bad_Name Format: please do not use a variable name like this

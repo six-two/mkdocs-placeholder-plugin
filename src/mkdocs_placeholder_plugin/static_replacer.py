@@ -4,11 +4,12 @@ import os
 import re
 # local files
 from . import warning
+from .utils import Placeholder
 
 PLACEHOLDER_INPUT_FIELD_REGEX = re.compile(r'(<input(?:\s+[^<>]*?)?)\s+data-input-for="([^"]*)"')
 
 class StaticReplacer:
-    def __init__(self, placeholders: dict[str, str], replace_file_pattern_list: list[str]) -> None:
+    def __init__(self, placeholders: dict[str,Placeholder], replace_file_pattern_list: list[str]) -> None:
         self.placeholders = placeholders
         self.replace_file_pattern_list = replace_file_pattern_list
 
@@ -44,8 +45,8 @@ class StaticReplacer:
         (and thus error prone) and would require extra dependenices. So I will try to just use "dumb"
         replacements and hope it does not cause any errors.
         """
-        for key, value in self.placeholders.items():
-            text = text.replace(f"x{key}x", value)
+        for placeholder in self.placeholders.values():
+            text = text.replace(f"x{placeholder.name}x", placeholder.default_value)
         return text
 
     def _disable_placeholder_input_fields(self, text: str) -> str:
@@ -57,7 +58,7 @@ class StaticReplacer:
         for match in reversed(matches):
             tag_start = match.group(1)
             placeholder_name = match.group(2)
-            placeholder_value = self.placeholders[placeholder_name]
+            placeholder_value = self.placeholders[placeholder_name].default_value
             # Remove the "data-input-for" attribute (since JS may override the value) and insert a static value
             new_tag = tag_start + f' value="{html.escape(placeholder_value)}" disabled'
             start, end = match.span()
