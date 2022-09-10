@@ -1,5 +1,6 @@
 # Tests: Mermaid diagrams
 
+
 These diagrams require the Material theme to work correctly.
 
 !!! warning "May be unreliable"
@@ -14,6 +15,12 @@ These diagrams require the Material theme to work correctly.
     ```
 
     This may not always work or may cause other issues.
+
+## Placeholder values
+
+You can enter your values here and reload the page:
+
+<placeholdertable>
 
 ## Flowchart
 

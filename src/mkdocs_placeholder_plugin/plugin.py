@@ -12,6 +12,7 @@ from mkdocs.config.base import Config
 from .assets import PLACEHOLDER_JS, copy_asset_if_target_file_does_not_exist, replace_text_in_file
 from .utils import load_placeholder_data, placeholders_to_simple_json, search_for_invalid_variable_names_in_input_field_targets
 from .static_replacer import StaticReplacer
+from .input_table import InputTableGenerator
 from . import set_warnings_enabled, debug
 
 DEFAULT_JS_PATH = "assets/javascripts/placeholder-plugin.js"
@@ -59,10 +60,17 @@ class PlaceholderPlugin(BasePlugin):
         # Immediatley parse the placeholder file, so that all following methods can use the information
         placeholder_file = self.config["placeholder_file"]
         self.placeholders = load_placeholder_data(placeholder_file)
-        print(self.placeholders)
+
+        self.table_generator = InputTableGenerator(self.placeholders)
 
         return config
 
+    def on_page_markdown(self, markdown: str, page, config: Config, files) -> str:
+        """
+        The page_markdown event is called after the page's markdown is loaded from file and can be used to alter the Markdown source text. The meta- data has been stripped off and is available as page.meta at this point.
+        See: https://www.mkdocs.org/dev-guide/plugins/#on_page_markdown
+        """
+        return self.table_generator.handle_markdown(markdown)
 
     @convert_exceptions
     def on_post_build(self, config: Config) -> None:

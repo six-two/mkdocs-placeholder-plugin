@@ -60,3 +60,22 @@ In input field | In normal page
 <input data-input-for="XSS_TWO"> | xXSS_TWOx
 <input data-input-for="XSS_THREE"> | xXSS_THREEx
 console.log("xXSS_TWOx") | Check the browser console (F12)<script>setTimeout(function(){console.log("xXSS_TWOx")}, 1000); // This should output xXSS_TWOx, since scripts should not be modified</script> 
+
+## Placeholder tables
+
+### All placeholders
+
+<placeholdertable entries="all" type="description">
+
+### Only placeholders used on this site
+
+<placeholdertable entries="auto">
+
+### Explicit entry definition (only XSS)
+
+<placeholdertable entries="XSS_ONE,XSS_TWO ,  XSS_THREE">
+
+### No entries
+
+<placeholdertable entries="">
+
