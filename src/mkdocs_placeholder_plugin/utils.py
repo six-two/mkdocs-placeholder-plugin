@@ -39,12 +39,12 @@ def load_placeholder_data(path: str) -> dict[str, Placeholder]:
             # Make sure that values are strings (or convert them to strings if possible)
             if isinstance(value, dict):
                 # New style entry with attributes
-                debug(f"dict: {value}")
+                # debug(f"dict: {value}")
                 placeholders[key] = parse_placeholder_dict(key, value)
             elif type(value) in [bool, float, int, str]:
                 # Old config style, will only set name and default_value
                 # For consistency's sake, we also parse it wit the parse_palceholder_dict() function
-                debug(f"primitive: {value}")
+                # debug(f"primitive: {value}")
                 placeholders[key] = parse_placeholder_dict(key, {"default": value})
             else:
                 raise mkdocs.exceptions.PluginError(f"Expected a single value or object for key '{key}', but got type {type(value).__name__}")
@@ -70,8 +70,8 @@ def parse_placeholder_dict(name: str, data: dict[str,Any]) -> Placeholder:
     if type(read_only) != bool:
         raise mkdocs.exceptions.PluginError(f"Wrong type for key 'read_only' in placeholder '{name}': Expected 'bool', got '{type(read_only).__name__}'")
 
-    # Description is optional, defaults to "No description available"
-    description = str(data.get("description", "No description available"))
+    # Description is optional
+    description = str(data.get("description", ""))
 
     return Placeholder(
         name=name,

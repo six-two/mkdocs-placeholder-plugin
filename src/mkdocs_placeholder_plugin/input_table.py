@@ -11,6 +11,8 @@ def reload_on_click(text: str) -> str:
     return f'<span class="button-reload" style="cursor: pointer" onclick="window.location.reload()">{text}</span>'
 
 INPUT_TABLE_PLACEHOLDER = re.compile("<placeholdertable[^>]*>")
+#@TODO: add an option to disable this
+#@TODO: make inputs for readonly placeholders disabled
 RELOAD_ROW = reload_on_click("Apply the new values") + " | " + reload_on_click("by clicking on this text") + "\n"
 
 class PlaceholderTableTagParser(HTMLParser):
@@ -38,11 +40,10 @@ class PlaceholderTableSettings(NamedTuple):
 
 
 class InputTableGenerator:
-    def __init__(self, placeholders: dict[str,Placeholder]) -> None:
+    def __init__(self, placeholders: dict[str,Placeholder], default_show_readonly: bool, default_table_type: str) -> None:
         self.placeholders = placeholders
-        #@TODO: allow to specify via plugin settings
-        self.default_table_type = "simple"
-        self.default_show_readonly = False
+        self.default_table_type = default_table_type
+        self.default_show_readonly = default_show_readonly
 
     def handle_markdown(self, page_markdown: str) -> str:
         matches = list(INPUT_TABLE_PLACEHOLDER.finditer(page_markdown))
@@ -68,13 +69,16 @@ class InputTableGenerator:
         # parse entries as a comma separated list with optional whitespace
         entries = [x.strip() for x in entries_string.split(",") if x.strip()]
 
-        show_readonly_string = parser.attributes.get("show-readonly", "false").lower()
-        if show_readonly_string in ["0", "off", "disabled", "false"]:
-            show_readonly = False
-        elif show_readonly_string in ["1", "on", "enabled", "true"]:
-            show_readonly = True
-        else:
-            raise mkdocs.exceptions.PluginError(f"[placeholder] Expected boolean value ('true' or 'false') for 'show-readonly', but got '{show_readonly_string}'")
+        try:
+            show_readonly_string = parser.attributes["show-readonly"].lower()
+            if show_readonly_string in ["0", "off", "disabled", "false"]:
+                show_readonly = False
+            elif show_readonly_string in ["1", "on", "enabled", "true"]:
+                show_readonly = True
+            else:
+                raise mkdocs.exceptions.PluginError(f"[placeholder] Expected boolean value ('true' or 'false') for 'show-readonly', but got '{show_readonly_string}'")
+        except KeyError:
+            show_readonly = self.default_show_readonly
 
         return PlaceholderTableSettings(
             table_type=table_type,

@@ -65,7 +65,7 @@ console.log("xXSS_TWOx") | Check the browser console (F12)<script>setTimeout(fun
 
 ### All placeholders
 
-<placeholdertable entries="all" type="description">
+<placeholdertable entries="all" show-readonly="true" type="description">
 
 ### Only placeholders used on this site
 
@@ -73,7 +73,7 @@ console.log("xXSS_TWOx") | Check the browser console (F12)<script>setTimeout(fun
 
 ### Explicit entry definition (only XSS)
 
-<placeholdertable entries="XSS_ONE,XSS_TWO ,  XSS_THREE">
+<placeholdertable entries="XSS_ONE,XSS_TWO ,  XSS_THREE, XSS_COMB">
 
 ### No entries
 

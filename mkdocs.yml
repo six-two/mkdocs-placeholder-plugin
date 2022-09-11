@@ -6,8 +6,13 @@ plugins:
     static_pages:
     - "tests/static_replacements/index.html"
     replace_delay_millis: -1
+    # # Uncomment for testing
+    # table_default_show_readonly: True
+    # table_default_type: description
+
 - badges
 - search
+
 nav:
 - index.md
 - usage.md

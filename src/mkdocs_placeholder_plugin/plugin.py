@@ -41,6 +41,9 @@ class PlaceholderPlugin(BasePlugin):
         ("placeholder_js", Type(str, default=DEFAULT_JS_PATH)),
         # Replace delay millis
         ("replace_delay_millis", Type(int, default=0)),
+        # Default values for place4holder input tables
+        ("table_default_show_readonly", Type(bool, default=False)),
+        ("table_default_type", Type(str, default="simple")),
     )
 
     @convert_exceptions
@@ -61,7 +64,9 @@ class PlaceholderPlugin(BasePlugin):
         placeholder_file = self.config["placeholder_file"]
         self.placeholders = load_placeholder_data(placeholder_file)
 
-        self.table_generator = InputTableGenerator(self.placeholders)
+        default_show_readonly = self.config["table_default_show_readonly"]
+        default_table_type = self.config["table_default_type"]
+        self.table_generator = InputTableGenerator(self.placeholders, default_show_readonly, default_table_type)
 
         return config
 

@@ -25,6 +25,7 @@ The documentation is also available in the `docs` folder of the source code and 
 ### HEAD
 
 - Placeholder config: Placeholders can now have attributes (like `description`)
+- Tables with inputs for all placeholders on a page can now be generated via `<placeholdertable>` elements
 - Stack traces for fatal exceptions can now be seen with the `-v` flag (`mkdocs serve -v`)
 
 ### Version 0.1.2

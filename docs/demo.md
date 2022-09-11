@@ -10,7 +10,7 @@ LINK | <input data-input-for="LINK">
 ## Outputs
 
 These are your variables.
-They are also set for all other page (like the [test page](tests.md)).
+They are also set for all other page (like the [test page](tests/basic.md)).
 However after changing them, you need to reload the page to show the new values.
 
 Variable | Value

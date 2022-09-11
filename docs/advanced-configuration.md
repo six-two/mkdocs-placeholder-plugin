@@ -4,11 +4,13 @@
 
 Option | Type | Default value
 ---|---|---
-show_warnings | `bool` | `True`
-static_pages | `list[str]` | `[]` (empty list)
 placeholder_file | `str` | placeholder-plugin.yaml
 placeholder_js | `str` | assets/javascripts/placeholder-plugin.js
 replace_delay_millis | `int` | 0
+show_warnings | `bool` | `True`
+static_pages | `list[str]` | `[]` (empty list)
+table_default_show_readonly | `bool` | `False`
+table_default_type | `str` | simple
 
 You can set these values in `mkdocs.yml` like this:
 
@@ -17,12 +19,33 @@ plugins:
 - placeholder:
     show_warnings: true
     static_pages:
-    - static_replacements.md
+    - static_replacements/index.html
+    - another-page.html
     placeholder_file: placeholder-plugin.yaml
     placeholder_js: assets/javascripts/placeholder-plugin.js
     replace_delay_millis: 0
+    table_default_show_readonly: False
+    table_default_type: simple
 ```
 
+
+### placeholder_file
+
+The placeholders and their initial values will be read from this file.
+
+### placeholder_js
+
+The path where to store the JavaScript file created by this plugin.
+If this file already exists, the plugin will not change its contents.
+This allows you to modify the JavaScript code used by this plugin if you have a reason to ever want to do that.
+
+### replace_delay_millis
+
+This value determines, *when* the replacement should be triggered:
+
+- `x` < 0: Replace the placeholders as soon as the script is executed.
+- `x` == 0: Replace the placeholders as soon as the `document.onload` event is fired (when the page is fully loaded). This is the current default value.
+- `x` > 0: After the `document.onload` event is fired, wait `x` milli seconds, then replace the placeholders.
 
 ### show_warnings
 
@@ -43,20 +66,10 @@ It takes a list of glob placeholders, so something like `relative/path/**/*.html
     This code is run after the pages are processed, so the path you need to specify is not the same as the one of the markdown file.
     So `page.md` will either be `page.html` or `page/index.html`.
 
-### placeholder_file
+### table_default_show_readonly
 
-The placeholders and their initial values will be read from this file.
+The default value for placeholder input tables, when no `show-readonly` attribute was specified.
 
-### placeholder_js
+### table_default_type
 
-The path where to store the JavaScript file created by this plugin.
-If this file already exists, the plugin will not change its contents.
-This allows you to modify the JavaScript code used by this plugin if you have a reason to ever want to do that.
-
-### replace_delay_millis
-
-This value determines, *when* the replacement should be triggered:
-
-- `x` < 0: Replace the placeholders as soon as the script is executed.
-- `x` == 0: Replace the placeholders as soon as the `document.onload` event is fired (when the page is fully loaded). This is the current default value.
-- `x` > 0: After the `document.onload` event is fired, wait `x` milli seconds, then replace the placeholders.
+The default value for placeholder input tables, when no `type` attribute was specified.
