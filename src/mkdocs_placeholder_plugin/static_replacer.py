@@ -46,7 +46,7 @@ class StaticReplacer:
         replacements and hope it does not cause any errors.
         """
         for placeholder in self.placeholders.values():
-            text = text.replace(f"x{placeholder.name}x", placeholder.default_value)
+            text = text.replace(f"x{placeholder.name}x", html.escape(placeholder.default_value))
         return text
 
     def _disable_placeholder_input_fields(self, text: str) -> str:
@@ -58,7 +58,11 @@ class StaticReplacer:
         for match in reversed(matches):
             tag_start = match.group(1)
             placeholder_name = match.group(2)
-            placeholder_value = self.placeholders[placeholder_name].default_value
+            try:
+                placeholder_value = self.placeholders[placeholder_name].default_value
+            except KeyError as e:
+                warning(f"Input field for undefinded variable: {e}")
+                placeholder_value = f"Undefined variable {e}"
             # Remove the "data-input-for" attribute (since JS may override the value) and insert a static value
             new_tag = tag_start + f' value="{html.escape(placeholder_value)}" disabled'
             start, end = match.span()

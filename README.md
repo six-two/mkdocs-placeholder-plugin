@@ -17,7 +17,6 @@ The documentation is also available in the `docs` folder of the source code and 
 
 ## TODOs
 
-- Make placeholders in Mermaid diagrams work
 - What about the search entries? Can I hook into them for the normal MkDocs and the MkDocs for material plugins?
 
 ## Notable changes
@@ -27,6 +26,8 @@ The documentation is also available in the `docs` folder of the source code and 
 - Placeholder config: Placeholders can now have attributes (like `description`)
 - Tables with inputs for all placeholders on a page can now be generated via `<placeholdertable>` elements
 - Stack traces for fatal exceptions can now be seen with the `-v` flag (`mkdocs serve -v`)
+- When performing static replacements, the contents are now HTML escaped
+- Added script `mkdocs-placeholder-replace-static.py`
 
 ### Version 0.1.2
 
