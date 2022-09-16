@@ -21,7 +21,7 @@ The documentation is also available in the `docs` folder of the source code and 
 
 ## Notable changes
 
-### HEAD
+### Version 0.1.3
 
 - Placeholder config: Placeholders can now have attributes (like `description`)
 - Tables with inputs for all placeholders on a page can now be generated via `<placeholdertable>` elements

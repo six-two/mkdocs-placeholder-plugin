@@ -43,7 +43,7 @@ Tries to do build time replacing of placeholders on the pages defined via `stati
 
 ## Placeholder input tables
 
-Beginning with version 0.1.3, you can embedd input tables for placeholders.
+Beginning with version 0.1.3, you can embed input tables for placeholders.
 The following syntax is used:
 
 ```html
