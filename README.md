@@ -18,6 +18,9 @@ The documentation is also available in the `docs` folder of the source code and 
 ## TODOs
 
 - What about the search entries? Can I hook into them for the normal MkDocs and the MkDocs for material plugins?
+- Update to new plugin config (mkdocs 1.4)?
+- Implement different input types (dropdown menu, checkbox)
+- Set initial value from input fields to something like "JavaScript disabled" (to tell users to enable JS)
 
 ## Notable changes
 

@@ -11,30 +11,30 @@
         }
     };
 
+    const initialize_undefined_placeholders = () => {
+        init_count = 0;
+        for (let placeholder in PLACEHOLDER_DEFAULTS) {
+            if (!localStorage.getItem(placeholder)) {
+                localStorage.setItem(placeholder, PLACEHOLDER_DEFAULTS[placeholder]);
+                init_count++;
+            }
+        }
+        if (init_count > 0) {
+            console.log(`Initialized ${init_count} placeholder(s) with default values`);
+        }
+    }
+
     const replace_placeholders_in_subtree = (root_element) => {
         for (let placeholder in PLACEHOLDER_DEFAULTS) {
-            let replace_value = localStorage.getItem(placeholder);
-            if (!replace_value) {
-                replace_value = PLACEHOLDER_DEFAULTS[placeholder];
-                localStorage.setItem(placeholder, replace_value);
-            }
-            // We need to chose a format, that does not get broken up by the syntax highlighting in code snippets.
-            // I would hav liked something like @{PLACEHOLDER}@, but __PLACEHOLDER__ would probably be safest
-            // Turns out __PLACEHOLDER__ is the markdown syntax for bold. Thus it works fine in code listings, but not in normal text.
-            // Ok, let's try xPLACEHOLDERx. This uses just normal letters and has a beginning and end marker (assuming PLACEHOLdER is always uppercase).
             const search_regex = RegExp("x" + placeholder + "x", "g");
+            const replace_value = localStorage.getItem(placeholder) || "BUG: Value missing";
             replace_text_in_page(root_element, search_regex, replace_value);
         }
     };
-
-    const replace_placeholders = () => {
-        const replace_root = document.querySelector("html");
-        replace_placeholders_in_subtree(replace_root);
-    };
-
+    
     const prepare_variable_input_fields = () => {
         const input_list = document.querySelectorAll("input[data-input-for]");
-        console.log(`Found ${input_list.length} input fields`);
+        console.log(`Found ${input_list.length} input field(s)`);
         for (let input of input_list) {
             input.classList.add("input-for-variable");
             const variable_name = input.getAttribute("data-input-for");
@@ -44,21 +44,28 @@
             });
         }
     };
+    
+    const init = () => {
+        initialize_undefined_placeholders();
 
-    // Set up the input fields for the placeholder fields
-    window.addEventListener("load", prepare_variable_input_fields);
+        prepare_variable_input_fields();
+        
+        const replace_root = document.querySelector("html");
+        replace_placeholders_in_subtree(replace_root);
+    }
 
+    
     // Then do the placeholder replacing at the user-specified time
     if (REPLACE_TRIGGER_DELAY_MILLIS < 0) {
         // For values smaller than 0, immediately do the replacements
-        replace_placeholders();
+        init();
     } else if (REPLACE_TRIGGER_DELAY_MILLIS == 0) {
         // Replace placeholders as soon as the page finished loading
-        window.addEventListener("load", replace_placeholders);
+        window.addEventListener("load", init);
     } else {
         // Wait the amount of millis specified by the user
         window.addEventListener("load", () => {
-            setTimeout(replace_placeholders, REPLACE_TRIGGER_DELAY_MILLIS);
+            setTimeout(init, REPLACE_TRIGGER_DELAY_MILLIS);
         });
     }
 }());
