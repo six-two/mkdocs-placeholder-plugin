@@ -6,7 +6,9 @@ import re
 from . import warning
 from .utils import Placeholder
 
-PLACEHOLDER_INPUT_FIELD_REGEX = re.compile(r'(<input(?:\s+[^<>]*?)?)\s+data-input-for="([^"]*)"')
+# This will fail (not match) if the placeholder name contains an space, single quote or double quote.
+# But since I produce a warning on the console if you do that, that is your problem
+PLACEHOLDER_INPUT_FIELD_REGEX = re.compile(r'(<input(?:\s+[^<>]*?)?)\s+data-input-for=(["\']?)([^\'"\s>]*)\2')
 
 class StaticReplacer:
     def __init__(self, placeholders: dict[str,Placeholder], replace_file_pattern_list: list[str]) -> None:
@@ -57,7 +59,8 @@ class StaticReplacer:
         # Iterate in reverse order to not screw up the indices used when replacing text
         for match in reversed(matches):
             tag_start = match.group(1)
-            placeholder_name = match.group(2)
+            # quote = match.group(2)
+            placeholder_name = match.group(3)
             try:
                 placeholder_value = self.placeholders[placeholder_name].default_value
             except KeyError as e:
