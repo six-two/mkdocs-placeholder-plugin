@@ -43,7 +43,7 @@ This allows you to modify the JavaScript code used by this plugin if you have a 
 
 This value determines, *when* the replacement should be triggered:
 
-- `x` < 0: Replace the placeholders as soon as the script is executed.
+- `x` < 0: Replace the placeholders as soon as the script is executed. I need this to make replacements in Mermaid diagrams work.
 - `x` == 0: Replace the placeholders as soon as the `document.onload` event is fired (when the page is fully loaded). This is the current default value.
 - `x` > 0: After the `document.onload` event is fired, wait `x` milli seconds, then replace the placeholders.
 

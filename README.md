@@ -19,10 +19,16 @@ The documentation is also available in the `docs` folder of the source code and 
 
 - What about the search entries? Can I hook into them for the normal MkDocs and the MkDocs for material plugins?
 - Update to new plugin config (mkdocs 1.4)?
-- Implement different input types (dropdown menu, checkbox)
+- Optional extra buttons for the global placeholder state (reset, import, export)
 - Set initial value from input fields to something like "JavaScript disabled" (to tell users to enable JS)
+- Add option to reload the page if a checkbox/dropdown is changed or a text field is changed and `Enter` is pressed (to immediately show the new values)
 
 ## Notable changes
+
+### HEAD
+
+- Added new input types (checkbox & dropdown menu)
+- Also allow numbers in placeholder names (everywhere except the first character)
 
 ### Version 0.1.3
 

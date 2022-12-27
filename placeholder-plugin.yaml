@@ -5,6 +5,29 @@ TEST:
 LINK: 
   default: https://www.example.com/test/page
 
+CHECKBOX:
+  description: A checkbox would be nice, wouldn't it?
+  default: checked
+  values:
+    checked: "Checkbox checked"
+    unchecked: "Checkbox NOT Checked"
+QUOTE_CHECKBOX:
+  description: Use double quotes?
+  default: checked
+  values:
+    checked: "\""
+    unchecked: "'"
+
+DROPDOWN:
+  description: An test dropdown for selecting your favourite DNS lookup tool
+  default: "DNS lookup with host"
+  values:
+    "DNS lookup with dig": "dig"
+    "DNS lookup with nmap": "nmap -n --resolve-all"
+    "DNS lookup with host": "host"
+    "DNS lookup with nslookup": "nslookup"
+
+
 # This should cause an warning:
 Bad_Name Format: please do not use a variable name like this
 

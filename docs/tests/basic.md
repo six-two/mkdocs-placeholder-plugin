@@ -7,6 +7,13 @@ Variable | Value
 ---|---
 TEST | `xTESTx`
 LINK | [xLINKx](xLINKx)
+CHECKBOX | xCHECKBOXx
+Qouted string | xQUOTE_CHECKBOXxxTESTxxQUOTE_CHECKBOXx
+DROPDOWN | xDROPDOWNx
+
+<label><input data-input-for="QUOTE_CHECKBOX">Use double quotes</label>
+
+<label>Label for dropdown<input data-input-for="DROPDOWN"></label>
 
 Other test pages:
 

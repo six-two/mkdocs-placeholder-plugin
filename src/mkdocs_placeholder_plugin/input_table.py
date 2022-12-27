@@ -1,11 +1,10 @@
 import html
-from html.parser import HTMLParser
 import re
 from typing import NamedTuple
 # pip dependencies
 import mkdocs
 # local files
-from .utils import Placeholder
+from .utils import Placeholder, parse_html_tag
 
 def reload_on_click(text: str) -> str:
     return f'<span class="button-reload" style="cursor: pointer" onclick="window.location.reload()">{text}</span>'
@@ -14,21 +13,6 @@ INPUT_TABLE_PLACEHOLDER = re.compile("<placeholdertable[^>]*>")
 #@TODO: add an option to disable this
 #@TODO: make inputs for readonly placeholders disabled
 RELOAD_ROW = reload_on_click("Apply the new values") + " | " + reload_on_click("by clicking on this text") + "\n"
-
-class PlaceholderTableTagParser(HTMLParser):
-    def __init__(self, *args, **kwargs) -> None:
-        super().__init__(*args, **kwargs)
-        self.attributes: dict[str,str] = {}
-
-    def handle_starttag(self, tag: str, attrs: list[tuple[str,str]]):
-        if tag == "placeholdertable":
-            for key, value in attrs:
-                if key in self.attributes:
-                    raise Exception(f"Attribute '{key}' defined multiple times")
-                else:
-                    self.attributes[key] = value
-        else:
-            raise Exception(f"Expected placeholdertable tag, but got '{tag}'")
 
 
 class PlaceholderTableSettings(NamedTuple):
@@ -59,18 +43,20 @@ class InputTableGenerator:
 
 
     def parse_placeholder_table_tag(self, full_tag_html: str) -> PlaceholderTableSettings:
-        parser = PlaceholderTableTagParser()
-        parser.feed(full_tag_html)
-        parser.close()
+        parsed = parse_html_tag(full_tag_html)
+        
+        if parsed.tag != "placeholdertable":
+            raise Exception(f"Expected placeholdertable tag, but got '{parsed.tag}'")
 
-        table_type = parser.attributes.get("type", self.default_table_type)
 
-        entries_string = parser.attributes.get("entries", "auto")
+        table_type = parsed.attributes.get("type", self.default_table_type)
+
+        entries_string = parsed.attributes.get("entries", "auto")
         # parse entries as a comma separated list with optional whitespace
         entries = [x.strip() for x in entries_string.split(",") if x.strip()]
 
         try:
-            show_readonly_string = parser.attributes["show-readonly"].lower()
+            show_readonly_string = parsed.attributes["show-readonly"].lower()
             if show_readonly_string in ["0", "off", "disabled", "false"]:
                 show_readonly = False
             elif show_readonly_string in ["1", "on", "enabled", "true"]:
@@ -108,7 +94,7 @@ class InputTableGenerator:
         placeholder_names = settings.entries
         if placeholder_names == ["all"]:
             # use all placeholders
-            placeholder_entries = self.placeholders.values()
+            placeholder_entries = list(self.placeholders.values())
         else:
             if placeholder_names == ["auto"]:
                 # auto detect placeholders

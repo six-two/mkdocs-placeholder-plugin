@@ -10,7 +10,7 @@ from mkdocs.config.base import Config
 
 # local files
 from .assets import PLACEHOLDER_JS, copy_asset_if_target_file_does_not_exist, replace_text_in_file
-from .utils import load_placeholder_data, placeholders_to_simple_json, search_for_invalid_variable_names_in_input_field_targets
+from .utils import load_placeholder_data, generate_placeholder_json, search_for_invalid_variable_names_in_input_field_targets
 from .static_replacer import StaticReplacer
 from .input_table import InputTableGenerator
 from . import set_warnings_enabled, debug
@@ -72,7 +72,7 @@ class PlaceholderPlugin(BasePlugin):
 
     def on_page_markdown(self, markdown: str, page, config: Config, files) -> str:
         """
-        The page_markdown event is called after the page's markdown is loaded from file and can be used to alter the Markdown source text. The meta- data has been stripped off and is available as page.meta at this point.
+        The page_markdown event is called after the page's markdown is loaded from file and can be used to alter the Markdown source text. The metadata has been stripped off and is available as page.meta at this point.
         See: https://www.mkdocs.org/dev-guide/plugins/#on_page_markdown
         """
         return self.table_generator.handle_markdown(markdown)
@@ -91,7 +91,7 @@ class PlaceholderPlugin(BasePlugin):
         
         # replace placeholder in template with the actual data JSON
         full_custom_js_path = os.path.join(output_dir, custom_js_path)
-        placeholder_data_json = placeholders_to_simple_json(self.placeholders)
+        placeholder_data_json = generate_placeholder_json(self.placeholders)
         replace_text_in_file(full_custom_js_path, {
             "__MKDOCS_PLACEHOLDER_PLUGIN_JSON__": placeholder_data_json,
             "__MKDOCS_REPLACE_TRIGGER_DELAY_MILLIS__": str(self.config["replace_delay_millis"]),
