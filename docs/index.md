@@ -15,6 +15,12 @@ This plugin allows you to use placeholders in your website, that can be dynamica
 ## Caveats
 
 - Only visible text is replaced. So for example link targets are not a valid place where placeholders can be used.
+- To update the value of a placeholder, the site needs to be refreshed.
+    While this (by default) is done automatically, users may notice a small flickering / text changing when this is done.
+    If this is unacceptable to you, you can disable the automatic reload and do one of the following:
+    
+    - Put the placeholders on a different page than the content that uses them.
+    - Add a manual `Reload`/`Apply changes` button below the placeholders, that will execute `window.location.reload()` when clicked.
 
 ## Interested?
 

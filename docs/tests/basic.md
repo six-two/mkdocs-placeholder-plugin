@@ -1,4 +1,4 @@
-# Tests: basic
+# Tests: General
 
 This page exists to check if variables behave the way I expect them to do.
 So it may look very chaotic ;)

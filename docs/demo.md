@@ -1,5 +1,14 @@
 # Demo page
 
+This page demonstrates how placeholders can be used.
+You can view the relevant files on GitHub:
+
+- [docs/demo.md](https://github.com/six-two/mkdocs-placeholder-plugin/blob/main/docs/demo.md?plain=1): the page's markdown with the placeholders and the input fields.
+- [placeholder-plugin.yaml](https://github.com/six-two/mkdocs-placeholder-plugin/blob/main/placeholder-plugin.yaml): Defines the page's placeholders.
+    The relevant values are named `DEMO_*` and are at/near the top of the file.
+
+## Inputs
+
 Enter the values for your variables here:
 
 Variable | Value
@@ -9,6 +18,7 @@ Server port | <input data-input-for="DEMO_SERVER_PORT">
 Binding to port requires sudo | <input data-input-for="DEMO_SUDO">
 File name to transfer | <input data-input-for="DEMO_FILENAME">
 Netcat binary | <input data-input-for="DEMO_NETCAT">
+HTTP client | <input data-input-for="DEMO_HTTP_CLIENT_COMMAND">
 
 
 These are your variables.
@@ -63,6 +73,6 @@ xDEMO_SUDOxpython -m http.server xDEMO_SERVER_PORTx
 
 On the client run:
 ```
-curl http://xDEMO_SERVER_IPx:xDEMO_SERVER_PORTx/xDEMO_FILENAMEx -o xDEMO_FILENAMEx
+xDEMO_HTTP_CLIENT_COMMANDx
 ```
 
