@@ -10,6 +10,8 @@ class PlaceholderPluginConfig(Config):
     enabled = Type(bool, default=True)
     # Show warnings if potential errors are found
     show_warnings = Type(bool, default=True)
+    # Reload the page when a significant change (pressed Enter in textbox, change in checkbox or dropdown)
+    reload_on_change = Type(bool, default=True)
     # Add the "Apply the new values by clicking on this text" to placeholder input tables
     add_apply_table_column = Type(bool, default=False)
     # files to perform static replacements for:

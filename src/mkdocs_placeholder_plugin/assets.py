@@ -83,5 +83,6 @@ def generate_placeholder_json(placeholders: dict[str, Placeholder], plugin_confi
         "placeholder_names": placeholder_names,
         "textbox": textbox_data,
         "delay_millis": plugin_config.replace_delay_millis,
+        "reload": plugin_config.reload_on_change,
     }
     return json.dumps(result_object, indent=None, sort_keys=False)

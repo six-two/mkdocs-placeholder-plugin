@@ -4,8 +4,11 @@
 
 Option | Type | Default value
 ---|---|---
+add_apply_table_column | `bool` | `False`
+enabled | `bool` | `True`
 placeholder_file | `str` | placeholder-plugin.yaml
 placeholder_js | `str` | assets/javascripts/placeholder-plugin.js
+reload_on_change | `bool` | `True`
 replace_delay_millis | `int` | 0
 show_warnings | `bool` | `True`
 static_pages | `list[str]` | `[]` (empty list)
@@ -17,17 +20,29 @@ You can set these values in `mkdocs.yml` like this:
 ```yaml
 plugins:
 - placeholder:
+    add_apply_table_column: False
+    enabled: True
+    placeholder_file: placeholder-plugin.yaml
+    placeholder_js: assets/javascripts/placeholder-plugin.js
+    reload_on_change: True
+    replace_delay_millis: 0
     show_warnings: true
     static_pages:
     - static_replacements/index.html
     - another-page.html
-    placeholder_file: placeholder-plugin.yaml
-    placeholder_js: assets/javascripts/placeholder-plugin.js
-    replace_delay_millis: 0
     table_default_show_readonly: False
     table_default_type: simple
 ```
 
+### add_apply_table_column
+
+Add a table column at the end of placeholder input tables that will reload the page when clicked.
+May be useful, when you disable `reload_on_change`.
+
+### enabled
+
+When you set this to false, the extension will be disabled.
+This allows you to for example conditionally disable this plugin if a specific environment variable is used.
 
 ### placeholder_file
 
@@ -38,6 +53,14 @@ The placeholders and their initial values will be read from this file.
 The path where to store the JavaScript file created by this plugin.
 If this file already exists, the plugin will not change its contents.
 This allows you to modify the JavaScript code used by this plugin if you have a reason to ever want to do that.
+
+### reload_on_change
+
+This will cause the page to be reloaded (and thus upload the placeholder values), when a one of the following events occurs:
+
+- For a checkbox: when the value is changed
+- For a dropdown menu: when a different value is selected
+- For a textbox: when the `Enter` key is pressed
 
 ### replace_delay_millis
 

@@ -1,10 +1,15 @@
 // Do not expose our methods to the outside (prevent accidentially shadowing stuff)
 (function() {
     DATA_FROM_MKDOCS_PLUGIN = __MKDOCS_PLACEHOLDER_PLUGIN_JSON__;
-    console.debug("Data from plugin:", DATA_FROM_MKDOCS_PLUGIN);
+    console.debug("Data from plugin:");
+    for (key in DATA_FROM_MKDOCS_PLUGIN) {
+        console.debug(`  - ${key}:`, DATA_FROM_MKDOCS_PLUGIN[key]);
+    }
 
     // int
     REPLACE_TRIGGER_DELAY_MILLIS = DATA_FROM_MKDOCS_PLUGIN["delay_millis"];
+    // bool
+    RELOAD_ON_CHANGE = DATA_FROM_MKDOCS_PLUGIN["reload"];
     // name:str -> default_value:str
     TEXTBOX_DATA = DATA_FROM_MKDOCS_PLUGIN["textbox"];
     // name:str -> { "checked" -> value:str, "unchecked" -> value:str, "default_value" -> checked_by_default:bool }
@@ -28,6 +33,13 @@
         }
         return count;
     };
+
+    const on_placeholder_change = () => {
+        if (RELOAD_ON_CHANGE){
+            console.debug("Reloading page to update placeholder values");
+            window.location.reload();
+        }
+    }
 
     const store_checkbox_state = (placeholder_name, new_is_checked) => {
         data = CHECKBOX_DATA[placeholder_name];
@@ -108,7 +120,11 @@
     const replace_placeholders_in_subtree = (root_element) => {
         for (let placeholder of PLACEHOLDER_NAMES) {
             const search_regex = RegExp("x" + placeholder + "x", "g");
-            const replace_value = localStorage.getItem(placeholder) || "BUG: Value missing";
+            let replace_value = localStorage.getItem(placeholder);
+            if (replace_value == null) {
+                console.warn(`Undefined value for placeholder '${placeholder}'`);
+                replace_value = "<BUG:no_value_for_placeholder>"
+            }
             count = replace_text_in_page(root_element, search_regex, replace_value);
             if (count != 0) {
                 console.debug(`Replaced ${placeholder} at least ${count} time(s)`);
@@ -131,6 +147,12 @@
             input_element.addEventListener("change", () => {
                 localStorage.setItem(placeholder_name, input_element.value);
             });
+            input_element.addEventListener("keypress", e => {
+                if (e.key === "Enter") {
+                    console.debug("Textbox change confirmed with Enter key for ", placeholder_name, "- new value:", input_element.checked);
+                    on_placeholder_change();
+                }
+            });
         }
     };
 
@@ -147,7 +169,9 @@
         } else {
             // Listen for state changes
             input_element.addEventListener("change", () => {
+                console.debug("Checkbox change", placeholder_name, "- new value:", input_element.checked);
                 store_checkbox_state(placeholder_name, input_element.checked);
+                on_placeholder_change();
             });
         }
     };
@@ -177,8 +201,9 @@
         } else{
             // Add an event listener
             new_node.addEventListener("change", () => {
-                console.log("change", new_node.selectedIndex);
+                console.debug("Dropdown change", placeholder_name, "- new index:", new_node.selectedIndex);
                 store_dropdown_state(placeholder_name, new_node.selectedIndex);
+                on_placeholder_change();
             })
         }
     };

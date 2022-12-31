@@ -20,11 +20,13 @@ The documentation is also available in the `docs` folder of the source code and 
 - What about the search entries? Can I hook into them for the normal MkDocs and the MkDocs for material plugins?
 - Optional extra buttons for the global placeholder state (reset, import, export)
 - Set initial value from input fields to something like "JavaScript disabled" (to tell users to enable JS)
-- Add option to reload the page if a checkbox/dropdown is changed or a text field is changed and `Enter` is pressed (to immediately show the new values)
 
 ## Notable changes
 
 ### HEAD
+
+- Add option to reload the page if a checkbox/dropdown is changed or a text field is changed and `Enter` is pressed (to immediately show the new values).
+    This is enabled by default.
 
 ### Version 0.2.0
 
