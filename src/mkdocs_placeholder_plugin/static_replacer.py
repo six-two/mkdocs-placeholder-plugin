@@ -4,7 +4,7 @@ import os
 import re
 # local files
 from . import warning
-from .utils import Placeholder
+from .placeholder_data import Placeholder
 
 # This will fail (not match) if the placeholder name contains an space, single quote or double quote.
 # But since I produce a warning on the console if you do that, that is your problem

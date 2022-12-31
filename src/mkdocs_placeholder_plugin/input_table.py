@@ -4,7 +4,8 @@ from typing import NamedTuple
 # pip dependencies
 import mkdocs
 # local files
-from .utils import Placeholder, parse_html_tag
+from .placeholder_data import Placeholder
+from .html_tag_parser import parse_html_tag
 
 def reload_on_click(text: str) -> str:
     return f'<span class="button-reload" style="cursor: pointer" onclick="window.location.reload()">{text}</span>'

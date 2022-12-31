@@ -15,3 +15,20 @@ Variable | Value
 ---|---
 TEST | xTESTx
 LINK | xLINKx
+
+## Mermaid diagram
+
+Code:
+```
+graph LR
+  A[Alice] --> B{xCOMB_FIRST_NAMEx};
+  B -->|xCOMB_DOMAINx| C[Does it work?];
+```
+
+Rendered:
+```mermaid
+graph LR
+  A[Alice] --> B{xCOMB_FIRST_NAMEx};
+  B -->|xCOMB_DOMAINx| C[Does it work?];
+```
+

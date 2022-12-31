@@ -1,8 +1,10 @@
 // Do not expose our methods to the outside (prevent accidentially shadowing stuff)
 (function() {
     DATA_FROM_MKDOCS_PLUGIN = __MKDOCS_PLACEHOLDER_PLUGIN_JSON__;
-    REPLACE_TRIGGER_DELAY_MILLIS = __MKDOCS_REPLACE_TRIGGER_DELAY_MILLIS__;
+    console.debug("Data from plugin:", DATA_FROM_MKDOCS_PLUGIN);
 
+    // int
+    REPLACE_TRIGGER_DELAY_MILLIS = DATA_FROM_MKDOCS_PLUGIN["delay_millis"];
     // name:str -> default_value:str
     TEXTBOX_DATA = DATA_FROM_MKDOCS_PLUGIN["textbox"];
     // name:str -> { "checked" -> value:str, "unchecked" -> value:str, "default_value" -> checked_by_default:bool }

@@ -1,2 +1,2 @@
 include README.md
-include src/mkdocs_placeholder_plugin/assets/placeholder-plugin.js
+include src/mkdocs_placeholder_plugin/placeholder-plugin.js

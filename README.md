@@ -30,6 +30,7 @@ The documentation is also available in the `docs` folder of the source code and 
 - Also allow numbers in placeholder names (everywhere except the first character)
 - Moved to typed mkdocs config (now requires mkdocs 1.4+)
 - Disable input elements for read only placeholders
+- Moved a lot of code around, significantly changed JavaScript file
 
 ### Version 0.1.3
 
