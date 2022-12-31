@@ -26,6 +26,8 @@ The documentation is also available in the `docs` folder of the source code and 
 
 ### HEAD
 
+### Version 0.2.0
+
 - Added new input types (checkbox & dropdown menu)
 - Also allow numbers in placeholder names (everywhere except the first character)
 - Moved to typed mkdocs config (now requires mkdocs 1.4+)
