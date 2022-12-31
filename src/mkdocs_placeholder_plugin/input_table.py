@@ -10,8 +10,6 @@ def reload_on_click(text: str) -> str:
     return f'<span class="button-reload" style="cursor: pointer" onclick="window.location.reload()">{text}</span>'
 
 INPUT_TABLE_PLACEHOLDER = re.compile("<placeholdertable[^>]*>")
-#@TODO: add an option to disable this
-#@TODO: make inputs for readonly placeholders disabled
 RELOAD_ROW = reload_on_click("Apply the new values") + " | " + reload_on_click("by clicking on this text") + "\n"
 
 
@@ -24,10 +22,11 @@ class PlaceholderTableSettings(NamedTuple):
 
 
 class InputTableGenerator:
-    def __init__(self, placeholders: dict[str,Placeholder], default_show_readonly: bool, default_table_type: str) -> None:
+    def __init__(self, placeholders: dict[str,Placeholder], default_show_readonly: bool, default_table_type: str, add_apply_table_column: bool) -> None:
         self.placeholders = placeholders
         self.default_table_type = default_table_type
         self.default_show_readonly = default_show_readonly
+        self.add_apply_table_column = add_apply_table_column
 
     def handle_markdown(self, page_markdown: str) -> str:
         matches = list(INPUT_TABLE_PLACEHOLDER.finditer(page_markdown))
@@ -128,7 +127,9 @@ class InputTableGenerator:
             name = html.escape(placeholder.name)
             markdown_table += f'{name} | <input data-input-for="{name}">\n'
 
-        return markdown_table + RELOAD_ROW + "\n"
+        if self.add_apply_table_column:
+            markdown_table += RELOAD_ROW
+        return markdown_table + "\n"
 
     def create_description_placeholder_table(self, placeholder_entries: list[Placeholder]) -> str:
         markdown_table = "Variable | Value | Description\n---|---|---\n"
@@ -139,5 +140,7 @@ class InputTableGenerator:
             description = html.escape(placeholder.description).replace("|", "&#124;").replace("\r", " ").replace("\n", " ")
             markdown_table += f'{name} | <input data-input-for="{name}"> | {description}\n'
         
-        return markdown_table + RELOAD_ROW + "\n"
+        if self.add_apply_table_column:
+            markdown_table += RELOAD_ROW
+        return markdown_table + "\n"
 

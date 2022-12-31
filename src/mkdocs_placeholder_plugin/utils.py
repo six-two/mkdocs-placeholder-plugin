@@ -158,13 +158,14 @@ def generate_placeholder_json(placeholders: dict[str, Placeholder]) -> str:
     checkbox_data = {}
     dropdown_data = {}
     textbox_data = {}
-    
+
     for placeholder in placeholders.values():
         if placeholder.input_type == InputType.Checkbox:
             checkbox_data[placeholder.name] = {
                 "default_value": bool(placeholder.default_value == "checked"),
                 "checked": placeholder.values["checked"],
                 "unchecked": placeholder.values["unchecked"],
+                "read_only": placeholder.read_only,
             }
         elif placeholder.input_type == InputType.Dropdown:
             # Figure out the index of the item selected by default
@@ -176,9 +177,13 @@ def generate_placeholder_json(placeholders: dict[str, Placeholder]) -> str:
             dropdown_data[placeholder.name] = {
                 "default_index": default_index,
                 "options": [[key, value] for key, value in placeholder.values.items()],
+                "read_only": placeholder.read_only,
             }
         elif placeholder.input_type == InputType.Field:
-            textbox_data[placeholder.name] = placeholder.default_value
+            textbox_data[placeholder.name] = {
+                "value": placeholder.default_value,
+                "read_only": placeholder.read_only,
+            }
         else:
             raise Exception(f"Unexpected input type: {placeholder.input_type}")
 

@@ -76,7 +76,8 @@
         init_count = 0;
         for (let placeholder in TEXTBOX_DATA) {
             if (!localStorage.getItem(placeholder)) {
-                localStorage.setItem(placeholder, TEXTBOX_DATA[placeholder]);
+                const value = TEXTBOX_DATA[placeholder]["value"];
+                localStorage.setItem(placeholder, value);
                 init_count++;
             }
         }
@@ -118,23 +119,35 @@
         // Restore the stored state
         input_element.value = localStorage.getItem(placeholder_name) || placeholder_name + " is undefined";
 
-        // Listen for state changes
-        input_element.addEventListener("change", () => {
-            store_checkbox_state(placeholder_name, input_element.checked);
-        });
+        data = TEXTBOX_DATA[placeholder_name];
+        if (data["read_only"]) {
+            // disable the checkbox
+            input_element.disabled = "1";
+            input_element.style.cursor = "not-allowed";
+        } else {
+            // Listen for state changes
+            input_element.addEventListener("change", () => {
+                localStorage.setItem(placeholder_name, input_element.value);
+            });
+        }
     };
 
     // For checkbox fields
     const prepare_checkbox_field = (placeholder_name, input_element) => {
         // Restore the stored state
+        data = CHECKBOX_DATA[placeholder_name];
         last_state = load_checkbox_state(placeholder_name);
         input_element.type = "checkbox";
         input_element.checked = last_state;
-
-        // Listen for state changes
-        input_element.addEventListener("change", () => {
-            store_checkbox_state(placeholder_name, input_element.checked);
-        });
+        if (data["read_only"]) {
+            // disable the checkbox
+            input_element.disabled = "1";
+        } else {
+            // Listen for state changes
+            input_element.addEventListener("change", () => {
+                store_checkbox_state(placeholder_name, input_element.checked);
+            });
+        }
     };
 
     // For dropdown fields
@@ -146,7 +159,6 @@
 
         for (var i = 0; i < option_list.length; i++) {
             const option = document.createElement("option");
-            option.value = option_list[i][1]; // should not be needed TBH, since we just need the index
             option.text = option_list[i][0];
             new_node.appendChild(option);
         }
@@ -157,11 +169,16 @@
         selected_index = load_dropdown_state(placeholder_name);
         new_node.selectedIndex = selected_index;
 
-        // Add an event listener
-        new_node.addEventListener("change", () => {
-            console.log("change", new_node.selectedIndex);
-            store_dropdown_state(placeholder_name, new_node.selectedIndex);
-        })
+        if (data["read_only"]) {
+            // disable the dropdown
+            new_node.disabled = "1";
+        } else{
+            // Add an event listener
+            new_node.addEventListener("change", () => {
+                console.log("change", new_node.selectedIndex);
+                store_dropdown_state(placeholder_name, new_node.selectedIndex);
+            })
+        }
     };
 
     const prepare_variable_input_fields = () => {

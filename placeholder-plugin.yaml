@@ -11,6 +11,7 @@ CHECKBOX:
   values:
     checked: "Checkbox checked"
     unchecked: "Checkbox NOT Checked"
+  read_only: true
 QUOTE_CHECKBOX:
   description: Use double quotes?
   default: checked
@@ -26,6 +27,16 @@ DROPDOWN:
     "DNS lookup with nmap": "nmap -n --resolve-all"
     "DNS lookup with host": "host"
     "DNS lookup with nslookup": "nslookup"
+
+READ_ONLY_DROPDOWN:
+  description: You should not be able to modify this
+  read_only: true
+  default: "Default"
+  values:
+    "A": "a"
+    "Default": "default"
+    "B": "b"
+    "C": "c"
 
 
 # This should cause an warning:
