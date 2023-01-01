@@ -1,7 +1,6 @@
 import glob
 import html
 import os
-import re
 # local files
 from . import warning
 from .placeholder_data import Placeholder

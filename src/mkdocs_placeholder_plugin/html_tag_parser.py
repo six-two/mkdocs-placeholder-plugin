@@ -1,9 +1,6 @@
 from html.parser import HTMLParser
 import html
-import os
 from typing import NamedTuple, Optional
-# local
-from . import warning
 
 
 class ParsedHtmlTag(NamedTuple):

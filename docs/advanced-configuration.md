@@ -51,8 +51,8 @@ It is strongly recommended to have either `reload_on_change` or `add_apply_table
 
 ### auto_placeholder_tables_collapsible
 
-If it is enabled, the table will be wrapped in a collapsible adminition.
-If this is enabled and the required markdown extensions are not specified in the `mkdocs.yml`, then the extensions will be added by the plugin.
+If it is enabled, the table will be wrapped in a collapsible admonition.
+If this is enabled and the required markdown extensions (`admonition` and `pymdownx.details`) are not specified in the `mkdocs.yml`, then the extensions will be added by the plugin.
 Has no effect, when `auto_placeholder_tables` is disabled.
 
 ### enabled
@@ -112,3 +112,7 @@ The default value for placeholder input tables, when no `show-readonly` attribut
 ### table_default_type
 
 The default value for placeholder input tables, when no `type` attribute was specified.
+Valid values:
+
+- `simple`
+- `description`

@@ -25,6 +25,8 @@ The documentation is also available in the `docs` folder of the source code and 
 
 ### HEAD
 
+### Version 0.2.1
+
 - Add option to reload the page if a checkbox/dropdown is changed or a text field is changed and `Enter` is pressed (to immediately show the new values).
     This is enabled by default.
 - Set initial value for placeholder input fields to "Please enable JavaScript"
