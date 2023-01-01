@@ -4,6 +4,7 @@ repo_name: mkdocs-placeholder-plugin
 
 theme:
   name: material
+  # name: mkdocs
   icon:
     repo: fontawesome/brands/github 
   features:
@@ -15,6 +16,9 @@ plugins:
     - "tests/static_replacements/index.html"
     replace_delay_millis: -1
     # # Uncomment for testing
+    # auto_placeholder_tables: True
+    # add_apply_table_column: True
+    # auto_placeholder_tables_collapsible: false
     # table_default_show_readonly: True
     # table_default_type: description
 - badges
@@ -33,7 +37,8 @@ nav:
 
 markdown_extensions:
   # Message/error/warning boxes
-  - admonition
+  # - admonition
+  # - pymdownx.details
   # For mermaid diagrams
   - pymdownx.superfences:
       custom_fences:

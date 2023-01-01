@@ -5,6 +5,8 @@
 Option | Type | Default value
 ---|---|---
 add_apply_table_column | `bool` | `False`
+auto_placeholder_tables | `bool` | `False`
+auto_placeholder_tables_collapsible | `bool` | `True`
 enabled | `bool` | `True`
 placeholder_file | `str` | placeholder-plugin.yaml
 placeholder_js | `str` | assets/javascripts/placeholder-plugin.js
@@ -21,6 +23,8 @@ You can set these values in `mkdocs.yml` like this:
 plugins:
 - placeholder:
     add_apply_table_column: False
+    auto_placeholder_tables: False
+    auto_placeholder_tables_collapsible: True
     enabled: True
     placeholder_file: placeholder-plugin.yaml
     placeholder_js: assets/javascripts/placeholder-plugin.js
@@ -38,6 +42,18 @@ plugins:
 
 Add a table column at the end of placeholder input tables that will reload the page when clicked.
 May be useful, when you disable `reload_on_change`.
+
+### auto_placeholder_tables
+
+If enabled, every page that has changeable (non readonly) placeholders will have a table with the used placeholders at the top.
+This will enable users to quickly change the placeholders relevant to the page.
+It is strongly recommended to have either `reload_on_change` or `add_apply_table_column` enabled, so that value changes can be applied easily.
+
+### auto_placeholder_tables_collapsible
+
+If it is enabled, the table will be wrapped in a collapsible adminition.
+If this is enabled and the required markdown extensions are not specified in the `mkdocs.yml`, then the extensions will be added by the plugin.
+Has no effect, when `auto_placeholder_tables` is disabled.
 
 ### enabled
 

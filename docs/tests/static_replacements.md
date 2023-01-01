@@ -6,8 +6,7 @@ Variable | Value
 ---|---
 TEST | <input data-input-for="TEST">
 LINK | <input data-input-for="LINK">
-
-<input data-input-for=static-undefined-placeholder>
+Undefined placeholder | <input data-input-for=static-undefined-placeholder>
 
 ## Outputs
 

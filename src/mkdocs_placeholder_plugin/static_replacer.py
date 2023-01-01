@@ -8,9 +8,6 @@ from .placeholder_data import Placeholder
 from .html_tag_parser import create_html_opening_tag, ParsedHtmlTag
 from .input_tag_handler import InputTagHandler
 
-# This will fail (not match) if the placeholder name contains an space, single quote or double quote.
-# But since I produce a warning on the console if you do that, that is your problem
-PLACEHOLDER_INPUT_FIELD_REGEX = re.compile(r'(<input(?:\s+[^<>]*?)?)\s+data-input-for=(["\']?)([^\'"\s>]*)\2')
 
 class StaticReplacer:
     def __init__(self, placeholders: dict[str,Placeholder], replace_file_pattern_list: list[str]) -> None:

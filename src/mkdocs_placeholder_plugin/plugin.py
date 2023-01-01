@@ -12,7 +12,8 @@ from .plugin_config import PlaceholderPluginConfig
 from .placeholder_data import load_placeholder_data
 from .assets import copy_assets_to_mkdocs_site_directory
 from .static_replacer import StaticReplacer
-from .input_tag_handler import InputTagHandler, create_normal_input_class_handler
+from .input_tag_handler import create_normal_input_class_handler
+from .auto_input_table import AutoTableInserter
 from .input_table import InputTableGenerator
 from . import set_warnings_enabled, debug
 
@@ -51,6 +52,8 @@ class PlaceholderPlugin(BasePlugin[PlaceholderPluginConfig]):
         See: https://www.mkdocs.org/dev-guide/plugins/#on_page_markdown
         """
         if self.config.enabled:
+            if self.config.auto_placeholder_tables:
+                markdown = self.auto_table_inserter.add_to_page(markdown)
             return self.table_generator.handle_markdown(markdown)
         else:
             return markdown
@@ -99,6 +102,11 @@ class PlaceholderPlugin(BasePlugin[PlaceholderPluginConfig]):
         # Otherwise stuff in listings and co may be unintentianally modified/checked
         self.input_tag_modifier = create_normal_input_class_handler(self.placeholders, add_line_in_warning=False)
 
+        if self.config.auto_placeholder_tables:
+            self.auto_table_inserter = AutoTableInserter(self.placeholders, self.config)
+            if self.config.auto_placeholder_tables_collapsible:
+                ensure_extensions_loaded(config, ["admonition", "pymdownx.details"])
+
     def after_build_action(self, config: MkDocsConfig) -> None:
         copy_assets_to_mkdocs_site_directory(config.site_dir, self.config, self.placeholders)
 
@@ -108,3 +116,8 @@ class PlaceholderPlugin(BasePlugin[PlaceholderPluginConfig]):
             static_replacer = StaticReplacer(self.placeholders, replacement_list)
             static_replacer.process_output_folder(config.site_dir)
 
+
+def ensure_extensions_loaded(config: MkDocsConfig, extensions: list[str]) -> None:
+    for extension in extensions:
+        if extension not in config.markdown_extensions:
+            config.markdown_extensions.append(extension)

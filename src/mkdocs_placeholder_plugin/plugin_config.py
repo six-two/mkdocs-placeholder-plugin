@@ -8,6 +8,10 @@ class PlaceholderPluginConfig(Config):
     """
     # Can be used to disable the plugin
     enabled = Type(bool, default=True)
+    # Automatically add input tables to the top of each page with placeholders
+    auto_placeholder_tables = Type(bool, default=False)
+    # Use collapsible admonitions
+    auto_placeholder_tables_collapsible = Type(bool, default=True)
     # Show warnings if potential errors are found
     show_warnings = Type(bool, default=True)
     # Reload the page when a significant change (pressed Enter in textbox, change in checkbox or dropdown)
