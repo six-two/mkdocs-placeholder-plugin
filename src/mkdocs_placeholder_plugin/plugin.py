@@ -2,17 +2,17 @@ from functools import wraps
 import traceback
 from typing import Callable
 # pip dependency
-import mkdocs
 from mkdocs.config.defaults import MkDocsConfig
 from mkdocs.plugins import BasePlugin
 from mkdocs.config.base import Config
+from mkdocs.exceptions import PluginError
 
 # local files
 from .plugin_config import PlaceholderPluginConfig
-from .placeholder_data import load_placeholder_data, search_for_invalid_variable_names_in_input_field_targets
+from .placeholder_data import load_placeholder_data
 from .assets import copy_assets_to_mkdocs_site_directory
 from .static_replacer import StaticReplacer
-from .input_tag_handler import InputTagHandler, replace_function_set_default_value_to_js_warning
+from .input_tag_handler import InputTagHandler, create_normal_input_class_handler
 from .input_table import InputTableGenerator
 from . import set_warnings_enabled, debug
 
@@ -24,11 +24,11 @@ def convert_exceptions(function: Callable) -> Callable:
             return function(*args, **kwargs)
         except Exception as ex:
             debug(f"Fatal exception occurred, stack trace:\n{traceback.format_exc()}")
-            if isinstance(ex, mkdocs.exceptions.PluginError):
-                raise mkdocs.exceptions.PluginError(f"[placeholder] {ex}")
+            if isinstance(ex, PluginError):
+                raise PluginError(f"[placeholder] {ex}")
             else:
                 # Add the information, that it is a normal uncaught excaption
-                raise mkdocs.exceptions.PluginError(f"[placeholder] Uncaught exception: {ex}")
+                raise PluginError(f"[placeholder] Uncaught exception: {ex}")
     return wrap
 
 
@@ -51,10 +51,21 @@ class PlaceholderPlugin(BasePlugin[PlaceholderPluginConfig]):
         See: https://www.mkdocs.org/dev-guide/plugins/#on_page_markdown
         """
         if self.config.enabled:
-            markdown = self.input_tag_modifier.process_string(str(page), markdown)
             return self.table_generator.handle_markdown(markdown)
         else:
             return markdown
+
+    @convert_exceptions
+    def on_page_content(self, html: str, page, config: MkDocsConfig, files) -> str:
+        """
+        The page_content event is called after the Markdown text is rendered to HTML (but before being passed to a template) and can be used to alter the HTML body of the page.
+        """
+        if self.config.enabled:
+            file_path = page.file.src_path
+            return self.input_tag_modifier.process_string(file_path, html)
+        else:
+            return html
+
 
     @convert_exceptions
     def on_post_build(self, config: MkDocsConfig) -> None:
@@ -84,14 +95,12 @@ class PlaceholderPlugin(BasePlugin[PlaceholderPluginConfig]):
             self.config.add_apply_table_column)
 
         # Set the value for inputs to inform the user to enable JavaScript
-        self.input_tag_modifier = InputTagHandler(replace_function_set_default_value_to_js_warning)
+        # Line numbers in output are disabled, since we need to call this after the markdown was parsed.
+        # Otherwise stuff in listings and co may be unintentianally modified/checked
+        self.input_tag_modifier = create_normal_input_class_handler(self.placeholders, add_line_in_warning=False)
 
     def after_build_action(self, config: MkDocsConfig) -> None:
         copy_assets_to_mkdocs_site_directory(config.site_dir, self.config, self.placeholders)
-
-        # Check the variable names linked to input fields
-        valid_variable_names = list(self.placeholders.keys())
-        search_for_invalid_variable_names_in_input_field_targets(config.site_dir, valid_variable_names)
 
         # Replace placeholders in files marked for static replacements
         replacement_list = self.config.static_pages

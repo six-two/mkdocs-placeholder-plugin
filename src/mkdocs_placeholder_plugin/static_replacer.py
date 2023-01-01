@@ -5,6 +5,8 @@ import re
 # local files
 from . import warning
 from .placeholder_data import Placeholder
+from .html_tag_parser import create_html_opening_tag, ParsedHtmlTag
+from .input_tag_handler import InputTagHandler
 
 # This will fail (not match) if the placeholder name contains an space, single quote or double quote.
 # But since I produce a warning on the console if you do that, that is your problem
@@ -14,9 +16,12 @@ class StaticReplacer:
     def __init__(self, placeholders: dict[str,Placeholder], replace_file_pattern_list: list[str]) -> None:
         self.placeholders = placeholders
         self.replace_file_pattern_list = replace_file_pattern_list
+        self.input_tag_modifier = create_static_input_field_replacer(placeholders)
+        self.site_dir = "not yet set"
 
     def process_output_folder(self, folder_path: str) -> None:
         file_processed = False
+        self.site_dir = folder_path
         for pattern in self.replace_file_pattern_list:
             # the iglob(root_dir=...) parameter was only introduced in 3.10, so we can not rely on it
             path_pattern = os.path.join(folder_path, pattern)
@@ -36,7 +41,8 @@ class StaticReplacer:
             text = f.read()
         # modify the file's contents
         text = self._replace_placeholders_in_html_page(text)
-        text = self._disable_placeholder_input_fields(text)
+        relative_path = os.path.relpath(path, self.site_dir)
+        text = self._disable_placeholder_input_fields(relative_path, text)
         # Write file
         with open(path, "w") as f:
             f.write(text)
@@ -51,24 +57,31 @@ class StaticReplacer:
             text = text.replace(f"x{placeholder.name}x", html.escape(placeholder.default_value))
         return text
 
-    def _disable_placeholder_input_fields(self, text: str) -> str:
+    def _disable_placeholder_input_fields(self, path: str, text: str) -> str:
         """
         Search for inputs with the data-input-for attribute and insert a disabled
         """
-        matches = list(PLACEHOLDER_INPUT_FIELD_REGEX.finditer(text))
-        # Iterate in reverse order to not screw up the indices used when replacing text
-        for match in reversed(matches):
-            tag_start = match.group(1)
-            # quote = match.group(2)
-            placeholder_name = match.group(3)
-            try:
-                placeholder_value = self.placeholders[placeholder_name].default_value
-            except KeyError as e:
-                warning(f"Input field for undefinded variable: {e}")
-                placeholder_value = f"Undefined variable {e}"
-            # Remove the "data-input-for" attribute (since JS may override the value) and insert a static value
-            new_tag = tag_start + f' value="{html.escape(placeholder_value)}" disabled'
-            start, end = match.span()
-            text = text[:start] + new_tag + text[end:]
+        return self.input_tag_modifier.process_string(path, text)
 
-        return text
+
+def create_static_input_field_replacer(placeholders: dict[str,Placeholder]) -> InputTagHandler:
+    def static_replacer_input_tag_modifier(handler, tag: str, parsed: ParsedHtmlTag) -> str:
+        placeholder_name = parsed.attributes.get("data-input-for")
+        if placeholder_name:
+            attrs = dict(parsed.attributes)
+
+            # Print a warning if the placeholder does not exist
+            if placeholder_name not in placeholders:
+                warning(f"{handler.location} (static replacer) - Input element is linked to non-existent variable '{placeholder_name}'. Is this a typo or did you forget to set a default value for it?")
+                attrs["value"] = f"Undefined variable {placeholder_name}"
+            else:
+                attrs["value"] = placeholders[placeholder_name].default_value
+            
+            # Disable the input elements
+            attrs["disabled"] = "1"
+
+            return create_html_opening_tag(parsed.tag, attrs)
+        else:
+            return tag
+    
+    return InputTagHandler(static_replacer_input_tag_modifier, False)
