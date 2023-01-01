@@ -12,6 +12,7 @@ from .plugin_config import PlaceholderPluginConfig
 from .placeholder_data import load_placeholder_data, search_for_invalid_variable_names_in_input_field_targets
 from .assets import copy_assets_to_mkdocs_site_directory
 from .static_replacer import StaticReplacer
+from .input_tag_handler import InputTagHandler, replace_function_set_default_value_to_js_warning
 from .input_table import InputTableGenerator
 from . import set_warnings_enabled, debug
 
@@ -50,6 +51,7 @@ class PlaceholderPlugin(BasePlugin[PlaceholderPluginConfig]):
         See: https://www.mkdocs.org/dev-guide/plugins/#on_page_markdown
         """
         if self.config.enabled:
+            markdown = self.input_tag_modifier.process_string(str(page), markdown)
             return self.table_generator.handle_markdown(markdown)
         else:
             return markdown
@@ -80,6 +82,9 @@ class PlaceholderPlugin(BasePlugin[PlaceholderPluginConfig]):
             self.config.table_default_show_readonly,
             self.config.table_default_type,
             self.config.add_apply_table_column)
+
+        # Set the value for inputs to inform the user to enable JavaScript
+        self.input_tag_modifier = InputTagHandler(replace_function_set_default_value_to_js_warning)
 
     def after_build_action(self, config: MkDocsConfig) -> None:
         copy_assets_to_mkdocs_site_directory(config.site_dir, self.config, self.placeholders)

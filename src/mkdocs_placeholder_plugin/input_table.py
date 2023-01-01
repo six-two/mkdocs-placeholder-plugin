@@ -126,7 +126,7 @@ class InputTableGenerator:
         markdown_table = "Variable | Value\n---|---\n"
         for placeholder in placeholder_entries:
             name = html.escape(placeholder.name)
-            markdown_table += f'{name} | <input data-input-for="{name}">\n'
+            markdown_table += f'{name} | <input data-input-for="{name}" value="Please enable JavaScript">\n'
 
         if self.add_apply_table_column:
             markdown_table += RELOAD_ROW
@@ -139,7 +139,7 @@ class InputTableGenerator:
             name = html.escape(placeholder.name)
             # Also escape/replace characters that may break my table
             description = html.escape(placeholder.description).replace("|", "&#124;").replace("\r", " ").replace("\n", " ")
-            markdown_table += f'{name} | <input data-input-for="{name}"> | {description}\n'
+            markdown_table += f'{name} | <input data-input-for="{name}" value="Please enable JavaScript"> | {description}\n'
         
         if self.add_apply_table_column:
             markdown_table += RELOAD_ROW

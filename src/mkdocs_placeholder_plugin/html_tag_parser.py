@@ -1,4 +1,5 @@
 from html.parser import HTMLParser
+import html
 import os
 from typing import NamedTuple, Optional
 # local
@@ -8,6 +9,13 @@ from . import warning
 class ParsedHtmlTag(NamedTuple):
     tag: str
     attributes: dict[str,str]
+
+
+def create_html_opening_tag(tag: str, attributes: dict[str,str]) -> str:
+    result = "<" + tag
+    for key, value in attributes.items():
+        result += f' {key}="{html.escape(value)}"'
+    return result + ">"
 
 
 class HtmlTagParser(HTMLParser):
