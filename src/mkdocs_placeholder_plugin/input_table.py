@@ -2,7 +2,7 @@ import html
 import re
 from typing import NamedTuple
 # pip dependencies
-import mkdocs
+from mkdocs.exceptions import PluginError
 # local files
 from .placeholder_data import Placeholder
 from .html_tag_parser import parse_html_tag
@@ -11,8 +11,10 @@ def reload_on_click(text: str) -> str:
     return f'<span class="button-reload" style="cursor: pointer" onclick="window.location.reload()">{text}</span>'
 
 INPUT_TABLE_PLACEHOLDER = re.compile("<placeholdertable[^>]*>")
-RELOAD_ROW = reload_on_click("Apply the new values") + " | " + reload_on_click("by clicking on this text") + "\n"
-
+# RELOAD_ROW_2_COLS = [reload_on_click("Apply the new values"), reload_on_click("by clicking on this text")]
+# RELOAD_ROW_3_COLS = [reload_on_click("Apply the new"), reload_on_click("values by clicking"), reload_on_click("on this text")]
+RELAOD_BUTTON_STYLE = "border: 1px solid gray; border-radius: 5px; padding: 7px; cursor: pointer;"
+RELAOD_BUTTON = f'<button class="placeholder-input-apply-button" onclick="window.location.reload()" style="{RELAOD_BUTTON_STYLE}">Apply new values</button>'
 
 class PlaceholderTableSettings(NamedTuple):
     table_type: str
@@ -20,6 +22,13 @@ class PlaceholderTableSettings(NamedTuple):
     entries: list[str]
     show_readonly: bool
 
+
+TABLE_HEADERS = {
+    "name": "Name",
+    "description": "Description",
+    "value": "Value",
+    "input": "Input element",
+}
 
 
 class InputTableGenerator:
@@ -62,7 +71,7 @@ class InputTableGenerator:
             elif show_readonly_string in ["1", "on", "enabled", "true"]:
                 show_readonly = True
             else:
-                raise mkdocs.exceptions.PluginError(f"[placeholder] Expected boolean value ('true' or 'false') for 'show-readonly', but got '{show_readonly_string}'")
+                raise PluginError(f"[placeholder] Expected boolean value ('true' or 'false') for 'show-readonly', but got '{show_readonly_string}'")
         except KeyError:
             show_readonly = self.default_show_readonly
 
@@ -104,7 +113,7 @@ class InputTableGenerator:
             try:
                 placeholder_entries = [self.placeholders[name] for name in placeholder_names]
             except KeyError as e:
-                raise mkdocs.exceptions.PluginError(f"[placeholder] Unknown placeholder: '{e}'")
+                raise PluginError(f"[placeholder] Unknown placeholder: '{e}'")
 
         if not settings.show_readonly:
             # remove all placeholders that are marked as readonly
@@ -115,33 +124,58 @@ class InputTableGenerator:
             return ""
 
         if settings.table_type == "simple":
-            return self.create_simple_placeholder_table(placeholder_entries)
+            return self.create_placeholder_table_with_columns(["name", "input"], placeholder_entries)
         elif settings.table_type == "description":
-            return self.create_description_placeholder_table(placeholder_entries)
+            return self.create_placeholder_table_with_columns(["name", "input", "description"], placeholder_entries)
+        elif "," in settings.table_type:
+            columns = [x.strip() for x in settings.table_type.split(",")]
+            return self.create_placeholder_table_with_columns(columns, placeholder_entries)
         else:
-            raise mkdocs.exceptions.PluginError(f"[placeholder] Unknown table type: '{settings.table_type}'")
+            raise PluginError(f"[placeholder] Unknown table type: '{settings.table_type}'")
 
+    def create_placeholder_table_with_columns(self, column_list: list[str], placeholder_entries: list[Placeholder]) -> str:
+        if len(column_list) < 2:
+            raise PluginError(f"[placeholder] Need to get at least 2 colums, but got: {column_list}")
+        rows = [[] for _ in range(len(placeholder_entries) + 2)]
+        for column in column_list:
+            # Table header
+            try:
+                rows[0].append(TABLE_HEADERS[column])
+            except KeyError:
+                raise PluginError(f"[placeholder] Invalid column name '{column}'. Valid values: {', '.join(TABLE_HEADERS)}")
+            rows[1].append("---")
 
-    def create_simple_placeholder_table(self, placeholder_entries: list[Placeholder]) -> str:
-        markdown_table = "Variable | Value\n---|---\n"
-        for placeholder in placeholder_entries:
-            name = html.escape(placeholder.name)
-            markdown_table += f'{name} | <input data-input-for="{name}" value="Please enable JavaScript">\n'
-
-        if self.add_apply_table_column:
-            markdown_table += RELOAD_ROW
-        return markdown_table + "\n"
-
-    def create_description_placeholder_table(self, placeholder_entries: list[Placeholder]) -> str:
-        markdown_table = "Variable | Value | Description\n---|---|---\n"
-        for placeholder in placeholder_entries:
-            # HTML escape contents for security
-            name = html.escape(placeholder.name)
-            # Also escape/replace characters that may break my table
-            description = html.escape(placeholder.description).replace("|", "&#124;").replace("\r", " ").replace("\n", " ")
-            markdown_table += f'{name} | <input data-input-for="{name}" value="Please enable JavaScript"> | {description}\n'
+            # Table body
+            for index, placeholder in enumerate(placeholder_entries):
+                cell = self.create_table_cell(column, placeholder)
+                # escape potentially dangerous characters that could mess up the table syntax
+                cell = cell.replace("|", "&#124;").replace("\r", " ").replace("\n", " ")
+                rows[index+2].append(cell)
         
-        if self.add_apply_table_column:
-            markdown_table += RELOAD_ROW
-        return markdown_table + "\n"
+        if self.add_apply_table_column and "input" in column_list:
+            # if len(column_list) == 2:
+            #     rows.append(RELOAD_ROW_2_COLS)
+            # else:
+            #     padding = ["" for _ in range(len(column_list) - 3)]
+            #     rows.append(RELOAD_ROW_3_COLS + padding)
+            apply_row = []
+            for column in column_list:
+                cell = RELAOD_BUTTON if column == "input" else ""
+                apply_row.append(cell)
+            rows.append(apply_row)
+
+        lines = [" | ".join(cells) for cells in rows]
+        return "\n".join([*lines, "", ""])
+
+    def create_table_cell(self, column: str, placeholder: Placeholder) -> str:
+        if column == "name":
+            return html.escape(placeholder.name)
+        elif column == "description":
+            return html.escape(placeholder.description)
+        elif column == "input":
+            return f'<input data-input-for="{html.escape(placeholder.name)}">'
+        elif column == "value":
+            return f"x{html.escape(placeholder.name)}x"
+        else:
+            raise PluginError(f"[placeholder] Invalid column name '{column}'. Valid values: {', '.join(TABLE_HEADERS)}")
 

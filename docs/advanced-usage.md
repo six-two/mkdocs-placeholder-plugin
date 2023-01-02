@@ -63,8 +63,17 @@ The following attributes are available:
     - `PLACEHOLDER_1,PLACEHOLDER_2,[...]`: Only show the specified placeholders in the table.
 - `show-readonly` determines, if placeholders with `read_only: true` will be shown. This is for example useful to hide *combined fields* described above. Defaults to the value specified in the config (or `False`).
 - `type` determines, which columns are included in the table:
-    - `simple` shows `Varibale` and `Value`
-    - `description` shows `Varibale`, `Value` and `Description`
+    - `simple` shows `Name` and `Input`
+    - `description` shows `Name`, `Input` and `Description`
+    - You can manually define the columns to use, by separating them with a comma.
+        Example: `input,description`
+
+        Valid column names are:
+
+        - description
+        - input
+        - name
+        - value
 
     It defaults to the value specified in the config (or `simple`).
 

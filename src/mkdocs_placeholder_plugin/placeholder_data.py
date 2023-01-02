@@ -80,11 +80,6 @@ def parse_placeholder_dict(name: str, data: dict[str,Any]) -> Placeholder:
     """
     Parse a dictionary that contains the information for a single placeholder.
     """
-    # default (default_value) is required
-    try:
-        default_value = str(data["default"])
-    except KeyError:
-        raise PluginError(f"Missing key 'default' in placeholder '{name}'")
 
     # Readonly is optional, defaults to False
     read_only = data.get("read_only", False)
@@ -102,6 +97,16 @@ def parse_placeholder_dict(name: str, data: dict[str,Any]) -> Placeholder:
             values[str(key)] = str(value)
         else:
             raise PluginError(f"Type error in placeholder '{name}', field 'values': Expected a dictionary with primitive values, but got {value} ({type(value).__name__}) in key {key}")
+
+    # default (default_value) is required, unless values exists
+    try:
+        default_value = str(data["default"])
+    except KeyError:
+        if not values:
+            raise PluginError(f"Missing key 'default' in placeholder '{name}'")
+        else:
+            # signal that it is not set
+            default_value = ""
 
     # Determine the type, and do some extra type dependent validation
     if values:

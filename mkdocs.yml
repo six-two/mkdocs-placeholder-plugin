@@ -17,7 +17,7 @@ plugins:
     replace_delay_millis: -1
     # # Uncomment for testing
     # auto_placeholder_tables: True
-    # add_apply_table_column: True
+    add_apply_table_column: True
     # auto_placeholder_tables_collapsible: false
     # table_default_show_readonly: True
     # table_default_type: description
@@ -32,6 +32,7 @@ nav:
 - demo.md
 - "Tests":
   - tests/basic.md
+  - tests/input-tables.md
   - tests/mermaid_diagrams.md
   - tests/static_replacements.md
 

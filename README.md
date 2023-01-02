@@ -25,6 +25,11 @@ The documentation is also available in the `docs` folder of the source code and 
 
 ### HEAD
 
+- Improved placeholder input tables:
+
+    - Can now specify which columns to use (and their order)
+    - Only show apply values column, if at least one column contains input elements
+
 ### Version 0.2.1
 
 - Add option to reload the page if a checkbox/dropdown is changed or a text field is changed and `Enter` is pressed (to immediately show the new values).

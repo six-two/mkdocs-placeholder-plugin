@@ -82,6 +82,11 @@ XSS_COMB:
 PIPE_IN_DESCRIPTION:
   default: ""
   description: <s>Pipes | in || description
+"<s>BAD_NAME<script>confirm(3)</script>": "bad name"
+XSS_DROPDOWN:
+  values:
+    "<s>1": "<s>one<svg/onload=alert(1)>"
+    "</option>2": "</option>two"
 
 # TEST COMBINED VARIABLES
 # This one needs to be specified first, since it includes the other variables
