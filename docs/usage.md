@@ -81,8 +81,13 @@ LINK:
 ```
 
 The `default` field's value will be used as the default for the placeholder.
+You can apply the new value by changing the text in the text box and pressing `Enter` (if `reload_on_change` is enabled, which it is by default).
 
-<label>Example: <input data-input-for="LINK"></label>
+##### Live demo
+
+**Input element for placeholder** | <input data-input-for="LINK">
+---|---
+**Current placeholder value** | xLINKx
 
 #### Checkbox field
 
@@ -105,7 +110,11 @@ Otherwise `values.unchecked` is used.
 To determine, whether it is checked by default, you set `default` to `checked` or `unchecked`.
 If `default` is not specified or empty, `unchecked` is used.
 
-<label>Example: <input data-input-for="QUOTE_CHECKBOX"></label>
+##### Live demo
+
+**Input element for placeholder** | <input data-input-for="QUOTE_CHECKBOX">
+---|---
+**Current placeholder value** | xQUOTE_CHECKBOXx
 
 
 #### Dropdown field
@@ -128,7 +137,11 @@ The possible values are defined in `values`: Each key specifies the displayed op
 You can specify the option to select by default, by passing the corresponding display name to `default`.
 If this is not done, the first option will be selected by default.
 
-<label>Example: <input data-input-for="DROPDOWN"></label>
+##### Live demo
+
+**Input element for placeholder** | <input data-input-for="DROPDOWN">
+---|---
+**Current placeholder value** | xDROPDOWNx
 
 
 ### Via JavaScript
