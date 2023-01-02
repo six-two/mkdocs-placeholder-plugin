@@ -11,10 +11,9 @@ def reload_on_click(text: str) -> str:
     return f'<span class="button-reload" style="cursor: pointer" onclick="window.location.reload()">{text}</span>'
 
 INPUT_TABLE_PLACEHOLDER = re.compile("<placeholdertable[^>]*>")
-# RELOAD_ROW_2_COLS = [reload_on_click("Apply the new values"), reload_on_click("by clicking on this text")]
-# RELOAD_ROW_3_COLS = [reload_on_click("Apply the new"), reload_on_click("values by clicking"), reload_on_click("on this text")]
-RELAOD_BUTTON_STYLE = "border: 1px solid gray; border-radius: 5px; padding: 7px; cursor: pointer;"
-RELAOD_BUTTON = f'<button class="placeholder-input-apply-button" onclick="window.location.reload()" style="{RELAOD_BUTTON_STYLE}">Apply new values</button>'
+# "md-button md-button--primary" make it look pretty if you are using Material for Mkdocs (https://squidfunk.github.io/mkdocs-material/reference/buttons/#adding-icon-buttons)
+# Otherwise it will be styled in the default button way, with the option to use "placeholder-input-apply-button" to give it a custom style
+RELAOD_BUTTON = '<button class="placeholder-input-apply-button md-button md-button--primary" onclick="window.location.reload()">Apply new values</button>'
 
 class PlaceholderTableSettings(NamedTuple):
     table_type: str
@@ -153,11 +152,6 @@ class InputTableGenerator:
                 rows[index+2].append(cell)
         
         if self.add_apply_table_column and "input" in column_list:
-            # if len(column_list) == 2:
-            #     rows.append(RELOAD_ROW_2_COLS)
-            # else:
-            #     padding = ["" for _ in range(len(column_list) - 3)]
-            #     rows.append(RELOAD_ROW_3_COLS + padding)
             apply_row = []
             for column in column_list:
                 cell = RELAOD_BUTTON if column == "input" else ""

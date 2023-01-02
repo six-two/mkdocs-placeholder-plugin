@@ -26,6 +26,13 @@ TEST:
 LINK: 
   default: https://www.example.com/test/page
 
+# What happens, when the values / choices are also placeholders?
+ALIAS_TEXTBOX: xTESTx
+ALIAS_DROPDOWN:
+  values:
+    TEST=xTESTx: LINK=xLINKx
+    "": ""
+
 READONLY_TEXTBOX:
   description: Should be readonly
   read_only: true

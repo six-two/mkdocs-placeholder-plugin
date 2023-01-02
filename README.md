@@ -22,6 +22,7 @@ The documentation is also available in the `docs` folder of the source code and 
     - Can now specify which columns to use (and their order)
     - Only show apply values column, if at least one column contains input elements
 - Properly handle checkboxes and dropdown menus when performing static replacements
+- Hide JavaScript console output by default
 
 ### Version 0.2.1
 

@@ -5,10 +5,13 @@ repo_name: mkdocs-placeholder-plugin
 theme:
   name: material
   # name: mkdocs
+  # name: readthedocs
   icon:
     repo: fontawesome/brands/github 
   features:
   - navigation.sections
+  - content.code.copy
+  - navigation.footer
 plugins:
 - placeholder:
     show_warnings: true
@@ -38,8 +41,10 @@ nav:
 
 markdown_extensions:
   # Message/error/warning boxes
-  # - admonition
-  # - pymdownx.details
+  - admonition
+  - pymdownx.details
+  # For search exclusion
+  - attr_list
   # For mermaid diagrams
   - pymdownx.superfences:
       custom_fences:

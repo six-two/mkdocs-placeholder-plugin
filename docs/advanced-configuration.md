@@ -7,6 +7,7 @@ Option | Type | Default value
 add_apply_table_column | `bool` | `False`
 auto_placeholder_tables | `bool` | `False`
 auto_placeholder_tables_collapsible | `bool` | `True`
+debug_javascript | `bool` | `False`
 enabled | `bool` | `True`
 placeholder_file | `str` | placeholder-plugin.yaml
 placeholder_js | `str` | assets/javascripts/placeholder-plugin.js
@@ -25,6 +26,7 @@ plugins:
     add_apply_table_column: False
     auto_placeholder_tables: False
     auto_placeholder_tables_collapsible: True
+    debug_javascript: False
     enabled: True
     placeholder_file: placeholder-plugin.yaml
     placeholder_js: assets/javascripts/placeholder-plugin.js
@@ -55,6 +57,15 @@ If it is enabled, the table will be wrapped in a collapsible admonition.
 If this is enabled and the required markdown extensions (`admonition` and `pymdownx.details`) are not specified in the `mkdocs.yml`, then the extensions will be added by the plugin.
 Has no effect, when `auto_placeholder_tables` is disabled.
 
+### debug_javascript
+
+If enabled, JavaScript debugging messages will be printed to the browsers console.
+These include information such as:
+
+- The placeholder / configuration data passed by the plugin to the JavaScript code
+- How many input elements of each type were found on the page
+- Which placeholders were replaced and approximately how often
+
 ### enabled
 
 When you set this to false, the extension will be disabled.
@@ -69,6 +80,7 @@ The placeholders and their initial values will be read from this file.
 The path where to store the JavaScript file created by this plugin.
 If this file already exists, the plugin will not change its contents.
 This allows you to modify the JavaScript code used by this plugin if you have a reason to ever want to do that.
+Please note, that the interaction between the plugin and the JavaScript file is not stable, sso if you use this option, you should pin the exact version of this plugin in your `requirements.txt`
 
 ### reload_on_change
 

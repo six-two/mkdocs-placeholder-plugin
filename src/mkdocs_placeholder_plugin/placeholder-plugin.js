@@ -1,23 +1,37 @@
 // Do not expose our methods to the outside (prevent accidentially shadowing stuff)
 (function() {
     DATA_FROM_MKDOCS_PLUGIN = __MKDOCS_PLACEHOLDER_PLUGIN_JSON__;
-    console.debug("Data from plugin:");
+    // Set up or disable logging as early as possible
+    let log, debug;
+    if (DATA_FROM_MKDOCS_PLUGIN["debug"]) {
+        // Write debugging messages to console
+        debug = console.debug;
+        log = console.log;
+    } else {
+        // If debugging is disabled, make the functions do nothing
+        debug = () => {};
+        log = () => {};
+    }
+
+    debug("Data from plugin:");
     for (key in DATA_FROM_MKDOCS_PLUGIN) {
-        console.debug(`  - ${key}:`, DATA_FROM_MKDOCS_PLUGIN[key]);
+        debug(`  - ${key}:`, DATA_FROM_MKDOCS_PLUGIN[key]);
     }
 
     // int
     REPLACE_TRIGGER_DELAY_MILLIS = DATA_FROM_MKDOCS_PLUGIN["delay_millis"];
     // bool
     RELOAD_ON_CHANGE = DATA_FROM_MKDOCS_PLUGIN["reload"];
-    // name:str -> default_value:str
+    // name:str -> { "value" -> default_value:str, "read_only" -> bool }
     TEXTBOX_DATA = DATA_FROM_MKDOCS_PLUGIN["textbox"];
-    // name:str -> { "checked" -> value:str, "unchecked" -> value:str, "default_value" -> checked_by_default:bool }
+    // name:str -> { "checked" -> value:str, "unchecked" -> value:str, "default_value" -> checked_by_default:bool, "read_only" -> bool }
     CHECKBOX_DATA = DATA_FROM_MKDOCS_PLUGIN["checkbox"];
-    // name:str -> { "default_index" -> default:int, "options" -> list of [display_name:str, actual_value:str] }
+    // name:str -> { "default_index" -> default:int, "options" -> list of [display_name:str, actual_value:str], "read_only" -> bool }
     DROPDOWN_DATA = DATA_FROM_MKDOCS_PLUGIN["dropdown"];
     // list of name:str
     PLACEHOLDER_NAMES = DATA_FROM_MKDOCS_PLUGIN["placeholder_names"];
+
+    
 
     const replace_text_in_page = (root_element, search_regex, replacement_value) => {
         const walker = document.createTreeWalker(root_element, NodeFilter.SHOW_TEXT);
@@ -36,7 +50,7 @@
 
     const on_placeholder_change = () => {
         if (RELOAD_ON_CHANGE){
-            console.debug("Reloading page to update placeholder values");
+            debug("Reloading page to update placeholder values");
             window.location.reload();
         }
     }
@@ -113,7 +127,7 @@
             store_dropdown_state(placeholder, value);
         }
         if (init_count > 0) {
-            console.log(`Initialized ${init_count} placeholder(s) with default values`);
+            log(`Initialized ${init_count} placeholder(s) with default values`);
         }
     }
 
@@ -127,7 +141,7 @@
             }
             count = replace_text_in_page(root_element, search_regex, replace_value);
             if (count != 0) {
-                console.debug(`Replaced ${placeholder} at least ${count} time(s)`);
+                debug(`Replaced ${placeholder} at least ${count} time(s)`);
             }
         }
     };
@@ -149,7 +163,7 @@
             });
             input_element.addEventListener("keypress", e => {
                 if (e.key === "Enter") {
-                    console.debug("Textbox change confirmed with Enter key for ", placeholder_name, "- new value:", input_element.checked);
+                    debug("Textbox change confirmed with Enter key for ", placeholder_name, "- new value:", input_element.checked);
                     on_placeholder_change();
                 }
             });
@@ -169,7 +183,7 @@
         } else {
             // Listen for state changes
             input_element.addEventListener("change", () => {
-                console.debug("Checkbox change", placeholder_name, "- new value:", input_element.checked);
+                debug("Checkbox change", placeholder_name, "- new value:", input_element.checked);
                 store_checkbox_state(placeholder_name, input_element.checked);
                 on_placeholder_change();
             });
@@ -201,7 +215,7 @@
         } else{
             // Add an event listener
             new_node.addEventListener("change", () => {
-                console.debug("Dropdown change", placeholder_name, "- new index:", new_node.selectedIndex);
+                debug("Dropdown change", placeholder_name, "- new index:", new_node.selectedIndex);
                 store_dropdown_state(placeholder_name, new_node.selectedIndex);
                 on_placeholder_change();
             })
@@ -229,11 +243,13 @@
                 // The placeholder is a textbox
                 prepare_textbox_field(placeholder_name, input);
                 textbox_count++;
+            } else {
+                console.warn(`Unknown placeholder referenced in input element: '${placeholder_name}'`)
             }
         }
-        checkbox_count > 0 && console.log(`Found ${checkbox_count} checkbox field(s)`);
-        dropdown_count > 0 && console.log(`Found ${dropdown_count} dropdown field(s)`);
-        textbox_count > 0 && console.log(`Found ${textbox_count} textbox field(s)`);
+        checkbox_count > 0 && log(`Found ${checkbox_count} checkbox field(s)`);
+        dropdown_count > 0 && log(`Found ${dropdown_count} dropdown field(s)`);
+        textbox_count > 0 && log(`Found ${textbox_count} textbox field(s)`);
     };
 
 

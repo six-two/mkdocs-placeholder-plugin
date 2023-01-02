@@ -12,6 +12,8 @@ class PlaceholderPluginConfig(Config):
     auto_placeholder_tables = Type(bool, default=False)
     # Use collapsible admonitions
     auto_placeholder_tables_collapsible = Type(bool, default=True)
+    # Enable logging of debuggin information to the browser's console
+    debug_javascript = Type(bool, default=False)
     # Show warnings if potential errors are found
     show_warnings = Type(bool, default=True)
     # Reload the page when a significant change (pressed Enter in textbox, change in checkbox or dropdown)
