@@ -136,7 +136,7 @@ class InputTableGenerator:
     def create_placeholder_table_with_columns(self, column_list: list[str], placeholder_entries: list[Placeholder]) -> str:
         if len(column_list) < 2:
             raise PluginError(f"[placeholder] Need to get at least 2 colums, but got: {column_list}")
-        rows = [[] for _ in range(len(placeholder_entries) + 2)]
+        rows: list[list[str]] = [[] for _ in range(len(placeholder_entries) + 2)]
         for column in column_list:
             # Table header
             try:

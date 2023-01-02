@@ -14,21 +14,14 @@ For a quick start and detailed information please see the [documentation](https:
 The documentation is also available in the `docs` folder of the source code and can be built localy with [MkDocs](https://www.mkdocs.org/).
 
 
-
-## TODOs
-
-- What about the search entries? Can I hook into them for the normal MkDocs and the MkDocs for material plugins?
-- Optional extra buttons for the global placeholder state (reset, import, export)
-- Set the correct input elements (checkboxed, dropdowns) for static replacements
-
 ## Notable changes
 
 ### HEAD
 
 - Improved placeholder input tables:
-
     - Can now specify which columns to use (and their order)
     - Only show apply values column, if at least one column contains input elements
+- Properly handle checkboxes and dropdown menus when performing static replacements
 
 ### Version 0.2.1
 
