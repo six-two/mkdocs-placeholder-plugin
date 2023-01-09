@@ -23,6 +23,7 @@ The documentation is also available in the `docs` folder of the source code and 
     - Only show apply values column, if at least one column contains input elements
 - Properly handle checkboxes and dropdown menus when performing static replacements
 - Hide JavaScript console output by default
+- TODO: Generate automatic placeholder table dynamically, since if checkboxes / dropdowns are used, it can not be predicted, which values are used on the page.
 
 ### Version 0.2.1
 

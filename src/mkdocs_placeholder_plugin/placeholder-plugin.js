@@ -1,5 +1,6 @@
-// Do not expose our methods to the outside (prevent accidentially shadowing stuff)
-(function() {
+// Exposed functionality will be stored in this
+const MkdocsPlaceholderPlugin = (function() {
+    // Do not expose our methods to the outside (prevent accidentially shadowing stuff) by default
     DATA_FROM_MKDOCS_PLUGIN = __MKDOCS_PLACEHOLDER_PLUGIN_JSON__;
     // Set up or disable logging as early as possible
     let log, debug;
@@ -31,7 +32,15 @@
     // list of name:str
     PLACEHOLDER_NAMES = DATA_FROM_MKDOCS_PLUGIN["placeholder_names"];
 
-    
+
+    // Constants
+    TABLE_CELL_HEADINGS = {
+        "name": "Name",
+        "description": "Description",
+        "value": "Value",
+        "input": "Input element",
+    }
+
 
     const replace_text_in_page = (root_element, search_regex, replacement_value) => {
         const walker = document.createTreeWalker(root_element, NodeFilter.SHOW_TEXT);
@@ -132,6 +141,7 @@
     }
 
     const replace_placeholders_in_subtree = (root_element) => {
+        used_placeholders = [];
         for (let placeholder of PLACEHOLDER_NAMES) {
             const search_regex = RegExp("x" + placeholder + "x", "g");
             let replace_value = localStorage.getItem(placeholder);
@@ -142,8 +152,11 @@
             count = replace_text_in_page(root_element, search_regex, replace_value);
             if (count != 0) {
                 debug(`Replaced ${placeholder} at least ${count} time(s)`);
+                // store all used placeholder names
+                used_placeholders.push(placeholder);
             }
         }
+        return used_placeholders;
     };
     
     // For normal text fields
@@ -228,31 +241,94 @@
         dropdown_count = 0;
         textbox_count = 0;
         for (let input of input_list) {
-            input.classList.add("input-for-variable");
             const placeholder_name = input.getAttribute("data-input-for");
-
-            if (CHECKBOX_DATA[placeholder_name]) {
-                // The placeholder is a checkbox
-                prepare_checkbox_field(placeholder_name, input);
-                checkbox_count++;
-            } else if (DROPDOWN_DATA[placeholder_name]) {
-                // The placeholder is a dropdown menu
-                prepare_dropdown_field(placeholder_name, input);
-                dropdown_count++;
-            } else if (TEXTBOX_DATA[placeholder_name]) {
-                // The placeholder is a textbox
-                prepare_textbox_field(placeholder_name, input);
-                textbox_count++;
-            } else {
-                console.warn(`Unknown placeholder referenced in input element: '${placeholder_name}'`)
-            }
+            prepare_input_field_for_placeholder(placeholder_name, input);
         }
         checkbox_count > 0 && log(`Found ${checkbox_count} checkbox field(s)`);
         dropdown_count > 0 && log(`Found ${dropdown_count} dropdown field(s)`);
         textbox_count > 0 && log(`Found ${textbox_count} textbox field(s)`);
     };
 
+    const prepare_input_field_for_placeholder = (placeholder_name, input) => {
+        input.classList.add("input-for-variable");
 
+        if (CHECKBOX_DATA[placeholder_name]) {
+            // The placeholder is a checkbox
+            prepare_checkbox_field(placeholder_name, input);
+            checkbox_count++;
+        } else if (DROPDOWN_DATA[placeholder_name]) {
+            // The placeholder is a dropdown menu
+            prepare_dropdown_field(placeholder_name, input);
+            dropdown_count++;
+        } else if (TEXTBOX_DATA[placeholder_name]) {
+            // The placeholder is a textbox
+            prepare_textbox_field(placeholder_name, input);
+            textbox_count++;
+        } else {
+            console.warn(`Unknown placeholder referenced in input element: '${placeholder_name}'`)
+        }
+    }
+
+    const generate_automatic_placeholder_table = (element, columns, used_placeholders) => {
+        if (used_placeholders.length == 0) {
+            // Do not create an empty table
+            return;
+        }
+
+        debug("Creating automatic input table at", element, `with columns ${columns}`);
+        element.innerHTML = ""; // remove all children
+        table = document.createElement("table");
+        table_head = document.createElement("thead");
+        table_head_row = document.createElement("tr");
+        table_body = document.createElement("tbody");
+        //
+        element.appendChild(table);
+        table.appendChild(table_head);
+        table.appendChild(table_body);
+        table_head.appendChild(table_head_row);
+
+        for (column of columns) {
+            table_cell = document.createElement("th");
+            table_cell.appendChild(document.createTextNode(TABLE_CELL_HEADINGS[column]))
+            table_head_row.appendChild(table_cell);
+        }
+
+        for (placeholder_name of used_placeholders) {
+            row = document.createElement("tr");
+            for (column of columns) {
+                cell = document.createElement("td");
+                row.appendChild(cell);
+
+                if (column == "name") {
+                    cell.appendChild(document.createTextNode(placeholder_name));
+                } else if (column == "description") {
+                    // TODO: needs plugin support
+                    cell.appendChild(document.createTextNode("TODO"));
+                } else if (column == "value") {
+                    cell.appendChild(document.createTextNode(`x${placeholder_name}x`));
+                    // @TODO: recursive raplacing ov values
+                } else if (column == "input") {
+                    input = document.createElement("input");
+                    cell.appendChild(input);
+                    prepare_input_field_for_placeholder(placeholder_name, input);
+                } else {
+                    console.error(`Unknown column name: ${column}`);
+                }
+            }
+            table_body.appendChild(row);
+        }
+        replace_placeholders_in_subtree(element);
+    }
+
+    const initialize_auto_tables = (used_placeholders) => {
+        const element_list = document.querySelectorAll("div.auto-input-table");
+        for (let element of element_list) {
+            const columns_str = element.getAttribute("data-columns") || "name,input";
+            const columns = columns_str.includes(",")? columns_str.split(",") : [columns_str];
+            debug("Auto table", element, used_placeholders, columns);
+            generate_automatic_placeholder_table(element, columns, used_placeholders);
+        }
+    };
     
     const init = () => {
         initialize_undefined_placeholders();
@@ -260,7 +336,10 @@
         prepare_variable_input_fields();
         
         const replace_root = document.querySelector("html");
-        replace_placeholders_in_subtree(replace_root);
+        const used_placeholders = replace_placeholders_in_subtree(replace_root);
+        debug("Used placeholder list:", used_placeholders);
+
+        initialize_auto_tables(used_placeholders);
     }
 
     
@@ -276,5 +355,9 @@
         window.addEventListener("load", () => {
             setTimeout(init, REPLACE_TRIGGER_DELAY_MILLIS);
         });
+    }
+
+    return {
+        "config": DATA_FROM_MKDOCS_PLUGIN,
     }
 }());
