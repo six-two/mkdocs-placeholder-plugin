@@ -22,6 +22,7 @@ plugins:
     # # Uncomment for testing
     # auto_placeholder_tables: True
     add_apply_table_column: True
+    auto_placeholder_tables_javascript: True
     # auto_placeholder_tables_collapsible: false
     # table_default_show_readonly: True
     # table_default_type: description

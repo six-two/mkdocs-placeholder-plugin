@@ -14,6 +14,7 @@ DEMO_NETCAT:
     "ncat (from nmap)": "ncat"
 DEMO_SUDO:
   default: unchecked
+  description: Does binding to the port require sudo?
   values:
     checked: "sudo "
     unchecked: ""

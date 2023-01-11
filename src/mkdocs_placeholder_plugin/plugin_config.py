@@ -12,6 +12,8 @@ class PlaceholderPluginConfig(Config):
     auto_placeholder_tables = Type(bool, default=False)
     # Use collapsible admonitions
     auto_placeholder_tables_collapsible = Type(bool, default=True)
+    # Create placeholder tables dynamically (with JavaScript), instead of at build time
+    auto_placeholder_tables_javascript = Type(bool, default=False)
     # Enable logging of debuggin information to the browser's console
     debug_javascript = Type(bool, default=False)
     # Show warnings if potential errors are found

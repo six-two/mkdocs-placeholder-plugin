@@ -43,6 +43,8 @@ Tries to do build time replacing of placeholders on the pages defined via `stati
 
 ## Placeholder input tables
 
+### Build time generated
+
 Beginning with version 0.1.3, you can embed input tables for placeholders.
 The following syntax is used:
 
@@ -78,4 +80,17 @@ The following attributes are available:
     It defaults to the value specified in the config (or `simple`).
 
 
+Since these tables are generated at build time, they are not entirely accurate, if you have conditional placeholders that are only included with some checkbox/dropdown values selected.
+The tables will also be indexed by the search plugin, so they may spam your search results, especially if you include the description column.
+
+### Dynamically generated
+
+Starting with version 0.2.2 you can add the following tag into your page:
+```html
+<div class="auto-input-table" data-columns="name,description,input"></div>
+```
+
+These tags will be detected by the JavaScript.
+Then a row for each placeholder, that was actually used on the site will be generated and added as children to the element.
+Currently only limited features are supported (no support for `reload_on_change` and `add_apply_table_column`, etc).
 

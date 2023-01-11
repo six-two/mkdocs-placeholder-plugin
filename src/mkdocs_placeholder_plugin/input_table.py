@@ -27,6 +27,7 @@ TABLE_HEADERS = {
     "description": "Description",
     "value": "Value",
     "input": "Input element",
+    "description-or-name": "Description / name",
 }
 
 
@@ -166,6 +167,8 @@ class InputTableGenerator:
             return html.escape(placeholder.name)
         elif column == "description":
             return html.escape(placeholder.description)
+        elif column == "description-or-name":
+            return html.escape(placeholder.description or placeholder.name)
         elif column == "input":
             return f'<input data-input-for="{html.escape(placeholder.name)}">'
         elif column == "value":
