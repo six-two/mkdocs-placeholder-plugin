@@ -3,14 +3,16 @@ const MkdocsPlaceholderPlugin = (function() {
     // Do not expose our methods to the outside (prevent accidentially shadowing stuff) by default
     DATA_FROM_MKDOCS_PLUGIN = __MKDOCS_PLACEHOLDER_PLUGIN_JSON__;
     // Set up or disable logging as early as possible
-    let log, debug;
+    let log, info, debug;
     if (DATA_FROM_MKDOCS_PLUGIN["debug"]) {
         // Write debugging messages to console
         debug = console.debug;
+        info = console.info;
         log = console.log;
     } else {
         // If debugging is disabled, make the functions do nothing
         debug = () => {};
+        info = () => {};
         log = () => {};
     }
 
@@ -29,16 +31,18 @@ const MkdocsPlaceholderPlugin = (function() {
     CHECKBOX_DATA = DATA_FROM_MKDOCS_PLUGIN["checkbox"];
     // name:str -> { "default_index" -> default:int, "options" -> list of [display_name:str, actual_value:str], "read_only" -> bool }
     DROPDOWN_DATA = DATA_FROM_MKDOCS_PLUGIN["dropdown"];
-    // list of name:str
-    PLACEHOLDER_NAMES = DATA_FROM_MKDOCS_PLUGIN["placeholder_names"];
-
-
+    // name:str -> description:str
+    DESCRIPTIONS = DATA_FROM_MKDOCS_PLUGIN["descriptions"];
+    // TODO: pass readonly, and other settings (auto reload, etc) to this script too
+    
+    PLACEHOLDER_NAMES = Object.keys(DESCRIPTIONS)
     // Constants
     TABLE_CELL_HEADINGS = {
         "name": "Name",
         "description": "Description",
         "value": "Value",
         "input": "Input element",
+        "description-or-name": "Description / name",
     }
 
 
@@ -269,28 +273,32 @@ const MkdocsPlaceholderPlugin = (function() {
         }
     }
 
+    const appendTextNode = (element, text) => {
+        element.appendChild(document.createTextNode(text));
+    }
+
+    const createChildElement = (parent, tag_name) => {
+        child = document.createElement(tag_name);
+        parent.appendChild(child);
+        return child;
+    }
+
     const generate_automatic_placeholder_table = (element, columns, used_placeholders) => {
         if (used_placeholders.length == 0) {
             // Do not create an empty table
             return;
         }
 
-        debug("Creating automatic input table at", element, `with columns ${columns}`);
-        element.innerHTML = ""; // remove all children
-        table = document.createElement("table");
-        table_head = document.createElement("thead");
-        table_head_row = document.createElement("tr");
-        table_body = document.createElement("tbody");
-        //
-        element.appendChild(table);
-        table.appendChild(table_head);
-        table.appendChild(table_body);
-        table_head.appendChild(table_head_row);
+        info("Creating automatic input table at", element, "with columns", columns);
+        // element.innerHTML = ""; // remove all children
+        table = createChildElement(element, "table");
+        table_head = createChildElement(table, "thead");
+        table_head_row = createChildElement(table_head, "tr");
+        table_body = createChildElement(table, "tbody");
 
         for (column of columns) {
-            table_cell = document.createElement("th");
-            table_cell.appendChild(document.createTextNode(TABLE_CELL_HEADINGS[column]))
-            table_head_row.appendChild(table_cell);
+            table_cell = createChildElement(table_head_row, "th");
+            appendTextNode(table_cell, TABLE_CELL_HEADINGS[column]);
         }
 
         for (placeholder_name of used_placeholders) {
@@ -300,17 +308,17 @@ const MkdocsPlaceholderPlugin = (function() {
                 row.appendChild(cell);
 
                 if (column == "name") {
-                    cell.appendChild(document.createTextNode(placeholder_name));
+                    appendTextNode(cell, placeholder_name);
                 } else if (column == "description") {
-                    // TODO: needs plugin support
-                    cell.appendChild(document.createTextNode("TODO"));
+                    appendTextNode(cell, DESCRIPTIONS[placeholder_name]);
                 } else if (column == "value") {
-                    cell.appendChild(document.createTextNode(`x${placeholder_name}x`));
-                    // @TODO: recursive raplacing ov values
+                    appendTextNode(cell, `x${placeholder_name}x`);
                 } else if (column == "input") {
-                    input = document.createElement("input");
-                    cell.appendChild(input);
+                    input = createChildElement(cell, "input");
                     prepare_input_field_for_placeholder(placeholder_name, input);
+                } else if (column == "description-or-name") {
+                    const text = DESCRIPTIONS[placeholder_name] || placeholder_name;
+                    appendTextNode(cell, text);
                 } else {
                     console.error(`Unknown column name: ${column}`);
                 }
@@ -325,7 +333,6 @@ const MkdocsPlaceholderPlugin = (function() {
         for (let element of element_list) {
             const columns_str = element.getAttribute("data-columns") || "name,input";
             const columns = columns_str.includes(",")? columns_str.split(",") : [columns_str];
-            debug("Auto table", element, used_placeholders, columns);
             generate_automatic_placeholder_table(element, columns, used_placeholders);
         }
     };

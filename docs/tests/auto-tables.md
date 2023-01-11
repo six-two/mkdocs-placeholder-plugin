@@ -8,4 +8,8 @@ XSS dropdown value: xXSS_DROPDOWN_ALLx
 
 ## Generated with JavaScript
 
-<div class="auto-input-table" data-columns="name,input,value">
+<div class="auto-input-table" data-columns="name,input,value,description"></div>
+
+### Second table
+
+<div class="auto-input-table" data-columns="description-or-name,input"></div>

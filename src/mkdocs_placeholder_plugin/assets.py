@@ -44,7 +44,6 @@ def generate_placeholder_json(placeholders: dict[str, Placeholder], plugin_confi
     """
     Generate the JSON string, that will replace the placeholder in the JavaScript file
     """
-    placeholder_names = list(placeholders.keys())
     checkbox_data = {}
     dropdown_data = {}
     textbox_data = {}
@@ -77,10 +76,12 @@ def generate_placeholder_json(placeholders: dict[str, Placeholder], plugin_confi
         else:
             raise Exception(f"Unexpected input type: {placeholder.input_type}")
 
+    descriptions = {p.name: p.description for p in placeholders.values()}
+
     result_object = {
         "checkbox": checkbox_data,
         "dropdown": dropdown_data,
-        "placeholder_names": placeholder_names,
+        "descriptions": descriptions,
         "textbox": textbox_data,
         "delay_millis": plugin_config.replace_delay_millis,
         "reload": plugin_config.reload_on_change,

@@ -82,18 +82,24 @@ Bad_Name Format: please do not use a variable name like this
 # HTML contents in variables should be escaped, since otherwise reflected Cross-Site Scripting would be possible
 XSS_DROPDOWN_ALL:
   default: xXSS_TWOx
+  description: <script>alert(1)</script>xXSS_COMBx
   values:
     xXSS_ONEx: xXSS_ONEx
     xXSS_TWOx: xXSS_TWOx
     xXSS_THREEx: xXSS_THREEx
     xXSS_COMBx: xXSS_COMBx
     xXSS_DROPDOWNx: xXSS_DROPDOWNx
-XSS_ONE: <img src=fail onerror=alert(1)> # For embedding in HTML
-XSS_TWO: '"+alert(2)+"' # For embedding in JS/JSON
-XSS_THREE: "</input><script>confirm(3)</script>" # Similar to first
 XSS_COMB:
   default: xXSS_ONEx | xXSS_TWOx | xXSS_THREEx
   read_only: true
+  description: A combination of the other XSS payloads and pipes
+XSS_ONE:
+  default: <img src=fail onerror=alert(1)>L
+  description: Standard image XSS payload
+XSS_TWO:
+  default: '"+alert(2)+"'
+  description: Will trigger if directly embedded into a JavaScript string
+XSS_THREE: "</input><script>confirm(3)</script>" # Similar to first
 PIPE_IN_DESCRIPTION:
   default: ""
   description: <s>Pipes | in || description
