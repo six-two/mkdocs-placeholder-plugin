@@ -18,6 +18,8 @@ The documentation is also available in the `docs` folder of the source code and 
 
 ### HEAD
 
+### Version 0.2.2
+
 - Improved placeholder input tables:
     - Can now specify which columns to use (and their order)
     - Only show apply values column, if at least one column contains input elements
