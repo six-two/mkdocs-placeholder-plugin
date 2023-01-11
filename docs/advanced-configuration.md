@@ -7,6 +7,7 @@ Option | Type | Default value
 add_apply_table_column | `bool` | `False`
 auto_placeholder_tables | `bool` | `False`
 auto_placeholder_tables_collapsible | `bool` | `True`
+auto_placeholder_tables_javascript | `bool` | `False`
 debug_javascript | `bool` | `False`
 enabled | `bool` | `True`
 placeholder_file | `str` | placeholder-plugin.yaml
@@ -26,6 +27,7 @@ plugins:
     add_apply_table_column: False
     auto_placeholder_tables: False
     auto_placeholder_tables_collapsible: True
+    auto_placeholder_tables_javascript: False
     debug_javascript: False
     enabled: True
     placeholder_file: placeholder-plugin.yaml
@@ -56,6 +58,11 @@ It is strongly recommended to have either `reload_on_change` or `add_apply_table
 If it is enabled, the table will be wrapped in a collapsible admonition.
 If this is enabled and the required markdown extensions (`admonition` and `pymdownx.details`) are not specified in the `mkdocs.yml`, then the extensions will be added by the plugin.
 Has no effect, when `auto_placeholder_tables` is disabled.
+
+### auto_placeholder_tables_javascript
+
+If set to `True`, the automatic placeholder input tables will be generated with JavaScript whenever the page is visited.
+`False` means that the tables will be generated during the mkdocs build process.
 
 ### debug_javascript
 
