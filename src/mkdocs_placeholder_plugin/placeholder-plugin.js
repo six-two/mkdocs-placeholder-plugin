@@ -93,11 +93,16 @@ const MkdocsPlaceholderPlugin = (function() {
     const store_dropdown_state = (placeholder_name, new_index) => {
         data = DROPDOWN_DATA[placeholder_name];
 
-        // Store the actual placeholder value
-        value = data["options"][new_index][1] // 1: value, 0 would be display name
-        localStorage.setItem(placeholder_name, value);
-        // Store whether it is checked in an extra variable
-        localStorage.setItem(`${placeholder_name}__STATE__`, "" + new_index);
+        const new_value_data = data["options"][new_index];
+        if (new_value_data){
+            // Store the actual placeholder value//@TODO dangerous
+            value = new_value_data[1] // 1: value, 0 would be display name
+            localStorage.setItem(placeholder_name, value);
+            // Store whether it is checked in an extra variable
+            localStorage.setItem(`${placeholder_name}__STATE__`, "" + new_index);
+        } else {
+            console.warn(`Tried to store state '${new_index}' for placeholder ${placeholder_name}, but the only valid names are:`, Object.keys(value["options"]))
+        }
     }
 
     const load_dropdown_state = (placeholder_name) => {
