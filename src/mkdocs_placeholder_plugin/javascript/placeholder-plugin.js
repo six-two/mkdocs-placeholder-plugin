@@ -1,32 +1,14 @@
 // Exposed functionality will be stored in this
 const MkdocsPlaceholderPlugin = (function() {
     // Do not expose our methods to the outside (prevent accidentially shadowing stuff) by default
-    DATA_FROM_MKDOCS_PLUGIN = __MKDOCS_PLACEHOLDER_PLUGIN_JSON__;
-    // Set up or disable logging as early as possible
-    let log, info, debug;
-    if (DATA_FROM_MKDOCS_PLUGIN["debug"]) {
-        // Write debugging messages to console
-        debug = console.debug;
-        info = console.info;
-        log = console.log;
-    } else {
-        // If debugging is disabled, make the functions do nothing
-        debug = () => {};
-        info = () => {};
-        log = () => {};
-    }
+    DATA_FROM_MKDOCS_PLUGIN = PlaceholderPlugin.raw_data;
+ 
 
     debug("Data from plugin:");
     for (key in DATA_FROM_MKDOCS_PLUGIN) {
         debug(`  - ${key}:`, DATA_FROM_MKDOCS_PLUGIN[key]);
     }
-
-    // int
-    REPLACE_TRIGGER_DELAY_MILLIS = DATA_FROM_MKDOCS_PLUGIN["delay_millis"];
-    // bool
-    RELOAD_ON_CHANGE = DATA_FROM_MKDOCS_PLUGIN["reload"];
-    // name:str -> { "value" -> default_value:str, "read_only" -> bool }
-    TEXTBOX_DATA = DATA_FROM_MKDOCS_PLUGIN["textbox"];
+    // @TODO: migrate to 10_*.js
     // name:str -> { "checked" -> value:str, "unchecked" -> value:str, "default_value" -> checked_by_default:bool, "read_only" -> bool }
     CHECKBOX_DATA = DATA_FROM_MKDOCS_PLUGIN["checkbox"];
     // name:str -> { "default_index" -> default:int, "options" -> list of [display_name:str, actual_value:str], "read_only" -> bool }
@@ -62,7 +44,7 @@ const MkdocsPlaceholderPlugin = (function() {
     };
 
     const on_placeholder_change = () => {
-        if (RELOAD_ON_CHANGE){
+        if (PlaceholderData.reload){
             debug("Reloading page to update placeholder values");
             window.location.reload();
         }
@@ -120,9 +102,9 @@ const MkdocsPlaceholderPlugin = (function() {
 
     const initialize_undefined_placeholders = () => {
         init_count = 0;
-        for (let placeholder in TEXTBOX_DATA) {
+        for (let placeholder in PlaceholderData.textbox_map) {
             if (!localStorage.getItem(placeholder)) {
-                const value = TEXTBOX_DATA[placeholder]["value"];
+                const value = PlaceholderData.textbox_map[placeholder]["value"];
                 localStorage.setItem(placeholder, value);
                 init_count++;
             }
@@ -173,7 +155,7 @@ const MkdocsPlaceholderPlugin = (function() {
         // Restore the stored state
         input_element.value = localStorage.getItem(placeholder_name) || placeholder_name + " is undefined";
 
-        data = TEXTBOX_DATA[placeholder_name];
+        data = PlaceholderData.textbox_map[placeholder_name];
         if (data["read_only"]) {
             // disable the checkbox
             input_element.disabled = "1";
@@ -269,7 +251,7 @@ const MkdocsPlaceholderPlugin = (function() {
             // The placeholder is a dropdown menu
             prepare_dropdown_field(placeholder_name, input);
             dropdown_count++;
-        } else if (TEXTBOX_DATA[placeholder_name]) {
+        } else if (PlaceholderData.textbox_map[placeholder_name]) {
             // The placeholder is a textbox
             prepare_textbox_field(placeholder_name, input);
             textbox_count++;
@@ -356,16 +338,16 @@ const MkdocsPlaceholderPlugin = (function() {
 
     
     // Then do the placeholder replacing at the user-specified time
-    if (REPLACE_TRIGGER_DELAY_MILLIS < 0) {
+    if (PlaceholderData.delay_millis < 0) {
         // For values smaller than 0, immediately do the replacements
         init();
-    } else if (REPLACE_TRIGGER_DELAY_MILLIS == 0) {
+    } else if (PlaceholderData.delay_millis == 0) {
         // Replace placeholders as soon as the page finished loading
         window.addEventListener("load", init);
     } else {
         // Wait the amount of millis specified by the user
         window.addEventListener("load", () => {
-            setTimeout(init, REPLACE_TRIGGER_DELAY_MILLIS);
+            setTimeout(init, PlaceholderData.delay_millis);
         });
     }
 

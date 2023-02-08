@@ -12,15 +12,18 @@ def copy_assets_to_mkdocs_site_directory(site_dir: str, plugin_config: Placehold
     custom_js_path = os.path.join(site_dir, plugin_config.placeholder_js)
     if os.path.exists(custom_js_path):
         # use the file that is already in the site directory
-        input_file = custom_js_path
+        with open(custom_js_path, "r") as f:
+            text = f.read()
     else:
         # use the default file supplied by the plugin
-        input_file = get_resource_path("placeholder-plugin.js")
+        text = ""
+        current_dir = os.path.dirname(__file__)
+        js_dir = os.path.join(current_dir, "javascript")
+        for file_name in sorted(os.listdir(js_dir)):
+            with open(os.path.join(js_dir, file_name), "r") as f:
+                text += f.read()
+        # input_file = get_resource_path("../javascript/placeholder-plugin.js")
     
-    # Read the text from the input file
-    with open(input_file, "r") as f:
-        text = f.read()
-
     # Generate placeholder data and inject them in the JavaScript file
     placeholder_data_json = generate_placeholder_json(placeholders, plugin_config)
     text = text.replace("__MKDOCS_PLACEHOLDER_PLUGIN_JSON__", placeholder_data_json)
