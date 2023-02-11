@@ -36,6 +36,11 @@ PlaceholderPlugin.generate_automatic_placeholder_table = (element, columns, used
     }
 
     for (placeholder_name of used_placeholders) {
+        if (PlaceholderData.auto_table_hide_read_only && 
+                    PlaceholderData.common_map[placeholder_name].read_only) {
+            debug(`auto_table: Skipping ${placeholder_name} because it is read-only`)
+            continue
+        }
         row = createChildElement(table_body, "tr");
         for (column of columns) {
             cell = createChildElement(row, "td");
@@ -43,14 +48,14 @@ PlaceholderPlugin.generate_automatic_placeholder_table = (element, columns, used
             if (column == "name") {
                 appendTextNode(cell, placeholder_name);
             } else if (column == "description") {
-                appendTextNode(cell, PlaceholderData.description_map[placeholder_name]);
+                appendTextNode(cell, PlaceholderData.common_map[placeholder_name].description);
             } else if (column == "value") {
                 appendTextNode(cell, `x${placeholder_name}x`);
             } else if (column == "input") {
                 input = createChildElement(cell, "input");
                 PlaceholderPlugin.prepare_input_field_for_placeholder(placeholder_name, input);
             } else if (column == "description-or-name") {
-                const text = PlaceholderData.description_map[placeholder_name] || placeholder_name;
+                const text = PlaceholderData.common_map[placeholder_name].description || placeholder_name;
                 appendTextNode(cell, text);
             } else {
                 console.error(`Unknown column name: ${column}`);

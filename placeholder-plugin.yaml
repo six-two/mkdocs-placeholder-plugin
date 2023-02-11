@@ -95,8 +95,9 @@ XSS_COMB:
   read_only: true
   description: A combination of the other XSS payloads and pipes
 XSS_ONE:
-  default: <img src=fail onerror=alert(1)>L
-  description: Standard image XSS payload
+  default: <img src=fail onerror=alert(1)>
+  description: Standard image XSS payload (read-only flag set)
+  read_only: true
 XSS_TWO:
   default: '"+alert(2)+"'
   description: Will trigger if directly embedded into a JavaScript string

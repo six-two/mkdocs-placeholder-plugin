@@ -127,6 +127,7 @@ It takes a list of glob placeholders, so something like `relative/path/**/*.html
 ### table_default_show_readonly
 
 The default value for placeholder input tables, when no `show-readonly` attribute was specified.
+This is also used by the JavaScript generated automatic input tables.
 
 ### table_default_type
 

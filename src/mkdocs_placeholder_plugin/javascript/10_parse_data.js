@@ -14,26 +14,26 @@ const assert_field_type = (name, expected_type_str, parent_object = PlaceholderP
 const PlaceholderData = {
     "debug": assert_field_type("debug", "boolean"),
     "fix_style": true,// @TODO: get from plugin's config
+    "auto_table_hide_read_only": assert_field_type("auto_table_hide_read_only", "boolean"),
     "delay_millis": assert_field_type("delay_millis", "number"),
     "reload": assert_field_type("reload", "boolean"),
-    // name:str -> { "value" -> default_value:str, "read_only" -> bool }
+    // name:str -> { "value" -> default_value:str }
     "textbox_map": assert_field_type("textbox", "object"),
-    // name:str -> { "checked" -> value:str, "unchecked" -> value:str, "default_value" -> checked_by_default:bool, "read_only" -> bool }
+    // name:str -> { "checked" -> value:str, "unchecked" -> value:str, "default_value" -> checked_by_default:bool }
     "checkbox_map": assert_field_type("checkbox", "object"),
-    // name:str -> { "default_index" -> default:int, "options" -> list of [display_name:str, actual_value:str], "read_only" -> bool }
+    // name:str -> { "default_index" -> default:int, "options" -> list of [display_name:str, actual_value:str] }
     "dropdown_map": assert_field_type("dropdown", "object"),
-    // name:str -> description:str
-    "description_map": assert_field_type("descriptions", "object"),
+    // name:str -> { "description" -> str, "read_only" -> bool }
+    "common_map": assert_field_type("common", "object"),
 }
 // Derive some helpful fields
-PlaceholderData.names = Object.keys(PlaceholderData.description_map);
+PlaceholderData.names = Object.keys(PlaceholderData.common_map);
 // TODO: pass readonly, and other settings (auto reload, etc) to this script too
 
 
 // Check textbox field in depth
 for (textbox of Object.values(PlaceholderData.textbox_map)) {
     assert_field_type("value", "string", textbox);
-    assert_field_type("read_only", "boolean", textbox);
 }
 
 // Check textbox field in depth
@@ -44,7 +44,6 @@ for (checkbox of Object.values(PlaceholderData.checkbox_map)) {
     assert_field_type("unchecked", "string", checkbox);
     
     assert_field_type("default_value", "boolean", checkbox);
-    assert_field_type("read_only", "boolean", checkbox);
 }
 
 // Check dropdown field in depth
@@ -66,7 +65,12 @@ for (dropdown of Object.values(PlaceholderData.dropdown_map)) {
     }
 
     assert_field_type("default_index", "number", dropdown);
-    assert_field_type("read_only", "boolean", dropdown);
+}
+
+// Check attributes set for all placeholders (independent of type) in depth
+for (common of Object.values(PlaceholderData.common_map)) {
+    assert_field_type("description", "string", common);
+    assert_field_type("read_only", "boolean", common);
 }
 
 

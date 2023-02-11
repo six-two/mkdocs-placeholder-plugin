@@ -50,6 +50,7 @@ def generate_placeholder_json(placeholders: dict[str, Placeholder], plugin_confi
     checkbox_data = {}
     dropdown_data = {}
     textbox_data = {}
+    common_data = {}
 
     for placeholder in placeholders.values():
         if placeholder.input_type == InputType.Checkbox:
@@ -57,7 +58,6 @@ def generate_placeholder_json(placeholders: dict[str, Placeholder], plugin_confi
                 "default_value": bool(placeholder.default_value == "checked"),
                 "checked": placeholder.values["checked"],
                 "unchecked": placeholder.values["unchecked"],
-                "read_only": placeholder.read_only,
             }
         elif placeholder.input_type == InputType.Dropdown:
             # Figure out the index of the item selected by default
@@ -69,24 +69,26 @@ def generate_placeholder_json(placeholders: dict[str, Placeholder], plugin_confi
             dropdown_data[placeholder.name] = {
                 "default_index": default_index,
                 "options": [[key, value] for key, value in placeholder.values.items()],
-                "read_only": placeholder.read_only,
             }
         elif placeholder.input_type == InputType.Field:
             textbox_data[placeholder.name] = {
                 "value": placeholder.default_value,
-                "read_only": placeholder.read_only,
             }
         else:
             raise Exception(f"Unexpected input type: {placeholder.input_type}")
 
-    descriptions = {p.name: p.description for p in placeholders.values()}
+        common_data[placeholder.name] = {
+            "description": placeholder.description,
+            "read_only": placeholder.read_only,
+        }
 
     result_object = {
         "checkbox": checkbox_data,
         "dropdown": dropdown_data,
-        "descriptions": descriptions,
+        "common": common_data,
         "textbox": textbox_data,
         "delay_millis": plugin_config.replace_delay_millis,
+        "auto_table_hide_read_only": not plugin_config.table_default_show_readonly,
         "reload": plugin_config.reload_on_change,
         "debug": plugin_config.debug_javascript,
     }

@@ -15,7 +15,7 @@ theme:
 plugins:
 - placeholder:
     show_warnings: true
-    # debug_javascript: true
+    debug_javascript: true
     static_pages:
     - "tests/static_replacements/index.html"
     replace_delay_millis: -1

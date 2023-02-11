@@ -18,6 +18,9 @@ The documentation is also available in the `docs` folder of the source code and 
 
 ### HEAD
 
+- Split JavaScript code into multiple files and made it available via the global `PlaceholderData` and `PlaceholderPlugin` objects.
+    These interfaces are not stable, so you should probably not try to rely on them to much.
+
 ### Version 0.2.2
 
 - Improved placeholder input tables:
