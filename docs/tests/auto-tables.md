@@ -4,7 +4,8 @@
 
 <placeholdertable entries="auto" type="name, input, value"> -->
 
-XSS dropdown value: xXSS_DROPDOWN_ALLx
+!!! note "XSS dropdown value"
+    xXSS_DROPDOWN_ALLx
 
 ## Generated with JavaScript
 

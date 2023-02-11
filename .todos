@@ -1,3 +1,4 @@
 - What about the search entries? Can I hook into them for the normal MkDocs and the MkDocs for material plugins?
 - Optional extra buttons for the global placeholder state (reset, import, export)
 - clean up the config file options to be more intuitive
+- Add hooks (for getting [initial] values for placeholders)
