@@ -23,7 +23,7 @@ const PlaceholderData = {
     "checkbox_map": assert_field_type("checkbox", "object"),
     // name:str -> { "default_index" -> default:int, "options" -> list of [display_name:str, actual_value:str] }
     "dropdown_map": assert_field_type("dropdown", "object"),
-    // name:str -> { "description" -> str, "read_only" -> bool }
+    // name:str -> { "description" -> str, "read_only" -> bool, "replace_everywhere" -> bool }
     "common_map": assert_field_type("common", "object"),
 }
 // Derive some helpful fields
@@ -71,6 +71,7 @@ for (dropdown of Object.values(PlaceholderData.dropdown_map)) {
 for (common of Object.values(PlaceholderData.common_map)) {
     assert_field_type("description", "string", common);
     assert_field_type("read_only", "boolean", common);
+    assert_field_type("replace_everywhere", "boolean", common);
 }
 
 

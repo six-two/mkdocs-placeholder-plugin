@@ -80,6 +80,7 @@ def generate_placeholder_json(placeholders: dict[str, Placeholder], plugin_confi
         common_data[placeholder.name] = {
             "description": placeholder.description,
             "read_only": placeholder.read_only,
+            "replace_everywhere": placeholder.replace_everywhere,
         }
 
     result_object = {

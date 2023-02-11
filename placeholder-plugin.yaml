@@ -26,6 +26,7 @@ TEST:
   default: 123
 LINK: 
   default: https://www.example.com/test/page
+  replace_everywhere: true
 
 # What happens, when the values / choices are also placeholders?
 ALIAS_TEXTBOX: xTESTx

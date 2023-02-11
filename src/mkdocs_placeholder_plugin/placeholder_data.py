@@ -34,6 +34,8 @@ class Placeholder(NamedTuple):
     # Whether the placeholder should be protected from users editing it.
     # Use true to have hidden convenience variables. Example "COMB_EMAIL: xCOMB_FIRST_NAMEx.xCOMB_SURNAMEx@xCOMB_DOMAINx"
     read_only: bool
+    # Whether to only replace visible text or to try to replace it anywhere in the DOM
+    replace_everywhere: bool
     # For supporting advanced input fields such as dropdown menus and checkboxes
     values: dict[str,str]
     # The type is not specified directly by the user, but is instead determined from the `values` field.
@@ -86,6 +88,11 @@ def parse_placeholder_dict(name: str, data: dict[str,Any]) -> Placeholder:
     if type(read_only) != bool:
         raise PluginError(f"Wrong type for key 'read_only' in placeholder '{name}': Expected 'bool', got '{type(read_only).__name__}'")
 
+    # Replace-everywhere is optional, defaults to False
+    replace_everywhere = data.get("replace_everywhere", False)
+    if type(replace_everywhere) != bool:
+        raise PluginError(f"Wrong type for key 'replace_everywhere' in placeholder '{name}': Expected 'bool', got '{type(replace_everywhere).__name__}'")
+
     # Description is optional
     description = str(data.get("description", ""))
 
@@ -126,6 +133,7 @@ def parse_placeholder_dict(name: str, data: dict[str,Any]) -> Placeholder:
         name=name,
         default_value=default_value,
         description=description,
+        replace_everywhere=replace_everywhere,
         read_only=read_only,
         values=values,
         input_type=input_type,

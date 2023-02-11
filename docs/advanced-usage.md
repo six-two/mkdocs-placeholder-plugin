@@ -1,5 +1,53 @@
 # Advanced usage
 
+## Placeholder attributes
+
+You can set some extra attributes for placeholders:
+
+```yaml
+FIRST_NAME:
+    default: John 
+    description: What should I call you?
+    read_only: false
+    replace_everywhere: false
+```
+
+### default
+
+This is the value, that is used as the initial value for the placeholder.
+The following two declarations are equivaluent:
+```yaml
+FIRST_NAME: John
+```
+
+```yaml
+FIRST_NAME:
+    default: John 
+```
+
+### description
+
+This description can be used in placeholder input tables to describe to users what value is expected for the field.
+
+### read_only
+
+Defaults to `false`.
+If this is set to `true`, input field's for the placeholder will be disabled, so that users can not change the placeholder unless they go to the browser's `Developer Tools` and change the `localStorage` object.
+Read-only fields can (and by default will) be hidden from placeholder input tables.
+
+### replace_everywhere
+
+Defaults to `false`.
+If this is set to `false`, only visible text is replaced.
+If you set it to `true`, it may be replaced anywhere in the page's document object model (probably including scripts, element attributes (such as a link's href), etc).
+
+!!! warning "Dangerous - may introduce security vulnerabilities"
+    You can very easily create self-XSS vulnerabilities if you set this to `true`.
+    These may be chanied with other vulnerabilities to allow attackers to potentially steal cookies, redirect to malicious pages and/or perform actions as the user.
+    So please use this sparringly, if at all.
+
+    Assuming that you just have a static MkDocs site, the impact should be minimal/none, but please think twice before you enable this.
+
 ## Combining fields
 
 Sometimes certain combinations of placeholders are often used.
