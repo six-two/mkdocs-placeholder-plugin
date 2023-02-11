@@ -1,11 +1,11 @@
 PlaceholderPlugin.init = () => {
     PlaceholderPlugin.initialize_undefined_placeholders();
 
-    PlaceholderPlugin.prepare_variable_input_fields();
-    
     const replace_root = document.querySelector("html");
     const used_placeholders = PlaceholderPlugin.replace_placeholders_in_subtree(replace_root);
     debug("Used placeholder list:", used_placeholders);
+
+    PlaceholderPlugin.prepare_variable_input_fields();
 
     PlaceholderPlugin.initialize_auto_tables(used_placeholders);
 }
