@@ -1,5 +1,7 @@
 PlaceholderPlugin.timestamp = () => new Date().toISOString().slice(11,23);
 PlaceholderPlugin.reload_page = () => window.location.reload();
+PlaceholderPlugin.DEBUG_COUNTER = 0;
+PlaceholderPlugin.increment_debug_counter = () => PlaceholderPlugin.DEBUG_COUNTER++;
 
 // Set up or disable logging as early as possible
 let log, info, debug;

@@ -10,7 +10,7 @@ PlaceholderPlugin.prepare_textbox_field = (placeholder_name, input_element) => {
     // Restore the stored state
     input_element.value = localStorage.getItem(placeholder_name) || placeholder_name + " is undefined";
 
-    data = PlaceholderData.textbox_map[placeholder_name];
+    let data = PlaceholderData.textbox_map[placeholder_name];
     if (data["read_only"]) {
         // disable the checkbox
         input_element.disabled = "1";
