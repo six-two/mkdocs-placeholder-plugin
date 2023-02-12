@@ -54,6 +54,9 @@ nav:
   - tests/mermaid_diagrams.md
   - tests/static_replacements.md
 
+extra_javascript:
+- development-warning.js
+
 markdown_extensions:
   # Message/error/warning boxes
   - admonition
