@@ -1,4 +1,7 @@
-- What about the search entries? Can I hook into them for the normal MkDocs and the MkDocs for material plugins?
 - Optional extra buttons for the global placeholder state (reset, import, export)
-- clean up the config file options to be more intuitive
-- Add hooks (for getting [initial] values for placeholders)
+- Clean up the config file options to be more intuitive
+- Add hooks (for getting initial values for placeholders)
+- Static replacement on a per placeholder basis
+- Formatters (such as for bash-shell) for escaping characters that may break the command that a placeholder is part of
+- Validators for common value types (IPv4 address, hostname, port number, file path, URL) and custom ones based on user supplied regular expressions
+
