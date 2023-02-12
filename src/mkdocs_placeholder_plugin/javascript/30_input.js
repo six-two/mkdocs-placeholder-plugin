@@ -17,12 +17,13 @@ PlaceholderPlugin.prepare_textbox_field = (placeholder_name, input_element) => {
         input_element.style.cursor = "not-allowed";
     } else {
         // Listen for state changes
-        input_element.addEventListener("change", () => {
-            localStorage.setItem(placeholder_name, input_element.value);
-        });
+        // input_element.addEventListener("change", () => {
+        //     localStorage.setItem(placeholder_name, input_element.value);
+        // });
         input_element.addEventListener("keypress", e => {
             if (e.key === "Enter") {
                 debug("Textbox change confirmed with Enter key for ", placeholder_name, "- new value:", input_element.checked);
+                localStorage.setItem(placeholder_name, input_element.value);
                 PlaceholderPlugin.on_placeholder_change();
             }
         });
