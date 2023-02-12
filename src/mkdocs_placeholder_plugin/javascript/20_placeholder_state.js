@@ -48,11 +48,25 @@ PlaceholderPlugin.load_dropdown_state = (placeholder_name) => {
     }
 }
 
+PlaceholderPlugin.store_textbox_state = (placeholder_name, new_value) => {
+    info(`Set textbox ${placeholder_name} to '${new_value}'`);
+    localStorage.setItem(placeholder_name, new_value);
+}
+
+PlaceholderPlugin.load_textbox_state = (placeholder_name) => {
+    let value = localStorage.getItem(placeholder_name);
+    if (!value) {
+        value = PlaceholderData.textbox_map[placeholder_name]["value"];
+    }
+    debug(`Read textbox ${placeholder_name}: '${value}'`);
+    return value;
+}
+
 PlaceholderPlugin.initialize_undefined_placeholders = () => {
     init_count = 0;
     for (let placeholder in PlaceholderData.textbox_map) {
         if (!localStorage.getItem(placeholder)) {
-            const value = PlaceholderData.textbox_map[placeholder]["value"];
+            const value = PlaceholderPlugin.load_textbox_state(placeholder);
             localStorage.setItem(placeholder, value);
             init_count++;
         }

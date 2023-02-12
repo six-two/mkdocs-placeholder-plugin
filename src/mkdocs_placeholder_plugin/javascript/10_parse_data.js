@@ -15,6 +15,7 @@ const PlaceholderData = {
     "debug": assert_field_type("debug", "boolean"),
     "fix_style": true,// @TODO: get from plugin's config
     "auto_table_hide_read_only": assert_field_type("auto_table_hide_read_only", "boolean"),
+    "auto_table_apply_button": assert_field_type("auto_table_apply_button", "boolean"),
     "delay_millis": assert_field_type("delay_millis", "number"),
     "reload": assert_field_type("reload", "boolean"),
     // name:str -> { "value" -> default_value:str }
@@ -72,19 +73,4 @@ for (common of Object.values(PlaceholderData.common_map)) {
     assert_field_type("description", "string", common);
     assert_field_type("read_only", "boolean", common);
     assert_field_type("replace_everywhere", "boolean", common);
-}
-
-
-// Set up or disable logging as early as possible
-let log, info, debug;
-if (PlaceholderData.debug) {
-    // Write debugging messages to console
-    debug = console.debug;
-    info = console.info;
-    log = console.log;
-} else {
-    // If debugging is disabled, make the functions do nothing
-    debug = () => {};
-    info = () => {};
-    log = () => {};
 }

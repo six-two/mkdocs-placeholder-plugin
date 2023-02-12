@@ -22,6 +22,8 @@ The documentation is also available in the `docs` folder of the source code and 
     These interfaces are not stable, so you should probably not try to rely on them to much.
 - Added `replace_everywhere` attribute for placeholders
 - Changes to textbox values are only stored, when you press `Enter`
+- Dynamically generated tables now honor `add_apply_table_column`
+- Improved JavaScript debugging: timestamps, more messages, and you can disable the page reload
 
 ### Version 0.2.2
 

@@ -7,13 +7,11 @@ from mkdocs.exceptions import PluginError
 from .placeholder_data import Placeholder
 from .html_tag_parser import parse_html_tag
 
-def reload_on_click(text: str) -> str:
-    return f'<span class="button-reload" style="cursor: pointer" onclick="window.location.reload()">{text}</span>'
 
 INPUT_TABLE_PLACEHOLDER = re.compile("<placeholdertable[^>]*>")
 # "md-button md-button--primary" make it look pretty if you are using Material for Mkdocs (https://squidfunk.github.io/mkdocs-material/reference/buttons/#adding-icon-buttons)
 # Otherwise it will be styled in the default button way, with the option to use "placeholder-input-apply-button" to give it a custom style
-RELAOD_BUTTON = '<button class="placeholder-input-apply-button md-button md-button--primary" onclick="window.location.reload()">Apply new values</button>'
+RELAOD_BUTTON = '<button class="placeholder-input-apply-button md-button md-button--primary" onclick="PlaceholderPlugin.reload_page()">Apply new values</button>'
 
 class PlaceholderTableSettings(NamedTuple):
     table_type: str

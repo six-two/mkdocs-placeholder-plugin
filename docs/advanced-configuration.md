@@ -44,8 +44,10 @@ plugins:
 
 ### add_apply_table_column
 
-Add a table column at the end of placeholder input tables that will reload the page when clicked.
+Add a table row at the end of placeholder input tables with a button that will reload the page when clicked.
 May be useful, when you disable `reload_on_change`.
+
+PS: Yes, I noticed that is should be called row instead of column, but I do not want to introduce a unnecessary breaking change by renaming it at this time.
 
 ### auto_placeholder_tables
 

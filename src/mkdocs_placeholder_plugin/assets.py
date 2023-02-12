@@ -89,6 +89,7 @@ def generate_placeholder_json(placeholders: dict[str, Placeholder], plugin_confi
         "common": common_data,
         "textbox": textbox_data,
         "delay_millis": plugin_config.replace_delay_millis,
+        "auto_table_apply_button": plugin_config.add_apply_table_column,
         "auto_table_hide_read_only": not plugin_config.table_default_show_readonly,
         "reload": plugin_config.reload_on_change,
         "debug": plugin_config.debug_javascript,

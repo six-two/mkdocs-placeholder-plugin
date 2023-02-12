@@ -1,7 +1,7 @@
 PlaceholderPlugin.on_placeholder_change = () => {
     if (PlaceholderData.reload){
         debug("Reloading page to update placeholder values");
-        window.location.reload();
+        PlaceholderPlugin.reload_page();
     }
 }
 
@@ -23,10 +23,12 @@ PlaceholderPlugin.prepare_textbox_field = (placeholder_name, input_element) => {
         input_element.addEventListener("keypress", e => {
             if (e.key === "Enter") {
                 debug("Textbox change confirmed with Enter key for ", placeholder_name, "- new value:", input_element.checked);
-                localStorage.setItem(placeholder_name, input_element.value);
+                PlaceholderPlugin.store_textbox_state(placeholder_name, input_element.value);
                 PlaceholderPlugin.on_placeholder_change();
             }
         });
+        // Return an action to perform when the apply button is clicked
+        return () => PlaceholderPlugin.store_textbox_state(placeholder_name, input_element.value);
     }
 };
 
@@ -73,33 +75,34 @@ PlaceholderPlugin.prepare_dropdown_field = (placeholder_name, input_element) => 
     if (data["read_only"]) {
         // disable the dropdown
         new_node.disabled = "1";
-    } else{
+    } else {
         // Add an event listener
         new_node.addEventListener("change", () => {
             debug("Dropdown change", placeholder_name, "- new index:", new_node.selectedIndex);
             PlaceholderPlugin.store_dropdown_state(placeholder_name, new_node.selectedIndex);
             PlaceholderPlugin.on_placeholder_change();
-        })
+        });
     }
 };
 
+// Prepare a placeholder input field. Returns the method to apply the current value (that will be executed when/if the "Apply new values" button is clicked)
 PlaceholderPlugin.prepare_input_field_for_placeholder = (placeholder_name, input) => {
     input.classList.add("input-for-variable");
 
     if (PlaceholderData.checkbox_map[placeholder_name]) {
         // The placeholder is a checkbox
-        PlaceholderPlugin.prepare_checkbox_field(placeholder_name, input);
         checkbox_count++;
+        return PlaceholderPlugin.prepare_checkbox_field(placeholder_name, input);
     } else if (PlaceholderData.dropdown_map[placeholder_name]) {
         // The placeholder is a dropdown menu
-        PlaceholderPlugin.prepare_dropdown_field(placeholder_name, input);
         dropdown_count++;
+        return PlaceholderPlugin.prepare_dropdown_field(placeholder_name, input);
     } else if (PlaceholderData.textbox_map[placeholder_name]) {
         // The placeholder is a textbox
-        PlaceholderPlugin.prepare_textbox_field(placeholder_name, input);
         textbox_count++;
+        return PlaceholderPlugin.prepare_textbox_field(placeholder_name, input);
     } else {
-        console.warn(`Unknown placeholder referenced in input element: '${placeholder_name}'`)
+        console.warn(`Unknown placeholder referenced in input element: '${placeholder_name}'`);
     }
 }
 
