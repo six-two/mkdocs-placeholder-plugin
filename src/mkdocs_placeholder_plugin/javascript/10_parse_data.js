@@ -16,6 +16,7 @@ const PlaceholderData = {
     "fix_style": true,// @TODO: get from plugin's config
     "auto_table_hide_read_only": assert_field_type("auto_table_hide_read_only", "boolean"),
     "auto_table_apply_button": assert_field_type("auto_table_apply_button", "boolean"),
+    "custom_css": assert_field_type("custom_css", "string"),
     "delay_millis": assert_field_type("delay_millis", "number"),
     "reload": assert_field_type("reload", "boolean"),
     // name:str -> { "value" -> default_value:str }

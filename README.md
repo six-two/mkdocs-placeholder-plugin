@@ -24,6 +24,7 @@ The documentation is also available in the `docs` folder of the source code and 
 - Changes to textbox values are only stored, when you press `Enter`
 - Dynamically generated tables now honor `add_apply_table_column`
 - Improved JavaScript debugging: timestamps, more messages, and you can disable the page reload
+- Some visual fixes, mainly for the `Material for MkDocs` theme
 
 ### Version 0.2.2
 

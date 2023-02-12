@@ -1,15 +1,17 @@
 import json
 import os
 # local
+from mkdocs.config.defaults import MkDocsConfig
 from .plugin_config import PlaceholderPluginConfig
 from .placeholder_data import Placeholder, InputType
+from .style import generate_style_sheet
 
 
-def copy_assets_to_mkdocs_site_directory(site_dir: str, plugin_config: PlaceholderPluginConfig, placeholders: dict[str, Placeholder]):
+def copy_assets_to_mkdocs_site_directory(config: MkDocsConfig, plugin_config: PlaceholderPluginConfig, placeholders: dict[str, Placeholder]):
     """
     Copy the JavaScript file to the site (if necessary) and replace the placeholder string with the actual data
     """
-    custom_js_path = os.path.join(site_dir, plugin_config.placeholder_js)
+    custom_js_path = os.path.join(config.site_dir, plugin_config.placeholder_js)
     if os.path.exists(custom_js_path):
         # use the file that is already in the site directory
         with open(custom_js_path, "r") as f:
@@ -25,7 +27,7 @@ def copy_assets_to_mkdocs_site_directory(site_dir: str, plugin_config: Placehold
         # input_file = get_resource_path("../javascript/placeholder-plugin.js")
     
     # Generate placeholder data and inject them in the JavaScript file
-    placeholder_data_json = generate_placeholder_json(placeholders, plugin_config)
+    placeholder_data_json = generate_placeholder_json(config.theme.name, placeholders, plugin_config)
     text = text.replace("__MKDOCS_PLACEHOLDER_PLUGIN_JSON__", placeholder_data_json)
 
     # write back the results
@@ -43,7 +45,7 @@ def get_resource_path(name: str) -> str:
     return os.path.join(current_dir, name)
 
 
-def generate_placeholder_json(placeholders: dict[str, Placeholder], plugin_config: PlaceholderPluginConfig) -> str:
+def generate_placeholder_json(theme_name: str, placeholders: dict[str, Placeholder], plugin_config: PlaceholderPluginConfig) -> str:
     """
     Generate the JSON string, that will replace the placeholder in the JavaScript file
     """
@@ -83,8 +85,11 @@ def generate_placeholder_json(placeholders: dict[str, Placeholder], plugin_confi
             "replace_everywhere": placeholder.replace_everywhere,
         }
 
+    custom_css = generate_style_sheet(theme_name)
+
     result_object = {
         "checkbox": checkbox_data,
+        "custom_css": custom_css,
         "dropdown": dropdown_data,
         "common": common_data,
         "textbox": textbox_data,

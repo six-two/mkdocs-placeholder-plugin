@@ -108,7 +108,7 @@ class PlaceholderPlugin(BasePlugin[PlaceholderPluginConfig]):
                 ensure_extensions_loaded(config, ["admonition", "pymdownx.details"])
 
     def after_build_action(self, config: MkDocsConfig) -> None:
-        copy_assets_to_mkdocs_site_directory(config.site_dir, self.config, self.placeholders)
+        copy_assets_to_mkdocs_site_directory(config, self.config, self.placeholders)
 
         # Replace placeholders in files marked for static replacements
         replacement_list = self.config.static_pages
