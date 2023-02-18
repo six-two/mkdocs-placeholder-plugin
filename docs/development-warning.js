@@ -7,9 +7,9 @@ If you use the pip packages (which you probably do or should do), please check t
 const is_dev_build = window.location.host != "mkdocs-placeholder-plugin.six-two.dev";
 console.log("is_dev_build:", is_dev_build);
 if (is_dev_build) {
-    const content_div = document.querySelector("div.md-content article.md-content__inner.md-typeset");
+    const h1 = document.querySelector("h1");
     const warning_div = document.createElement("div");
     warning_div.innerHTML = WARNING_HTML;
-    content_div.insertBefore(warning_div, content_div.firstChild);
+    h1.parentElement.insertBefore(warning_div, h1);
     console.log("Inserted:", warning_div);
 }
