@@ -30,12 +30,12 @@ const PlaceholderData = {
 }
 // Derive some helpful fields
 PlaceholderData.names = Object.keys(PlaceholderData.common_map);
-// TODO: pass readonly, and other settings (auto reload, etc) to this script too
 
 
 // Check textbox field in depth
 for (textbox of Object.values(PlaceholderData.textbox_map)) {
     assert_field_type("value", "string", textbox);
+    // @TODO: check validators?
 }
 
 // Check textbox field in depth

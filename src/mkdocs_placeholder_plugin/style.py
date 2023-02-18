@@ -7,6 +7,14 @@ select.placeholder-dropdown {
     max-width: min(30vw, 200px);
 }
 
+input.input-for-variable.validation-error {
+    background-color: #fc4462;
+}
+
+input.input-for-variable.validation-warn {
+    background-color: #f7dd67;
+}
+
 table tr td button.placeholder-input-apply-button,
 table tr td input.input-for-variable,
 table tr td select.placeholder-dropdown {

@@ -1,12 +1,13 @@
 from enum import Enum, auto
 import os
 import re
-from typing import NamedTuple, Any
+from typing import NamedTuple, Any, Optional
 # pip packages
 from mkdocs.exceptions import PluginError
 import yaml
 # local
 from . import warning
+from .validators import VALIDATOR_PRESETS, ValidatorPreset
 
 # Should only contain letters, numbers, and underscores (hopefully prevents them from being broken up by syntax highlighting)
 # Should not begin with a number (this prevents placeholders like `1`)
@@ -41,6 +42,8 @@ class Placeholder(NamedTuple):
     # The type is not specified directly by the user, but is instead determined from the `values` field.
     # It is stored here for internal use
     input_type: InputType
+    # Validator preset
+    validator_preset: Optional[ValidatorPreset]
 
 
 def load_placeholder_data(path: str) -> dict[str, Placeholder]:
@@ -128,6 +131,21 @@ def parse_placeholder_dict(name: str, data: dict[str,Any]) -> Placeholder:
     else:
         input_type = InputType.Field
 
+    # Validators only exist for textboxes:
+    validation_preset = None
+    if input_type == InputType.Field:
+        if "validation_preset" in data:
+            validation_preset_name = data["validation_preset"]
+            validation_preset = VALIDATOR_PRESETS.get(validation_preset_name)
+            if validation_preset:
+                # Check if the default value actually matches the validator
+                if validation_preset.should_match_regex and not re.match(validation_preset.should_match_regex, default_value):
+                    warning(f"Validator sanity check: Default value '{default_value}' does not match should_match_regex '{validation_preset.should_match_regex}'")
+
+                if validation_preset.must_match_regex and not re.match(validation_preset.must_match_regex, default_value):
+                    raise PluginError(f"Validator sanity check: Default value '{default_value}' does not match must_match_regex '{validation_preset.must_match_regex}'")
+            else:
+                raise PluginError(f"No validator preset named '{validation_preset}', valid values are: {', '.join(VALIDATOR_PRESETS)}")
 
     return Placeholder(
         name=name,
@@ -137,5 +155,6 @@ def parse_placeholder_dict(name: str, data: dict[str,Any]) -> Placeholder:
         read_only=read_only,
         values=values,
         input_type=input_type,
+        validator_preset=validation_preset,
     )
 

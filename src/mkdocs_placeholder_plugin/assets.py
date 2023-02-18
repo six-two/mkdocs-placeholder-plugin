@@ -1,5 +1,6 @@
 import json
 import os
+from typing import Any
 # local
 from mkdocs.config.defaults import MkDocsConfig
 from .plugin_config import PlaceholderPluginConfig
@@ -73,9 +74,22 @@ def generate_placeholder_json(theme_name: str, placeholders: dict[str, Placehold
                 "options": [[key, value] for key, value in placeholder.values.items()],
             }
         elif placeholder.input_type == InputType.Field:
-            textbox_data[placeholder.name] = {
+            td: dict[str, Any] = {
                 "value": placeholder.default_value,
             }
+            vp = placeholder.validator_preset
+            if vp:
+                if vp.must_match_regex:
+                    td["must_match"] = {
+                        "regex": vp.must_match_regex,
+                        "message": vp.must_match_message or f"Must match regular expression '{vp.must_match_regex}'"
+                    }
+                if vp.should_match_regex:
+                    td["should_match"] = {
+                        "regex": vp.should_match_regex,
+                        "message": vp.should_match_message or f"Must match regular expression '{vp.should_match_regex}'"
+                    }
+            textbox_data[placeholder.name] = td
         else:
             raise Exception(f"Unexpected input type: {placeholder.input_type}")
 
