@@ -15,6 +15,15 @@ python3 -m pip install .
 # Vercel prefers outputs to be in public/
 python3 -m mkdocs build -d public
 
+build_with_theme() {
+    #@TODO: Site dir does not always fit
+    # sed on MacOS is strange, so I try to do this without it
+    echo "site_url: https://mkdocs-placeholder-plugin.six-two.dev/$1" > mkdocs-theme.yml
+    cat mkdocs.yml >> mkdocs-theme.yml
+
+    python3 -m mkdocs build -t "$1" -d public/"$1"
+}
+
 # Build with other themes
-python3 -m mkdocs build -t mkdocs -d public/mkdocs
-python3 -m mkdocs build -t readthedocs -d public/readthedocs
+build_with_theme mkdocs
+build_with_theme readthedocs
