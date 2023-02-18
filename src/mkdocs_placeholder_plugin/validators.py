@@ -22,7 +22,7 @@ def generate_ipv4_validator() -> ValidatorPreset:
         # There are other ways of specifying IP addresses, that not all software understands. For example: 2130706433, 017700000001, and 127.1 are alternative representations of 127.0.0.1
         # So we just filter for expected characters, but not for the pattern
         should_match_regex=f"^{byte_regex}(?:\\.{byte_regex}){{3}}$",
-        should_match_message="Expected an IPv4 address like 123.4.56.78"
+        should_match_message="Expected an IPv4 address like 123.4.56.78",
     )
 
 def generate_port_validator() -> ValidatorPreset:
@@ -30,14 +30,35 @@ def generate_port_validator() -> ValidatorPreset:
         # Source: https://ihateregex.io/expr/port/
         must_match_regex="^((6553[0-5])|(655[0-2][0-9])|(65[0-4][0-9]{2})|(6[0-4][0-9]{3})|([1-5][0-9]{4})|([0-5]{0,5})|([0-9]{1,4}))$",
         must_match_message="Port number must be an positive integer between 0 and 65535 (inclusive)",
-        # There are other ways of specifying IP addresses, that not all software understands. For example: 2130706433, 017700000001, and 127.1 are alternative representations of 127.0.0.1
-        # So we just filter for expected characters, but not for the pattern
         should_match_regex="",
-        should_match_message=""
+        should_match_message="",
+    )
+
+def generate_domain_name_validator() -> ValidatorPreset:
+    return ValidatorPreset(
+        # Anthing that contains only allowed characters and does not start or end with a dot
+        must_match_regex="^[a-zA-Z0-9]([a-zA-Z0-9-.]*[a-zA-Z0-9])?$",
+        must_match_message="Only letters, numbers, dashes (minus signs), and dots are allowed. Do not start or end with a dot or dash.",
+        # I think subdomain names should be <= 63 characters
+        should_match_regex="^([a-zA-Z0-9-]{1,63}\\.)+[a-zA-Z0-9-]{1,63}$",
+        should_match_message="Domains should look something like 'www.example.com'",
+    )
+
+def generate_hostname_validator() -> ValidatorPreset:
+    # Similar to domain_name, but allows single element values like 'server-name'
+    return ValidatorPreset(
+        # Anthing that contains only allowed characters and does not start or end with a dot
+        must_match_regex="^[a-zA-Z0-9]([a-zA-Z0-9-.]*[a-zA-Z0-9])?$",
+        must_match_message="Only letters, numbers, dashes (minus signs), and dots are allowed. Do not start or end with a dot or dash.",
+        # I think subdomain names should be <= 63 characters
+        should_match_regex="^([a-zA-Z0-9-]{1,63}\\.)*[a-zA-Z0-9-]{1,63}$",
+        should_match_message="Domains should look something like 'server-name' or 'server-name.domain.extension'",
     )
 
 
 VALIDATOR_PRESETS = {
     "ipv4_address": generate_ipv4_validator(),
     "port_number": generate_port_validator(),
+    "domain": generate_domain_name_validator(),
+    "hostname": generate_hostname_validator(),
 }

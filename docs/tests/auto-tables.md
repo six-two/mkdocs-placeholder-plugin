@@ -1,9 +1,5 @@
 # Tests: Automatic input tables
 
-<!-- ## Generated at build time { data-search-exclude }
-
-<placeholdertable entries="auto" type="name, input, value"> -->
-
 !!! note "XSS dropdown value"
     xXSS_DROPDOWN_ALLx
 

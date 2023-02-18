@@ -124,7 +124,9 @@ COMB_EMAIL:
 # The variables that are part of the combined value
 COMB_FIRST_NAME: John
 COMB_SURNAME: Doe
-COMB_DOMAIN: example.com
+COMB_DOMAIN:
+  default: example.com
+  validation_preset: domain
 
 # Work around the problem, that my <placeholdertable> in code listings is being replaced
 PLACEHOLDERTABLE:

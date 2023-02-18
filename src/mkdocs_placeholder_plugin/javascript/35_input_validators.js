@@ -20,14 +20,20 @@ PlaceholderPlugin.validate_input = (value, placeholder_name) => {
 }
 
 PlaceholderPlugin.remove_tooltip = (input_field) => {
+    // Remove highlighting
     input_field.classList.remove("validation-error", "validation-warn");
-    // TODO
+
+    // Remove tooltip
+    input_field.title = "";
 }
 
 PlaceholderPlugin.show_tooltip = (input_field, rating, message) => {
+    // Set highlighting
     input_field.classList.remove("validation-error", "validation-warn");
     input_field.classList.add(`validation-${rating}`);
-    // TODO
+
+    // Set tooltip
+    input_field.title = message;
 }
 
 // apply_value: if set to true, this value will be set if it passes muster, otherwise a popup will be shown
