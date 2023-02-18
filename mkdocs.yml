@@ -47,6 +47,7 @@ nav:
 - advanced-configuration.md
 - advanced-usage.md
 - demo.md
+- themes.md
 - "Tests":
   - tests/basic.md
   - tests/input-tables.md

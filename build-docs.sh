@@ -14,3 +14,7 @@ python3 -m pip install .
 
 # Vercel prefers outputs to be in public/
 python3 -m mkdocs build -d public
+
+# Build with other themes
+python3 -m mkdocs build -t mkdocs -d public/mkdocs
+python3 -m mkdocs build -t readthedocs -d public/readthedocs

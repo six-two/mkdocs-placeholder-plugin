@@ -9,10 +9,12 @@ select.placeholder-dropdown {
 
 input.input-for-variable.validation-error {
     background-color: #fc4462;
+    color: black;
 }
 
 input.input-for-variable.validation-warn {
     background-color: #f7dd67;
+    color: black;
 }
 
 table tr td button.placeholder-input-apply-button,
