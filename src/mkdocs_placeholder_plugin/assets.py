@@ -6,6 +6,7 @@ from mkdocs.config.defaults import MkDocsConfig
 from .plugin_config import PlaceholderPluginConfig
 from .placeholder_data import Placeholder, InputType
 from .style import generate_style_sheet
+from .validators import validator_to_dict
 
 
 def copy_assets_to_mkdocs_site_directory(config: MkDocsConfig, plugin_config: PlaceholderPluginConfig, placeholders: dict[str, Placeholder]):
@@ -87,18 +88,8 @@ def generate_placeholder_json(theme_name: str, placeholders: dict[str, Placehold
             else:
                 td["value"] = placeholder.default_value
 
-            vp = placeholder.validator_preset
-            if vp:
-                if vp.must_match_regex:
-                    td["must_match"] = {
-                        "regex": vp.must_match_regex,
-                        "message": vp.must_match_message or f"Must match regular expression '{vp.must_match_regex}'"
-                    }
-                if vp.should_match_regex:
-                    td["should_match"] = {
-                        "regex": vp.should_match_regex,
-                        "message": vp.should_match_message or f"Must match regular expression '{vp.should_match_regex}'"
-                    }
+            if placeholder.validator_list:
+                td["validators"] = [validator_to_dict(v) for v in placeholder.validator_list]
             textbox_data[placeholder.name] = td
         else:
             raise Exception(f"Unexpected input type: {placeholder.input_type}")

@@ -16,22 +16,33 @@ PlaceholderPlugin.prepare_textbox_field = (placeholder_name, input_element) => {
         input_element.disabled = "1";
         input_element.style.cursor = "not-allowed";
     } else {
-        // Check if initial value is valid
-        PlaceholderPlugin.validate_input_field(input_element, placeholder_name, false);
-
-        // Listen for state changes
-        input_element.addEventListener("input", () => {
+        if (data.validators == undefined) {
+            input_element.addEventListener("keypress", e => {
+                if (e.key === "Enter") {
+                    debug("Textbox change confirmed with Enter key for ", placeholder_name, "- new value:", input_element.checked);
+                    PlaceholderPlugin.store_textbox_state(placeholder_name, input_element.value);
+                }
+            });
+            // Return an action to perform when the apply button is clicked
+            return () => PlaceholderPlugin.store_textbox_state(placeholder_name, input_element.value);
+        } else {
+            debug(`Has validator: ${placeholder_name}`);
+            // Check if initial value is valid
             PlaceholderPlugin.validate_input_field(input_element, placeholder_name, false);
-        });
-        input_element.addEventListener("keypress", e => {
-            if (e.key === "Enter") {
-                debug("Textbox change confirmed with Enter key for ", placeholder_name, "- new value:", input_element.checked);
-                // PlaceholderPlugin.store_textbox_state(placeholder_name, input_element.value);
-                PlaceholderPlugin.validate_input_field(input_element, placeholder_name, true);
-            }
-        });
-        // Return an action to perform when the apply button is clicked
-        return () => PlaceholderPlugin.store_textbox_state(placeholder_name, input_element.value);
+    
+            // Listen for state changes
+            input_element.addEventListener("input", () => {
+                PlaceholderPlugin.validate_input_field(input_element, placeholder_name, false);
+            });
+            input_element.addEventListener("keypress", e => {
+                if (e.key === "Enter") {
+                    debug("Textbox change confirmed with Enter key for ", placeholder_name, "- new value:", input_element.checked);
+                    PlaceholderPlugin.validate_input_field(input_element, placeholder_name, true);
+                }
+            });
+            // Return an action to perform when the apply button is clicked
+            return () => PlaceholderPlugin.validate_input_field(placeholder_name, input_element.value, true);
+        }
     }
 };
 

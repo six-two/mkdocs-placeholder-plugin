@@ -7,7 +7,7 @@ from mkdocs.exceptions import PluginError
 import yaml
 # local
 from . import warning
-from .validators import VALIDATOR_PRESETS, ValidatorPreset
+from .validators import VALIDATOR_PRESETS, Validator
 
 # Should only contain letters, numbers, and underscores (hopefully prevents them from being broken up by syntax highlighting)
 # Should not begin with a number (this prevents placeholders like `1`)
@@ -44,8 +44,8 @@ class Placeholder(NamedTuple):
     # The type is not specified directly by the user, but is instead determined from the `values` field.
     # It is stored here for internal use
     input_type: InputType
-    # Validator preset
-    validator_preset: Optional[ValidatorPreset]
+    # The input must conform to one of the validators. This allows mixed input such as "IPv4 address or IPv6 address or Hostname"
+    validator_list: list[Validator]
 
 
 def load_placeholder_data(path: str) -> dict[str, Placeholder]:
@@ -136,18 +136,15 @@ def parse_placeholder_dict(name: str, data: dict[str,Any]) -> Placeholder:
         input_type = InputType.Field
 
     # Validators only exist for textboxes:
+    validator_list = []
     validation_preset = None
     if input_type == InputType.Field:
         if "validation_preset" in data:
             validation_preset_name = data["validation_preset"]
             validation_preset = VALIDATOR_PRESETS.get(validation_preset_name)
             if validation_preset:
-                # Check if the default value actually matches the validator
-                if validation_preset.should_match_regex and not re.match(validation_preset.should_match_regex, default_value):
-                    warning(f"Validator sanity check: Default value '{default_value}' does not match should_match_regex '{validation_preset.should_match_regex}'")
-
-                if validation_preset.must_match_regex and not re.match(validation_preset.must_match_regex, default_value):
-                    raise PluginError(f"Validator sanity check: Default value '{default_value}' does not match must_match_regex '{validation_preset.must_match_regex}'")
+                validator_list = [validation_preset]
+                check_if_matches_validator(validation_preset, default_value, print_warnings=True, raise_exception_on_error=True)
             else:
                 raise PluginError(f"No validator preset named '{validation_preset}', valid values are: {', '.join(VALIDATOR_PRESETS)}")
 
@@ -160,6 +157,27 @@ def parse_placeholder_dict(name: str, data: dict[str,Any]) -> Placeholder:
         read_only=read_only,
         values=values,
         input_type=input_type,
-        validator_preset=validation_preset,
+        validator_list=validator_list,
     )
 
+
+def check_if_matches_validator(validator: Validator, default_value: str, print_warnings: bool = False, raise_exception_on_error: bool = False) -> bool:
+    has_error = False
+    is_match = True
+    for rule in validator.rules:
+        try:
+            matches = bool(re.search(rule.regex_string, default_value))
+        except Exception as ex:
+            raise PluginError(f"Error in regular expression '{rule.regex_string}': {ex}")
+        if matches != rule.should_match:
+            # This rule fails
+            is_match = False
+            if rule.severity == "error":
+                has_error = True
+            if print_warnings:
+                warning(f"[Validation {rule.severity}] '{default_value}' does not match validator '{validator.name}': {rule.error_message}")
+
+    if has_error and raise_exception_on_error:
+        raise PluginError(f"'{default_value}' does not match validator '{validator.name}'")
+
+    return is_match

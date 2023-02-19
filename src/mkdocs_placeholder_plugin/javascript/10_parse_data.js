@@ -33,18 +33,34 @@ PlaceholderData.names = Object.keys(PlaceholderData.common_map);
 
 
 // Check textbox field in depth
-for (textbox of Object.values(PlaceholderData.textbox_map)) {
+for (const textbox of Object.values(PlaceholderData.textbox_map)) {
     // either value_function or value should be defined
     if (textbox.value == undefined) {
         assert_field_type("value_function", "string", textbox);
     } else {
         assert_field_type("value", "string", textbox);
     }
-    // @TODO: check validators?
+
+    // Check validators
+    if (textbox.validators != undefined) {
+        assert_field_type("validators", "object", textbox);
+        for (const validator of textbox.validators) {
+            assert_field_type("name", "string", validator);
+            assert_field_type("rules", "object", validator);
+            for (const rule of validator.rules) {
+                assert_field_type("severity", "string", rule);
+                assert_field_type("regex", "string", rule);
+                assert_field_type("should_match", "boolean", rule);
+                assert_field_type("error_message", "string", rule);
+                // Compile the regex for better performance
+                rule.regex = new RegExp(rule.regex);
+            }
+        }
+    }
 }
 
 // Check textbox field in depth
-for (checkbox of Object.values(PlaceholderData.checkbox_map)) {
+for (const checkbox of Object.values(PlaceholderData.checkbox_map)) {
     // The value to use if the checkbox is checked
     assert_field_type("checked", "string", checkbox);
     // The value to use if the checkbox is unchecked
