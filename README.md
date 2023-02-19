@@ -26,6 +26,10 @@ The corresponding documentation is hosted at <https://dev.mkdocs-placeholder-plu
 
 ### HEAD
 
+- WIP: Input validation
+- Added `placeholder_extra_js` field to plugin configuration
+- Added `default-function` attribute for placeholders
+
 ### Version 0.2.3
 
 - Split JavaScript code into multiple files and made it available via the global `PlaceholderData` and `PlaceholderPlugin` objects.

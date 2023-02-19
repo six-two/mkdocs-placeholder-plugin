@@ -29,6 +29,14 @@ PASSWORD:
   default-function: "generate_placeholder_password(10)"
   description: A randomly generated password updated anytime you clear your localStorage
 
+RANDOM:
+  default-function: "Math.floor(Math.random()*100)"
+  description: A random number between 0 and 99
+
+ERROR:
+  default-function: "alert(1"
+  description: Broken on purpose, should cause an error
+
 TEST: 
   description: An test value, by default '123'
   default: 123

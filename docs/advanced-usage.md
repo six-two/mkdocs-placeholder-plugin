@@ -12,18 +12,64 @@ FIRST_NAME:
     replace_everywhere: false
 ```
 
-### default
-
-This is the value, that is used as the initial value for the placeholder.
-The following two declarations are equivaluent:
 ```yaml
-FIRST_NAME: John
+RANDOM:
+  default-function: "Math.floor(Math.random()*100)"
+  description: A random number between 0 and 99
 ```
 
-```yaml
-FIRST_NAME:
-    default: John 
-```
+
+### default / default-function
+
+!!! note "Mutually exclusive"
+
+    `default` and `default-function` are mutually exclusive.
+    You have to specify **exactly one** of them to provide a default value.
+
+=== "default"
+
+    This is the value, that is used as the initial value for the placeholder.
+    The following two declarations are equivaluent:
+    ```yaml
+    FIRST_NAME: John
+    ```
+
+    ```yaml
+    FIRST_NAME:
+        default: John 
+    ```
+
+=== "default-function"
+
+    This allows you to specify custom JavaScript code, that will be evaluated if the placeholder is not set.
+    It should return a string or something that can easily converted to a string (such as a number).
+
+    If you want to use complex functions that can not be expressed as a one-liner, you can:
+
+    1. Create a javascript file containing your function(s).
+        For example this repo has `placeholder-extra.js`:
+        ```javascript
+        const generate_placeholder_password = (length) => {
+            [...]
+            return pw_chars.join("");
+        }
+        ```
+    2. In the plugin's configuration within your `mkdocs.yaml`, set the `placeholder_extra_js` property to the path of your file.
+        For example:
+        ```yaml
+        plugins:
+        - placeholder:
+            placeholder_extra_js: placeholder-extra.js
+        [...]
+        ```
+
+        While you technically could load your code with other ways (such as MkDocs' `extra_javascript`), this way guarantees that it will be loaded *before* the plugin is run, which other methods may not guarantee.
+    3. In your placeholder's definition, set `default-function` to invoke the function with your desired arguments:
+        ```yaml
+        PASSWORD:
+            default-function: "generate_placeholder_password(10)"
+            description: A randomly generated password updated anytime you clear your localStorage
+        ```
 
 ### description
 

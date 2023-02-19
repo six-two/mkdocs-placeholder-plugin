@@ -59,9 +59,14 @@ PlaceholderPlugin.load_textbox_state = (placeholder_name) => {
         value = PlaceholderData.textbox_map[placeholder_name].value;
         if (value == undefined) {
             const value_fn = PlaceholderData.textbox_map[placeholder_name].value_function;
-            debug(`Evaluating value_function: '${value_fn}'`);
-            value = eval(value_fn);
-            debug(`Result of value_function: '${value}'`);
+            try {
+                // convert the result to string
+                value = `${eval(value_fn)}`;
+                debug(`Evaluating value_function: '${value_fn}' -> '${value}'`);
+            } catch (error) {
+                value = "EVALUATION_ERROR";
+                console.error(`Error while evaluating value_function: '${value_fn}'\nError message: ${error}`);
+            }
         }
     }
     debug(`Read textbox ${placeholder_name}: '${value}'`);

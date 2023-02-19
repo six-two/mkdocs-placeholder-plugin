@@ -10,14 +10,15 @@ auto_placeholder_tables_collapsible | `bool` | `True`
 auto_placeholder_tables_javascript | `bool` | `False`
 debug_javascript | `bool` | `False`
 enabled | `bool` | `True`
-placeholder_file | `str` | placeholder-plugin.yaml
-placeholder_js | `str` | assets/javascripts/placeholder-plugin.js
+placeholder_extra_js | `str` | empty string
+placeholder_file | `str` | `placeholder-plugin.yaml`
+placeholder_js | `str` | `assets/javascripts/placeholder-plugin.js`
 reload_on_change | `bool` | `True`
-replace_delay_millis | `int` | 0
+replace_delay_millis | `int` | `0`
 show_warnings | `bool` | `True`
-static_pages | `list[str]` | `[]` (empty list)
+static_pages | `list[str]` | empty list
 table_default_show_readonly | `bool` | `False`
-table_default_type | `str` | simple
+table_default_type | `str` | `simple`
 
 You can set these values in `mkdocs.yml` like this:
 
@@ -30,6 +31,7 @@ plugins:
     auto_placeholder_tables_javascript: False
     debug_javascript: False
     enabled: True
+    placeholder_extra_js: ""
     placeholder_file: placeholder-plugin.yaml
     placeholder_js: assets/javascripts/placeholder-plugin.js
     reload_on_change: True
@@ -79,6 +81,11 @@ These include information such as:
 
 When you set this to false, the extension will be disabled.
 This allows you to for example conditionally disable this plugin if a specific environment variable is used.
+
+### placeholder_extra_js
+
+This file will be read and inserted into the JavaScript file created by the plugin.
+It will be loaded before the plugin is run, so you can use it to supply custom JavaScript functions for use with the plugin (for example used as a `default-function` in a placeholder).
 
 ### placeholder_file
 
