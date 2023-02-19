@@ -26,8 +26,10 @@ class PlaceholderPluginConfig(Config):
     static_pages = Type(list, default=[])
     # The file where you define the placeholders
     placeholder_file = Type(str, default="placeholder-plugin.yaml")
-    # Output loaction for the custom JS file
+    # Output loaction for the custom JS file. This overwrites the javascript code provided by the plugin
     placeholder_js = Type(str, default="assets/javascripts/placeholder-plugin.js")
+    # Provide additional javascript for example for hooks, providing functions, etc
+    placeholder_extra_js = Type(str, default="")
     # Replace delay millis
     replace_delay_millis = Type(int, default=0)
     # Default values for place4holder input tables

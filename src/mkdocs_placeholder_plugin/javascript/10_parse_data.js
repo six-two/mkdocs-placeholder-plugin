@@ -3,7 +3,7 @@ const assert_field_type = (name, expected_type_str, parent_object = PlaceholderP
     const value = parent_object[name];
     const actual_type_str = typeof(value);
     if (actual_type_str != expected_type_str) {
-        const msg = `Type mismatch: ${name} should be ${expected_type_str}, but is ${actual_type_str}`;
+        const msg = `Type mismatch: ${name} should be ${expected_type_str}, but is ${actual_type_str}.\nProblematic object: ${JSON.stringify(parent_object)}`;
         throw new Error(msg);
     } else {
         return value;
@@ -34,7 +34,12 @@ PlaceholderData.names = Object.keys(PlaceholderData.common_map);
 
 // Check textbox field in depth
 for (textbox of Object.values(PlaceholderData.textbox_map)) {
-    assert_field_type("value", "string", textbox);
+    // either value_function or value should be defined
+    if (textbox.value == undefined) {
+        assert_field_type("value_function", "string", textbox);
+    } else {
+        assert_field_type("value", "string", textbox);
+    }
     // @TODO: check validators?
 }
 

@@ -56,7 +56,13 @@ PlaceholderPlugin.store_textbox_state = (placeholder_name, new_value) => {
 PlaceholderPlugin.load_textbox_state = (placeholder_name) => {
     let value = localStorage.getItem(placeholder_name);
     if (!value) {
-        value = PlaceholderData.textbox_map[placeholder_name]["value"];
+        value = PlaceholderData.textbox_map[placeholder_name].value;
+        if (value == undefined) {
+            const value_fn = PlaceholderData.textbox_map[placeholder_name].value_function;
+            debug(`Evaluating value_function: '${value_fn}'`);
+            value = eval(value_fn);
+            debug(`Result of value_function: '${value}'`);
+        }
     }
     debug(`Read textbox ${placeholder_name}: '${value}'`);
     return value;

@@ -30,6 +30,8 @@ class Placeholder(NamedTuple):
     name: str
     # The default value of the placeholder. For example "123"
     default_value: str
+    # A javascript snippet to generate the default value
+    default_function: str
     # The description to show when generating the input table
     description: str
     # Whether the placeholder should be protected from users editing it.
@@ -108,15 +110,17 @@ def parse_placeholder_dict(name: str, data: dict[str,Any]) -> Placeholder:
         else:
             raise PluginError(f"Type error in placeholder '{name}', field 'values': Expected a dictionary with primitive values, but got {value} ({type(value).__name__}) in key {key}")
 
-    # default (default_value) is required, unless values exists
+
+    # default (default_value) is required, unless values or default_function exists
+    default_function = str(data.get("default-function", ""))
     try:
         default_value = str(data["default"])
+        if default_function:
+            raise PluginError(f"Both 'default' and 'default-function' are defined in placeholder '{name}'")
     except KeyError:
-        if not values:
-            raise PluginError(f"Missing key 'default' in placeholder '{name}'")
-        else:
-            # signal that it is not set
-            default_value = ""
+        default_value = ""
+        if not default_function and not values:
+            raise PluginError(f"Missing key 'default' or 'default-function' in placeholder '{name}'")
 
     # Determine the type, and do some extra type dependent validation
     if values:
@@ -150,6 +154,7 @@ def parse_placeholder_dict(name: str, data: dict[str,Any]) -> Placeholder:
     return Placeholder(
         name=name,
         default_value=default_value,
+        default_function=default_function,
         description=description,
         replace_everywhere=replace_everywhere,
         read_only=read_only,

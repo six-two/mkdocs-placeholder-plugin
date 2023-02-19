@@ -26,7 +26,14 @@ def copy_assets_to_mkdocs_site_directory(config: MkDocsConfig, plugin_config: Pl
             with open(os.path.join(js_dir, file_name), "r") as f:
                 text += f.read()
         # input_file = get_resource_path("../javascript/placeholder-plugin.js")
-    
+
+    # Add extra JS
+    if (plugin_config.placeholder_extra_js):
+        with open(plugin_config.placeholder_extra_js, "r") as f:
+            extra_js = f.read()
+
+        text = "///// Custom extra JS code /////\n" + extra_js + "\n///// Normal JS code /////\n" + text
+
     # Generate placeholder data and inject them in the JavaScript file
     placeholder_data_json = generate_placeholder_json(config.theme.name, placeholders, plugin_config)
     text = text.replace("__MKDOCS_PLACEHOLDER_PLUGIN_JSON__", placeholder_data_json)
@@ -74,9 +81,12 @@ def generate_placeholder_json(theme_name: str, placeholders: dict[str, Placehold
                 "options": [[key, value] for key, value in placeholder.values.items()],
             }
         elif placeholder.input_type == InputType.Field:
-            td: dict[str, Any] = {
-                "value": placeholder.default_value,
-            }
+            td: dict[str, Any] = {}
+            if placeholder.default_function:
+                td["value_function"] = placeholder.default_function
+            else:
+                td["value"] = placeholder.default_value
+
             vp = placeholder.validator_preset
             if vp:
                 if vp.must_match_regex:

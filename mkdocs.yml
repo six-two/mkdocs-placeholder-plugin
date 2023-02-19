@@ -38,6 +38,7 @@ plugins:
     # auto_placeholder_tables_collapsible: false
     # table_default_show_readonly: True
     # table_default_type: description
+    placeholder_extra_js: placeholder-hooks.js
 - badges
 - search
 

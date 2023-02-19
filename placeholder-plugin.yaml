@@ -25,6 +25,10 @@ DEMO_SUDO:
 ### End of the demo page placeholders
 
 
+PASSWORD:
+  default-function: "generate_placeholder_password(10)"
+  description: A randomly generated password updated anytime you clear your localStorage
+
 TEST: 
   description: An test value, by default '123'
   default: 123
