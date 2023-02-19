@@ -14,6 +14,14 @@ def should_match(regex_string: str, error_message: str) -> ValidatorRule:
         error_message=error_message,
     )
 
+def should_not_match(regex_string: str, error_message: str) -> ValidatorRule:
+    return ValidatorRule(
+        severity="warn",
+        regex_string=regex_string,
+        should_match=False,
+        error_message=error_message,
+    )
+
 def must_match(regex_string: str, error_message: str) -> ValidatorRule:
     return ValidatorRule(
         severity="error",
@@ -70,7 +78,7 @@ def generate_port_validator() -> Validator:
 RULE_DOMAIN_CHARS = must_match("^[a-zA-Z0-9-.]+$", "Only letters, numbers, dashes (minus signs), and dots are allowed")
 RULE_DOMAIN_START = must_match("^[^.-]", "Can not begin with a dot or dash (minus sign)")
 RULE_DOMAIN_END = must_match("[^.-]$", "Can not end with a dot or dash (minus sign)")
-RULE_DOMAIN_LENGTH = should_match("^([a-zA-Z0-9-]{1,63}\\.)+[a-zA-Z0-9-]{1,63}$", "Subdomains should not be longer than 63 characters")
+RULE_DOMAIN_LENGTH = should_not_match("[a-zA-Z0-9-]{64}", "Subdomains should not be longer than 63 characters")
 
 def generate_domain_name_validator() -> Validator:
     return Validator(

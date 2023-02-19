@@ -20,17 +20,22 @@ PlaceholderPlugin.validate_input = (value, placeholder_name) => {
             }
         }
 
+        // @TODO: can I somehow simplify the following mess?
         // none of the validators returned ok.
-        let has_errors = false;
+        let all_have_errors = true;
         for (const message_list of messages) {
+            let has_errors = false;
             for (const message of message_list) {
                 if (message[0] == "error") {
                     has_errors = true;
                 }
             }
+            if (!has_errors) {
+                all_have_errors = false;
+            }
         }
         const filtered_messages = [];
-        if (has_errors) {
+        if (all_have_errors) {
             // If all of them have errors, we will remove the warnings to keep it shorter
             for (const message_list of messages) {
                 for (const message of message_list) {

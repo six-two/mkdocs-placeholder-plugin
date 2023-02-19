@@ -137,16 +137,27 @@ def parse_placeholder_dict(name: str, data: dict[str,Any]) -> Placeholder:
 
     # Validators only exist for textboxes:
     validator_list = []
-    validation_preset = None
     if input_type == InputType.Field:
-        if "validation_preset" in data:
-            validation_preset_name = data["validation_preset"]
-            validation_preset = VALIDATOR_PRESETS.get(validation_preset_name)
-            if validation_preset:
-                validator_list = [validation_preset]
-                check_if_matches_validator(validation_preset, default_value, print_warnings=True, raise_exception_on_error=True)
+        if "validators" in data:
+            validators = data["validators"]
+            if type(validators) == str:
+                validator_data_list = [validators]
+            elif type(validators) == list:
+                validator_data_list = validators
             else:
-                raise PluginError(f"No validator preset named '{validation_preset}', valid values are: {', '.join(VALIDATOR_PRESETS)}")
+                raise PluginError(f"Type error in placeholder '{name}', field 'validators': Should be either a string or a list, but is type {type(validators).__name__}")
+            
+            for validator in validator_data_list:
+                if type(validator) == str:
+                    # This is a validator preset
+                    validation_preset = VALIDATOR_PRESETS.get(validator)
+                    if validation_preset:
+                        validator_list.append(validation_preset)
+                        check_if_matches_validator(validation_preset, default_value, print_warnings=True, raise_exception_on_error=True)
+                    else:
+                        raise PluginError(f"No validator preset named '{validation_preset}', valid values are: {', '.join(VALIDATOR_PRESETS)}")
+                else:
+                    raise PluginError("Custom validators not implemented yet")
 
     return Placeholder(
         name=name,

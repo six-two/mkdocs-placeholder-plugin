@@ -6,10 +6,10 @@ DEMO_HTTP_CLIENT_COMMAND:
     wget: "wget http://xDEMO_SERVER_IPx:xDEMO_SERVER_PORTx/xDEMO_FILENAMEx"
 DEMO_SERVER_IP:
   default: 10.1.2.3
-  validation_preset: ipv4_address
+  validators: ipv4_address
 DEMO_SERVER_PORT:
   default: 80
-  validation_preset: port_number
+  validators: port_number
 DEMO_FILENAME: file_to_transfer.txt
 DEMO_NETCAT:
   default: nc
@@ -24,6 +24,14 @@ DEMO_SUDO:
     unchecked: ""
 ### End of the demo page placeholders
 
+
+MULTI_VALIDATORS:
+  default: 127.0.0.1
+  description: "Multiple validators: one of IPv4 address, domain name, and hostname"
+  validators:
+  - ipv4_address
+  - domain
+  - hostname
 
 PASSWORD:
   default-function: "generate_placeholder_password(10)"
@@ -138,7 +146,7 @@ COMB_FIRST_NAME: John
 COMB_SURNAME: Doe
 COMB_DOMAIN:
   default: example.com
-  validation_preset: domain
+  validators: domain
 
 # Work around the problem, that my <placeholdertable> in code listings is being replaced
 PLACEHOLDERTABLE:
