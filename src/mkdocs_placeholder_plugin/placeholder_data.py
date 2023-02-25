@@ -1,4 +1,5 @@
 from enum import Enum, auto
+import json
 import os
 import re
 from typing import NamedTuple, Any
@@ -16,6 +17,16 @@ from .validators_predefined import VALIDATOR_PRESETS
 VARIABLE_NAME_REGEX = re.compile("^[A-Z]([A-Z0-9_]*[A-Z0-9])?$")
 # The types to accept for fields, where a string is accepted
 TYPES_PRIMITIVE = [bool, float, int, str]
+# Only these fields are allowed in placeholders
+PLACEHOLDER_FIELD_NAMES = set([
+    "default",
+    "default-function",
+    "description",
+    "read_only",
+    "replace_everywhere",
+    "values",
+    "validators",
+])
 
 
 class InputType(Enum):
@@ -88,20 +99,61 @@ def parse_placeholder_dict(name: str, data: dict[str,Any]) -> Placeholder:
     """
     Parse a dictionary that contains the information for a single placeholder.
     """
+    try:
+        # Check for unexpected fields
+        supplied_fields = set(data)
+        unexpected_fields = supplied_fields.difference(PLACEHOLDER_FIELD_NAMES)
+        if unexpected_fields:
+            raise PluginError(f"Unexpected field(s): {', '.join(unexpected_fields)}")
 
-    # Readonly is optional, defaults to False
-    read_only = data.get("read_only", False)
-    if type(read_only) != bool:
-        raise PluginError(f"Wrong type for key 'read_only' in placeholder '{name}': Expected 'bool', got '{type(read_only).__name__}'")
+        # Readonly is optional, defaults to False
+        read_only = data.get("read_only", False)
+        if type(read_only) != bool:
+            raise PluginError(f"Wrong type for key 'read_only': Expected 'bool', got '{type(read_only).__name__}'")
 
-    # Replace-everywhere is optional, defaults to False
-    replace_everywhere = data.get("replace_everywhere", False)
-    if type(replace_everywhere) != bool:
-        raise PluginError(f"Wrong type for key 'replace_everywhere' in placeholder '{name}': Expected 'bool', got '{type(replace_everywhere).__name__}'")
+        # Replace-everywhere is optional, defaults to False
+        replace_everywhere = data.get("replace_everywhere", False)
+        if type(replace_everywhere) != bool:
+            raise PluginError(f"Wrong type for key 'replace_everywhere': Expected 'bool', got '{type(replace_everywhere).__name__}'")
 
-    # Description is optional
-    description = str(data.get("description", ""))
+        # Description is optional
+        description = str(data.get("description", ""))
 
+        values = parse_values(data)
+        default_value, default_function = parse_defaults(data, values)
+        input_type = determine_input_type(values, default_value)
+        validator_list = parse_validator_list(data, input_type, default_value)
+
+        return Placeholder(
+            name=name,
+            default_value=default_value,
+            default_function=default_function,
+            description=description,
+            replace_everywhere=replace_everywhere,
+            read_only=read_only,
+            values=values,
+            input_type=input_type,
+            validator_list=validator_list,
+        )
+    except Exception as ex:
+        raise PluginError(f"Failed to parse placeholder '{name}': {ex}\n\nCaused by placeholder data: {json.dumps(data, indent=4)}")
+
+
+def parse_defaults(data: dict[str,Any], values: dict[str,str]) -> tuple[str, str]:
+    # default (default_value) is required, unless values or default_function exists
+    default_function = str(data.get("default-function", ""))
+    try:
+        default_value = str(data["default"])
+        if default_function:
+            raise PluginError(f"Both 'default' and 'default-function' are defined")
+    except KeyError:
+        default_value = ""
+        if not default_function and not values:
+            raise PluginError(f"Missing key 'default' or 'default-function'")
+    return default_value, default_function
+
+
+def parse_values(data: dict[str,Any]) -> dict[str,str]:
     # Values are optional
     values_original: dict = data.get("values", {})
     values: dict[str,str] = {}
@@ -109,35 +161,28 @@ def parse_placeholder_dict(name: str, data: dict[str,Any]) -> Placeholder:
         if type(value) in TYPES_PRIMITIVE:
             values[str(key)] = str(value)
         else:
-            raise PluginError(f"Type error in placeholder '{name}', field 'values': Expected a dictionary with primitive values, but got {value} ({type(value).__name__}) in key {key}")
+            raise PluginError(f"Field 'values': Expected a dictionary with primitive values, but got {value} ({type(value).__name__}) in key {key}")
+    return values
 
 
-    # default (default_value) is required, unless values or default_function exists
-    default_function = str(data.get("default-function", ""))
-    try:
-        default_value = str(data["default"])
-        if default_function:
-            raise PluginError(f"Both 'default' and 'default-function' are defined in placeholder '{name}'")
-    except KeyError:
-        default_value = ""
-        if not default_function and not values:
-            raise PluginError(f"Missing key 'default' or 'default-function' in placeholder '{name}'")
-
+def determine_input_type(values: dict[str,str], default_value: str) -> InputType:
     # Determine the type, and do some extra type dependent validation
     if values:
         if set(values.keys()) == {"checked", "unchecked"}:
-            input_type = InputType.Checkbox
             if default_value not in ["", "checked", "unchecked"]:
-                raise PluginError(f"Type error in placeholder '{name}', field 'default': Allowed values for check boxes are '' (empty string), 'checked', 'unchecked'")
+                raise PluginError(f"Field 'default': Allowed values for check boxes are '' (empty string), 'checked', 'unchecked'")
+            return InputType.Checkbox
         else:
-            input_type = InputType.Dropdown
             if default_value != "" and default_value not in values.keys():
-                raise PluginError(f"Type error in placeholder '{name}', field 'default': Allowed values for a dropdown box are '' (empty string), or one of the keys defined in the 'values' field")
+                raise PluginError(f"Field 'default': Allowed values for a dropdown box are '' (empty string), or one of the keys defined in the 'values' field")
+            return InputType.Dropdown
     else:
-        input_type = InputType.Field
+        return InputType.Field
 
-    # Validators only exist for textboxes:
+
+def parse_validator_list(data: dict[str,Any], input_type: InputType, default_value: str) -> list[Validator]:
     validator_list = []
+    # Validators only exist for textboxes:
     if input_type == InputType.Field:
         if "validators" in data:
             validators = data["validators"]
@@ -146,7 +191,7 @@ def parse_placeholder_dict(name: str, data: dict[str,Any]) -> Placeholder:
             elif type(validators) == list:
                 validator_data_list = validators
             else:
-                raise PluginError(f"Type error in placeholder '{name}', field 'validators': Should be either a string or a list, but is type {type(validators).__name__}")
+                raise PluginError(f"Field 'validators': Should be either a string or a list, but is type {type(validators).__name__}")
             
             for validator in validator_data_list:
                 if type(validator) == str:
@@ -155,23 +200,12 @@ def parse_placeholder_dict(name: str, data: dict[str,Any]) -> Placeholder:
                     if validation_preset:
                         validator_list.append(validation_preset)
                     else:
-                        raise PluginError(f"No validator preset named '{validation_preset}', valid values are: {', '.join(VALIDATOR_PRESETS)}")
+                        raise PluginError(f"No validator preset named '{validator}', valid values are: {', '.join(VALIDATOR_PRESETS)}")
                 else:
                     raise PluginError("Custom validators not implemented yet")
 
             if validator_list:
                 assert_matches_one_validator(validator_list, default_value)
 
-    return Placeholder(
-        name=name,
-        default_value=default_value,
-        default_function=default_function,
-        description=description,
-        replace_everywhere=replace_everywhere,
-        read_only=read_only,
-        values=values,
-        input_type=input_type,
-        validator_list=validator_list,
-    )
-
+    return validator_list
 
