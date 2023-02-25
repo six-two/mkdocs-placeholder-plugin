@@ -33,6 +33,36 @@ MULTI_VALIDATORS:
   - domain
   - hostname
 
+CUSTOM_VALIDATORS:
+  default: A12
+  description: "Custom validators"
+  validators:
+  - name: Excel cell name
+    rules:
+    - regex: "^[A-Za-z]+"
+      should_match: true
+      error_message: "Needs to start with at least one letter"
+    - regex: "[0-9]+$"
+      should_match: true
+      error_message: "Needs to end with at least one digit"
+    - regex: "^[A-Za-z0-9]+$"
+      should_match: true
+      error_message: "Can only contain letters and numbers"
+    - severity: warn
+      regex: "^[A-Za-z]+[0-9]+$"
+      should_match: true
+      error_message: "Should look like AB123"
+  - name: Something nice
+    rules:
+    - regex: "fuck|shit|ass|jerk"
+      should_match: false
+      error_message: No cursing!
+    - regex: "corona|covid"
+      severity: warn
+      should_match: false
+      error_message: Can we talk about something else?
+
+
 PASSWORD:
   default-function: "generate_placeholder_password(10)"
   description: A randomly generated password updated anytime you clear your localStorage

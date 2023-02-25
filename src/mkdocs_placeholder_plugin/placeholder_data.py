@@ -8,7 +8,7 @@ from mkdocs.exceptions import PluginError
 import yaml
 # local
 from . import warning
-from .validators import Validator, assert_matches_one_validator
+from .validators import Validator, ValidatorRule, assert_matches_one_validator
 from .validators_predefined import VALIDATOR_PRESETS
 
 # Should only contain letters, numbers, and underscores (hopefully prevents them from being broken up by syntax highlighting)
@@ -18,7 +18,7 @@ VARIABLE_NAME_REGEX = re.compile("^[A-Z]([A-Z0-9_]*[A-Z0-9])?$")
 # The types to accept for fields, where a string is accepted
 TYPES_PRIMITIVE = [bool, float, int, str]
 # Only these fields are allowed in placeholders
-PLACEHOLDER_FIELD_NAMES = set([
+PLACEHOLDER_FIELD_NAMES = {
     "default",
     "default-function",
     "description",
@@ -26,8 +26,24 @@ PLACEHOLDER_FIELD_NAMES = set([
     "replace_everywhere",
     "values",
     "validators",
-])
+}
 
+VALIDATOR_FIELD_NAMES = {
+    "name",
+    "rules",
+}
+
+VALIDATOR_RULE_FIELD_NAMES = {
+    "severity",
+    "regex",
+    "should_match",
+    "error_message",
+}
+
+SEVERITY_LIST = [
+    "error",
+    "warn",
+]
 
 class InputType(Enum):
     Field = auto()
@@ -101,8 +117,7 @@ def parse_placeholder_dict(name: str, data: dict[str,Any]) -> Placeholder:
     """
     try:
         # Check for unexpected fields
-        supplied_fields = set(data)
-        unexpected_fields = supplied_fields.difference(PLACEHOLDER_FIELD_NAMES)
+        unexpected_fields = set(data).difference(PLACEHOLDER_FIELD_NAMES)
         if unexpected_fields:
             raise PluginError(f"Unexpected field(s): {', '.join(unexpected_fields)}")
 
@@ -136,7 +151,8 @@ def parse_placeholder_dict(name: str, data: dict[str,Any]) -> Placeholder:
             validator_list=validator_list,
         )
     except Exception as ex:
-        raise PluginError(f"Failed to parse placeholder '{name}': {ex}\n\nCaused by placeholder data: {json.dumps(data, indent=4)}")
+        message = f"Missing key {ex}" if type(ex) == KeyError else str(ex)
+        raise PluginError(f"Failed to parse placeholder '{name}': {message}\n\nCaused by placeholder data: {json.dumps(data, indent=4)}")
 
 
 def parse_defaults(data: dict[str,Any], values: dict[str,str]) -> tuple[str, str]:
@@ -201,11 +217,69 @@ def parse_validator_list(data: dict[str,Any], input_type: InputType, default_val
                         validator_list.append(validation_preset)
                     else:
                         raise PluginError(f"No validator preset named '{validator}', valid values are: {', '.join(VALIDATOR_PRESETS)}")
+                elif type(validator) == dict:
+                    validator_list.append(parse_validator_object(validator))
                 else:
-                    raise PluginError("Custom validators not implemented yet")
+                    raise PluginError(f"Wrong type for validator entry: Expected 'string' or 'dict', got '{type(validator).__name__}'")
+
 
             if validator_list:
                 assert_matches_one_validator(validator_list, default_value)
 
     return validator_list
 
+
+def parse_validator_object(data: dict[str,Any]) -> Validator:
+    try:
+        name = data["name"]
+        if type(name) != str:
+            raise PluginError(f"Wrong type for key 'name': Expected 'string', got '{type(name).__name__}'")
+
+        rules_data = data["rules"]
+        if type(rules_data) != list:
+            raise PluginError(f"Wrong type for key 'rules_data': Expected 'list', got '{type(rules_data).__name__}'")
+
+        rules = [parse_validator_rule(x) for x in rules_data]
+        return Validator(
+            name=name,
+            rules=rules,
+        )
+    except Exception as ex:
+        message = f"Missing key {ex}" if type(ex) == KeyError else str(ex)
+        raise PluginError(f"{message}\n\nCaused by validator: {json.dumps(data, indent=4)}")
+
+
+def parse_validator_rule(data: dict[str,Any]) -> ValidatorRule:
+    try:
+        unexpected_fields = set(data).difference(VALIDATOR_RULE_FIELD_NAMES)
+        if unexpected_fields:
+            raise PluginError(f"Unexpected field(s) in validator rule: {', '.join(unexpected_fields)}")
+
+        severity = data.get("severity", "error")
+        if severity not in SEVERITY_LIST:
+            raise PluginError(f"Unknown severity '{severity}'. Should be one of {', '.join(unexpected_fields)}")
+
+        regex = data["regex"]
+        if type(regex) != str:
+            raise PluginError(f"Wrong type for key 'regex': Expected 'string', got '{type(regex).__name__}'")
+
+        should_match = data["should_match"]
+        if type(should_match) != bool:
+            raise PluginError(f"Wrong type for key 'should_match': Expected 'bool', got '{type(should_match).__name__}'")
+
+        error_message = data.get("error_message")
+        if type(error_message) != str:
+            raise PluginError(f"Wrong type for key 'error_message': Expected 'string', got '{type(error_message).__name__}'")
+        if not error_message:
+            error_message = "Should match" if should_match else "Should not match"
+            error_message += f" the regular expression '{regex}'"
+
+        return ValidatorRule(
+            severity=severity,
+            regex_string=regex,
+            should_match=should_match,
+            error_message=error_message,
+        )
+    except Exception as ex:
+        message = f"Missing key {ex}" if type(ex) == KeyError else str(ex)
+        raise PluginError(f"{message}\n\nCaused by validator rule: {json.dumps(data, indent=4)}")
