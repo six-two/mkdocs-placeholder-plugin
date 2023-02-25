@@ -36,7 +36,8 @@ def copy_assets_to_mkdocs_site_directory(config: MkDocsConfig, plugin_config: Pl
         text = "///// Custom extra JS code /////\n" + extra_js + "\n///// Normal JS code /////\n" + text
 
     # Generate placeholder data and inject them in the JavaScript file
-    placeholder_data_json = generate_placeholder_json(config.theme.name, placeholders, plugin_config)
+    theme_name = config.theme.name or "mkdocs"
+    placeholder_data_json = generate_placeholder_json(theme_name, placeholders, plugin_config)
     text = text.replace("__MKDOCS_PLACEHOLDER_PLUGIN_JSON__", placeholder_data_json)
 
     # write back the results

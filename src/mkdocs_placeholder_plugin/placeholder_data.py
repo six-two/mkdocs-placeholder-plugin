@@ -1,13 +1,14 @@
 from enum import Enum, auto
 import os
 import re
-from typing import NamedTuple, Any, Optional
+from typing import NamedTuple, Any
 # pip packages
 from mkdocs.exceptions import PluginError
 import yaml
 # local
 from . import warning
-from .validators import VALIDATOR_PRESETS, Validator
+from .validators import Validator, assert_matches_one_validator
+from .validators_predefined import VALIDATOR_PRESETS
 
 # Should only contain letters, numbers, and underscores (hopefully prevents them from being broken up by syntax highlighting)
 # Should not begin with a number (this prevents placeholders like `1`)
@@ -153,11 +154,13 @@ def parse_placeholder_dict(name: str, data: dict[str,Any]) -> Placeholder:
                     validation_preset = VALIDATOR_PRESETS.get(validator)
                     if validation_preset:
                         validator_list.append(validation_preset)
-                        check_if_matches_validator(validation_preset, default_value, print_warnings=True, raise_exception_on_error=True)
                     else:
                         raise PluginError(f"No validator preset named '{validation_preset}', valid values are: {', '.join(VALIDATOR_PRESETS)}")
                 else:
                     raise PluginError("Custom validators not implemented yet")
+
+            if validator_list:
+                assert_matches_one_validator(validator_list, default_value)
 
     return Placeholder(
         name=name,
@@ -172,23 +175,3 @@ def parse_placeholder_dict(name: str, data: dict[str,Any]) -> Placeholder:
     )
 
 
-def check_if_matches_validator(validator: Validator, default_value: str, print_warnings: bool = False, raise_exception_on_error: bool = False) -> bool:
-    has_error = False
-    is_match = True
-    for rule in validator.rules:
-        try:
-            matches = bool(re.search(rule.regex_string, default_value))
-        except Exception as ex:
-            raise PluginError(f"Error in regular expression '{rule.regex_string}': {ex}")
-        if matches != rule.should_match:
-            # This rule fails
-            is_match = False
-            if rule.severity == "error":
-                has_error = True
-            if print_warnings:
-                warning(f"[Validation {rule.severity}] '{default_value}' does not match validator '{validator.name}': {rule.error_message}")
-
-    if has_error and raise_exception_on_error:
-        raise PluginError(f"'{default_value}' does not match validator '{validator.name}'")
-
-    return is_match

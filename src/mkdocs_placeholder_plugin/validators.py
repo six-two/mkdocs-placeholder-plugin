@@ -1,4 +1,8 @@
 from typing import NamedTuple
+from mkdocs.exceptions import PluginError
+import re
+# local
+from . import warning
 
 class ValidatorRule(NamedTuple):
     severity: str # warn or error
@@ -51,56 +55,67 @@ def validator_rule_to_dict(r: ValidatorRule) -> dict:
     }
 
 
+class ValidationResults(NamedTuple):
+    validator_name: str
+    value: str
+    warnings: list[str]
+    errors: list[str]
 
-def generate_ipv4_validator() -> Validator:
-    byte_regex = "(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)"
-    return Validator(
-        name="IPv4 address",
-        rules=[
-            must_match("^[0-9.]+$", "Only numbers and dots are allowed"),
-            # There are other ways of specifying IP addresses, that not all software understands. For example: 2130706433, 017700000001, and 127.1 are alternative representations of 127.0.0.1
-            # So we just filter for expected characters, but not for the pattern
-            should_match(f"^{byte_regex}(?:\\.{byte_regex}){{3}}$", "Expected an value like 123.4.56.78"),
-        ]
+
+def assert_matches_one_validator(validators: list[Validator], value: str) -> None:
+    if not validators:
+        # No validators -> Matches everything
+        return
+
+    results = [check_if_matches_validator(x, value) for x in validators]
+    has_rule_without_errors = False
+    for result in results:
+        if not result.errors:
+            if result.warnings:
+                has_rule_without_errors = True
+            else:
+                # One of the rules matches perfectly
+                return
+    
+    if has_rule_without_errors:
+        # Only show the options where there are only warnings and no errors
+        for result in results:
+            if not result.errors:
+                for msg in result.warnings:
+                    warning(f"[Validation warning] '{result.value}' is no {result.validator_name}: {msg}")
+    else:
+        # Show all warnings and errors and raise an exception
+        for result in results:
+            for msg in result.errors:
+                warning(f"[Validation error] '{value}' is no {result.validator_name}: {msg}")
+            for msg in result.warnings:
+                warning(f"[Validation warning] '{value}' is no {result.validator_name}: {msg}")
+        raise PluginError(f"Default value '{value}' failed validation")
+
+
+def check_if_matches_validator(validator: Validator, default_value: str) -> ValidationResults:
+    warnings = []
+    errors = []
+    for rule in validator.rules:
+        try:
+            matches = bool(re.search(rule.regex_string, default_value))
+        except Exception as ex:
+            raise PluginError(f"Error in regular expression '{rule.regex_string}': {ex}")
+
+        if matches != rule.should_match:
+            # This rule fails
+            if rule.severity == "error":
+                errors.append(rule.error_message)
+            elif rule.severity == "warn":
+                warnings.append(rule.error_message)
+            else:
+                raise PluginError(f"Unexpected severity: '{rule.severity}'")
+
+    return ValidationResults(
+        validator_name=validator.name,
+        value=default_value,
+        warnings=warnings,
+        errors=errors,
     )
 
 
-def generate_port_validator() -> Validator:
-    port_regex="^((6553[0-5])|(655[0-2][0-9])|(65[0-4][0-9]{2})|(6[0-4][0-9]{3})|([1-5][0-9]{4})|([0-5]{0,5})|([0-9]{1,4}))$"
-    return Validator(
-        name="TCP/UDP port",
-        rules=[
-            must_match("^[0-9]+$", "Only numbers are allowed"),
-            should_match(port_regex, "Expected an number between 0 and 65535 (inclusive)"),
-        ]
-    )
-
-RULE_DOMAIN_CHARS = must_match("^[a-zA-Z0-9-.]+$", "Only letters, numbers, dashes (minus signs), and dots are allowed")
-RULE_DOMAIN_START = must_match("^[^.-]", "Can not begin with a dot or dash (minus sign)")
-RULE_DOMAIN_END = must_match("[^.-]$", "Can not end with a dot or dash (minus sign)")
-RULE_DOMAIN_LENGTH = should_not_match("[a-zA-Z0-9-]{64}", "Subdomains should not be longer than 63 characters")
-
-def generate_domain_name_validator() -> Validator:
-    return Validator(
-        name="Domain name",
-        rules=[
-            RULE_DOMAIN_CHARS, RULE_DOMAIN_START, RULE_DOMAIN_END, RULE_DOMAIN_LENGTH,
-            should_match("\\.", "Should contain multiple elements (for example domain.com or my.domain.com)"),
-        ]
-    )
-
-def generate_hostname_validator() -> Validator:
-    return Validator(
-        name="Hostname",
-        rules=[
-            RULE_DOMAIN_CHARS, RULE_DOMAIN_START, RULE_DOMAIN_END, RULE_DOMAIN_LENGTH
-        ]
-    )
-
-
-VALIDATOR_PRESETS = {
-    "ipv4_address": generate_ipv4_validator(),
-    "port_number": generate_port_validator(),
-    "domain": generate_domain_name_validator(),
-    "hostname": generate_hostname_validator(),
-}
