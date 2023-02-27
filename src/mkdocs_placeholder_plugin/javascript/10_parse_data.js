@@ -49,11 +49,15 @@ for (const textbox of Object.values(PlaceholderData.textbox_map)) {
             assert_field_type("rules", "object", validator);
             for (const rule of validator.rules) {
                 assert_field_type("severity", "string", rule);
-                assert_field_type("regex", "string", rule);
+                if (rule.regex) {
+                    assert_field_type("regex", "string", rule);
+                    // Compile the regex for better performance
+                    rule.regex = new RegExp(rule.regex);
+                } else {
+                    assert_field_type("match_function", "string", rule);
+                }
                 assert_field_type("should_match", "boolean", rule);
                 assert_field_type("error_message", "string", rule);
-                // Compile the regex for better performance
-                rule.regex = new RegExp(rule.regex);
             }
         }
     }

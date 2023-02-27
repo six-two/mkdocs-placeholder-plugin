@@ -36,6 +36,7 @@ VALIDATOR_FIELD_NAMES = {
 VALIDATOR_RULE_FIELD_NAMES = {
     "severity",
     "regex",
+    "match_function",
     "should_match",
     "error_message",
 }
@@ -259,9 +260,27 @@ def parse_validator_rule(data: dict[str,Any]) -> ValidatorRule:
         if severity not in SEVERITY_LIST:
             raise PluginError(f"Unknown severity '{severity}'. Should be one of {', '.join(unexpected_fields)}")
 
-        regex = data["regex"]
-        if type(regex) != str:
-            raise PluginError(f"Wrong type for key 'regex': Expected 'string', got '{type(regex).__name__}'")
+        regex = ""
+        match_function = ""
+        if "regex" in data:
+            if "match_function" in data:
+                raise PluginError("Keys 'regex' and 'match_function' are mutually exclusive, but both are defined")
+            else:
+                regex = data["regex"]
+                if type(regex) != str:
+                    raise PluginError(f"Wrong type for key 'regex': Expected 'string', got '{type(regex).__name__}'")
+                elif not regex:
+                    raise PluginError(f"Key 'regex' can not be an empty string")
+        else:
+            if "match_function" in data:
+                match_function = data["match_function"]
+                if type(match_function) != str:
+                    raise PluginError(f"Wrong type for key 'match_function': Expected 'string', got '{type(match_function).__name__}'")
+                elif not match_function:
+                    raise PluginError(f"Key 'match_function' can not be an empty string")
+            else:
+                raise PluginError("Missing key: you need to specify either 'regex' or 'match_function'")
+
 
         should_match = data["should_match"]
         if type(should_match) != bool:
@@ -277,6 +296,7 @@ def parse_validator_rule(data: dict[str,Any]) -> ValidatorRule:
         return ValidatorRule(
             severity=severity,
             regex_string=regex,
+            match_function=match_function,
             should_match=should_match,
             error_message=error_message,
         )

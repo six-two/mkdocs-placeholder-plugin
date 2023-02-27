@@ -67,9 +67,26 @@ PlaceholderPlugin.validate_input = (value, placeholder_name) => {
 PlaceholderPlugin.get_validator_error_messages = (value, validator) => {
     const messages = [];
     for (const rule of validator.rules) {
-        const is_match = rule.regex.test(value);
-        if (is_match != rule.should_match) {
-            messages.push([rule.severity, `[${validator.name}] ${rule.error_message}`]);
+        if (rule.regex) {
+            const is_match = rule.regex.test(value);
+            if (is_match != rule.should_match) {
+                messages.push([rule.severity, `[${validator.name}] ${rule.error_message}`]);
+            }
+        } else {
+            try {
+                const is_match = eval(rule.match_function);
+                if (typeof(is_match) == "boolean") {
+                    if (is_match != rule.should_match) {
+                        messages.push([rule.severity, `[${validator.name}] ${rule.error_message}`]);
+                    }
+                } else {
+                    messages.push(["warn", `[${validator.name}] Function '${rule.match_function}' returned data of wrong type (expected boolean, got ${typeof(is_match)})`]);
+                    console.error(`[Validator ${validator.name}] Custom function '${rule.match_function}' evaluated to non-boolean value (returned type: ${typeof(is_match)}):`, is_match);
+                }
+            } catch (ex) {
+                messages.push(["warn", `[${validator.name}] Error evaluating function '${rule.match_function}': ${ex}`]);
+                console.error(`[Validator ${validator.name}] Error evaluating function '${rule.match_function}':`, ex);
+            }
         }
     }
     return messages;
