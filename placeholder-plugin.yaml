@@ -29,6 +29,12 @@ DEMO_SUDO:
 VALIDATOR_DOMAIN:
   default: example.com
   validators: domain
+VALIDATOR_FILE_LINUX:
+  default: my-archive.tar.gz
+  validators: file_name_linux
+VALIDATOR_FILE_WINDOWS:
+  default: my-program.exe
+  validators: file_name_windows
 VALIDATOR_HOSTNAME:
   default: examplesrv01
   validators: hostname
@@ -41,6 +47,12 @@ VALIDATOR_IPV4_CIDR:
 VALIDATOR_IPV4_DASHES:
   default: 127.0.0.1-32
   validators: ipv4_range_dashes
+VALIDATOR_PATH_LINUX:
+  default: ~/.bash_profile
+  validators: path_linux
+VALIDATOR_PATH_WINDOWS:
+  default: C:\Windows\system32\cmd.exe
+  validators: path_windows
 VALIDATOR_PORT:
   default: 31337
   validators: port_number
@@ -79,6 +91,11 @@ CUSTOM_VALIDATORS:
       regex: "^[A-Za-z]+[0-9]+$"
       should_match: true
       error_message: "Should look like AB123"
+
+SOMETHING_NICE:
+  default: Hi, how are you?
+  description: Please say something nice :)
+  validators:
   - name: Something nice
     rules:
     - regex: "fuck|shit|ass|jerk"

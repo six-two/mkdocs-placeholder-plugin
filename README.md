@@ -27,9 +27,8 @@ The corresponding documentation is hosted at <https://dev.mkdocs-placeholder-plu
 ### HEAD
 
 - Input validation:
-    - Predefined types: `ipv4_address`, `port_number`, `domain`, `hostname`
+    - Predefined types: `domain`, `file_name_linux`, `file_name_windows`, `hostname`, `hostname`, `ipv4_range_cidr`, `ipv4_range_cidr`, `path_linux`, `path_windows`, `port_number`, `url_any`, `url_http`
     - Custom validators with rules that either use `regex` or `match_function`
-    - @TODO: document (match_function uses `value` as variable name)
 - Added `placeholder_extra_js` field to plugin configuration
 - Added `default-function` attribute for placeholders
 

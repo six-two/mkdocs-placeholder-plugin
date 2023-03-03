@@ -6,7 +6,9 @@ IPV4_ADDRESS = f"{IPV4_SEGMENT}(?:\\.{IPV4_SEGMENT}){{3}}"
 CIDR_SUFFIX = "/(3[0-2]|[12]?[0-9])"
 URL_REGEX = "[a-zA-Z0-9-]+://(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*\(\),]|(?:%[0-9a-fA-F][0-9a-fA-F]))+(#\S*)?"
 RULE_URL_NO_WHITESPACE = must_not_match("\s", "URLs may not contain whitespace. Please URL encode it. For example a space should be replaced with '%20'")
-
+RULE_NOT_EMPTY = must_match("^.+$", "Can not be empty")
+RULE_WINDOS_NAME_PROHIBITED = must_not_match('[<>:"|?*]', 'Can not contain prohibited characters: \'<>:"|?*\'')
+RULE_WARN_WHITESPACE = should_not_match("\s", "Should not contain whitespace")
 
 def generate_url_http_validator() -> Validator:
     # source: https://urlregex.com. Modified to handle the fragment part (what comes after #)
@@ -18,6 +20,49 @@ def generate_url_http_validator() -> Validator:
             should_match(f"^{URL_REGEX}$", "Expected an value like https://example.com/some/page.php?x=1&y=some%20value"),
         ]
     )
+
+def generate_file_name_linux_validator() -> Validator:
+    return Validator(
+        name="File name",
+        rules=[
+            RULE_NOT_EMPTY,
+            must_not_match("/", "Can not contain path separators (slash)"),
+            RULE_WARN_WHITESPACE,
+        ]
+    )
+
+def generate_file_name_windows_validator() -> Validator:
+    return Validator(
+        name="File name",
+        rules=[
+            RULE_NOT_EMPTY,
+            must_not_match(r"[/\\]", "Can not contain path separators (slash or backslash)"),
+            must_not_match('[<>:"|?*]', 'Can not contain prohibited characters: \'<>:"|?*\''),
+            RULE_WARN_WHITESPACE,
+        ]
+    )
+
+
+def generate_path_linux_validator() -> Validator:
+    return Validator(
+        name="File path (Linux)",
+        rules=[
+            RULE_NOT_EMPTY,
+            RULE_WARN_WHITESPACE,
+        ]
+    )
+
+def generate_path_windows_validator() -> Validator:
+    return Validator(
+        name="File path (Windows)",
+        rules=[
+            RULE_NOT_EMPTY,
+            # Colon may be in 'C:\...' (and maybe for a port number in an UNC path?)
+            should_not_match('[<>"|?*]', 'Can not contain prohibited characters: \'<>"|?*\''),
+            RULE_WARN_WHITESPACE,
+        ]
+    )
+
 
 def generate_url_validator() -> Validator:
     # source: https://urlregex.com. Modified to handle the fragment part (what comes after #)
@@ -106,10 +151,14 @@ def generate_hostname_validator() -> Validator:
 
 VALIDATOR_PRESETS = {
     "domain": generate_domain_name_validator(),
+    "file_name_linux": generate_file_name_linux_validator(),
+    "file_name_windows": generate_file_name_windows_validator(),
     "hostname": generate_hostname_validator(),
     "ipv4_address": generate_ipv4_validator(),
     "ipv4_range_cidr": generate_ipv4_range_cidr_validator(),
     "ipv4_range_dashes": generate_ipv4_range_dash_validator(),
+    "path_linux": generate_path_linux_validator(),
+    "path_windows": generate_path_windows_validator(),
     "port_number": generate_port_validator(),
     "url_any": generate_url_validator(),
     "url_http": generate_url_http_validator(),
