@@ -25,6 +25,34 @@ DEMO_SUDO:
 ### End of the demo page placeholders
 
 
+## Single type validators
+VALIDATOR_DOMAIN:
+  default: example.com
+  validators: domain
+VALIDATOR_HOSTNAME:
+  default: examplesrv01
+  validators: hostname
+VALIDATOR_IPV4_ADDRESS:
+  default: 127.0.0.1
+  validators: ipv4_address
+VALIDATOR_IPV4_CIDR:
+  default: 127.0.0.0/8
+  validators: ipv4_range_cidr
+VALIDATOR_IPV4_DASHES:
+  default: 127.0.0.1-32
+  validators: ipv4_range_dashes
+VALIDATOR_PORT:
+  default: 31337
+  validators: port_number
+VALIDATOR_URL_ANY:
+  default: smb://example.com:10445/share/some-file.txts
+  validators: url_any
+VALIDATOR_URL_HTTP:
+  default: "http://www.example.com/page?a=123&b=c#chapter-2"
+  validators: url_http
+
+
+## Combined validators
 MULTI_VALIDATORS:
   default: "127.0.0.1"
   description: "Multiple validators: one of IPv4 address, domain name, and hostname"
@@ -32,7 +60,6 @@ MULTI_VALIDATORS:
   - ipv4_address
   - domain
   - hostname
-
 CUSTOM_VALIDATORS:
   default: A12
   description: "Custom validators"

@@ -39,6 +39,15 @@ def must_match(regex_string: str, error_message: str) -> ValidatorRule:
         error_message=error_message,
     )
 
+def must_not_match(regex_string: str, error_message: str) -> ValidatorRule:
+    return ValidatorRule(
+        severity="error",
+        regex_string=regex_string,
+        match_function="",
+        should_match=False,
+        error_message=error_message,
+    )
+
 
 class Validator(NamedTuple):
     name: str
