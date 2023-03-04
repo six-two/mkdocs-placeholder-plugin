@@ -24,7 +24,10 @@ PlaceholderPlugin.prepare_textbox_field = (placeholder_name, input_element) => {
                 }
             });
             // Return an action to perform when the apply button is clicked
-            return () => PlaceholderPlugin.store_textbox_state(placeholder_name, input_element.value);
+            return () => {
+                PlaceholderPlugin.store_textbox_state(placeholder_name, input_element.value);
+                return true;
+            }
         } else {
             debug(`Has validator: ${placeholder_name}`);
             // Check if initial value is valid
@@ -41,7 +44,7 @@ PlaceholderPlugin.prepare_textbox_field = (placeholder_name, input_element) => {
                 }
             });
             // Return an action to perform when the apply button is clicked
-            return () => PlaceholderPlugin.validate_input_field(input_element, placeholder_name, true)
+            return () => PlaceholderPlugin.validate_input_field(input_element, placeholder_name, true, reload_on_apply=false)
         }
     }
 };

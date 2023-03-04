@@ -88,13 +88,16 @@ PlaceholderPlugin.generate_automatic_placeholder_table = (element, columns, used
                     debug("Apply button clicked");
                     let reload = true;
                     for (const action of apply_actions) {
-                        debug("Pre apply function for", action.element);
-                        if (!action.function()) {
-                            // If there is a severe error in a field, so that it does not get stored, then disable the reload
+                        debug("Pre apply function for input element", action.element);
+                        const result = action.function();
+                        debug(`Pre apply function return value: ${result} (${typeof(result)})`)
+                        if (!result) {
+                            console.warn(`Reload canceled due to validation error in placeholder '${action.placeholder}'`);
                             reload = false;
                         }
                     }
                     if (reload) {
+                        debug("Reloading page due to apply button clicked");
                         PlaceholderPlugin.reload_page();
                     }
                 });

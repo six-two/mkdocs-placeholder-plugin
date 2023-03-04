@@ -164,7 +164,7 @@ PlaceholderPlugin.show_tooltip = (input_field, rating, message) => {
 
 // apply_value: if set to true, this value will be set if it passes muster, otherwise a popup will be shown
 // Returns "false" if the value has an error, so for example page reloading should be cancelled.
-PlaceholderPlugin.validate_input_field = (input_field, placeholder_name, apply_value) => {
+PlaceholderPlugin.validate_input_field = (input_field, placeholder_name, apply_value, reload_on_apply = true) => {
     const status = PlaceholderPlugin.validate_input(input_field.value, placeholder_name);
     debug("Validation: name =", placeholder_name, ", value =", input_field.value, ", results =", status);
     if (status && status.length != 0) {
@@ -182,7 +182,9 @@ PlaceholderPlugin.validate_input_field = (input_field, placeholder_name, apply_v
 
     if (apply_value) {
         PlaceholderPlugin.store_textbox_state(placeholder_name, input_field.value);
-        PlaceholderPlugin.on_placeholder_change();
+        if (reload_on_apply) {
+            PlaceholderPlugin.on_placeholder_change();
+        }
     }
     return true;
 }
