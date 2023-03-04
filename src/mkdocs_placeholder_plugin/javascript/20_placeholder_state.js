@@ -49,37 +49,55 @@ PlaceholderPlugin.load_dropdown_state = (placeholder_name) => {
 }
 
 PlaceholderPlugin.store_textbox_state = (placeholder_name, new_value) => {
-    info(`Set textbox ${placeholder_name} to '${new_value}'`);
-    localStorage.setItem(placeholder_name, new_value);
+    const is_validation_ok = PlaceholderPlugin.is_accepted_for_placeholder(new_value, placeholder_name);
+    info(`Set textbox ${placeholder_name} to '${new_value}'. Validation ok? ${is_validation_ok}`);
+    if (is_validation_ok) {
+        localStorage.setItem(placeholder_name, new_value);
+    } else {
+        throw new Error(`Validation error: Value '${is_validation_ok}' is not valid for placeholder ${placeholder_name}`);
+    }
 }
 
 PlaceholderPlugin.load_textbox_state = (placeholder_name) => {
     let value = localStorage.getItem(placeholder_name);
     if (!value) {
-        value = PlaceholderData.textbox_map[placeholder_name].value;
-        if (value == undefined) {
-            const value_fn = PlaceholderData.textbox_map[placeholder_name].value_function;
-            try {
-                // convert the result to string
-                value = `${eval(value_fn)}`;
-                debug(`Evaluating value_function: '${value_fn}' -> '${value}'`);
-            } catch (error) {
-                value = "EVALUATION_ERROR";
-                console.error(`Error while evaluating value_function: '${value_fn}'\nError message: ${error}`);
-            }
-        }
+        value = PlaceholderPlugin.default_textbox_value(placeholder_name);
     }
     debug(`Read textbox ${placeholder_name}: '${value}'`);
+    return value;
+}
+
+PlaceholderPlugin.default_textbox_value = (placeholder_name) => {
+    let value = PlaceholderData.textbox_map[placeholder_name].value;
+    if (value == undefined) {
+        const value_fn = PlaceholderData.textbox_map[placeholder_name].value_function;
+        try {
+            // convert the result to string
+            value = `${eval(value_fn)}`;
+            debug(`Evaluating value_function: '${value_fn}' -> '${value}'`);
+        } catch (error) {
+            value = "EVALUATION_ERROR";
+            console.error(`Error while evaluating value_function: '${value_fn}'\nError message: ${error}`);
+        }
+    }
     return value;
 }
 
 PlaceholderPlugin.initialize_undefined_placeholders = () => {
     init_count = 0;
     for (let placeholder in PlaceholderData.textbox_map) {
-        if (!localStorage.getItem(placeholder)) {
-            const value = PlaceholderPlugin.load_textbox_state(placeholder);
-            localStorage.setItem(placeholder, value);
+        const value = localStorage.getItem(placeholder)
+        if (!value) {
+            const new_value = PlaceholderPlugin.load_textbox_state(placeholder);
+            localStorage.setItem(placeholder, new_value);
             init_count++;
+        } else {
+            if (!PlaceholderPlugin.is_accepted_for_placeholder(value, placeholder)) {
+                const new_value = PlaceholderPlugin.default_textbox_value(placeholder);
+                localStorage.setItem(placeholder, new_value);
+                init_count++;
+                console.warn(`Placeholder '${placeholder}' had invalid value '${value}'. Replaced with default value '${new_value}'.`);
+            }
         }
     }
     for (let placeholder in PlaceholderData.checkbox_map) {

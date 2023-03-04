@@ -15,3 +15,9 @@ Port number | `port_number` | <input data-input-for="VALIDATOR_PORT">
 URL (any protocol) | `url_any` | <input data-input-for="VALIDATOR_URL_ANY">
 URL (HTTP or HTTPS) | `url_http` | <input data-input-for="VALIDATOR_URL_HTTP">
 
+## Test buttons
+
+When you click this button and reload the page, you should see the value reset to the default and a warning message in the console:
+
+<button class="md-button md-button--primary" onclick="localStorage.setItem('VALIDATOR_DOMAIN', 'not-a-valid/domain.')">Assign invalid value to domain input field</button>
+

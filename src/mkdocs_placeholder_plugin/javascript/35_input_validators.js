@@ -92,6 +92,50 @@ PlaceholderPlugin.get_validator_error_messages = (value, validator) => {
     return messages;
 }
 
+PlaceholderPlugin.is_accepted_for_placeholder = (value, placeholder_name) => {
+    // Basically an for speed optimized version of PlaceholderPlugin.validate_input that just returns a boolean
+    const validator_list = PlaceholderData.textbox_map[placeholder_name].validators;
+    if (validator_list) {
+        for (const validator of validator_list) {
+            if (!PlaceholderPlugin.is_accepted_by_validator(value, validator)) {
+                return false;
+            }
+        }
+    }
+    return true;
+}
+
+PlaceholderPlugin.is_accepted_by_validator = (value, validator) => {
+    // This version just checks if it mactches and is optimized for speed (compared to PlaceholderPlugin.get_validator_error_messages)
+    for (const rule of validator.rules) {
+        // Only check error rules, since warnings would be ignored anyway
+        if (rule.severity == "error") {
+            // Allow by default, so that if the rule has internal errors it will basically be ignored
+            let is_match = true;
+            if (rule.regex) {
+                is_match = rule.regex.test(value);
+            } else {
+                try {
+                    const result = eval(rule.match_function);
+                    if (typeof(result) == "boolean") {
+                        is_match = result;
+                    } else {
+                        console.error(`[Validator ${validator.name}] Custom function '${rule.match_function}' evaluated to non-boolean value (returned type: ${typeof(is_match)}):`, is_match);
+                    }
+                } catch (ex) {
+                    console.error(`[Validator ${validator.name}] Error evaluating function '${rule.match_function}':`, ex);
+                }
+            }
+            // Of a single rule rejects the input, return rejecting it entirely
+            if (is_match != rule.should_match) {
+                return false;
+            }
+        }
+    }
+    // No errors -> we can accept the input
+    return true;
+}
+
 PlaceholderPlugin.remove_tooltip = (input_field) => {
     // Remove highlighting
     input_field.classList.remove("validation-error", "validation-warn", "validation-ok");
