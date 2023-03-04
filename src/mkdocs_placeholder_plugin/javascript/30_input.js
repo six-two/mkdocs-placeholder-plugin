@@ -32,7 +32,7 @@ PlaceholderPlugin.prepare_textbox_field = (placeholder_name, input_element) => {
             debug(`Has validator: ${placeholder_name}`);
             // Check if initial value is valid
             PlaceholderPlugin.validate_input_field(input_element, placeholder_name, false);
-    
+
             // Listen for state changes
             input_element.addEventListener("input", () => {
                 PlaceholderPlugin.validate_input_field(input_element, placeholder_name, false);
@@ -73,7 +73,7 @@ PlaceholderPlugin.prepare_checkbox_field = (placeholder_name, input_element) => 
 PlaceholderPlugin.prepare_dropdown_field = (placeholder_name, input_element) => {
     // Restore the stored state
     const new_node = document.createElement("select");
-    new_node.classList.add("placeholder-dropdown"); 
+    new_node.classList.add("placeholder-dropdown");
     const data = PlaceholderData.dropdown_map[placeholder_name];
     const option_list = data["options"];
 

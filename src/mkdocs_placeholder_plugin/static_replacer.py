@@ -74,7 +74,7 @@ def create_static_input_field_replacer(placeholders: dict[str,Placeholder]) -> I
                 return create_input_html(placeholders[placeholder_name])
         else:
             return tag
-    
+
     return InputTagHandler(static_replacer_input_tag_modifier, False)
 
 

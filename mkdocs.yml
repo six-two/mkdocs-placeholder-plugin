@@ -6,11 +6,11 @@ theme:
   name: material
   # name: mkdocs
   # name: readthedocs
-  palette: 
+  palette:
     # Palette toggle for light mode
     - scheme: default
       toggle:
-        icon: material/brightness-7 
+        icon: material/brightness-7
         name: Switch to dark mode
     # Palette toggle for dark mode
     - scheme: slate
@@ -19,7 +19,7 @@ theme:
         icon: material/brightness-4
         name: Switch to light mode
   icon:
-    repo: fontawesome/brands/github 
+    repo: fontawesome/brands/github
   features:
   - navigation.sections
   - content.code.copy
@@ -75,4 +75,4 @@ markdown_extensions:
           format: !!python/name:pymdownx.superfences.fence_code_format
   # for tabs
   - pymdownx.tabbed:
-      alternate_style: true 
+      alternate_style: true

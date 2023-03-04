@@ -1,5 +1,5 @@
 PlaceholderPlugin.add_default_style = () => {
-    const plugin_style = document.createElement('style');
+    const plugin_style = document.createElement("style");
     plugin_style.innerHTML = PlaceholderData.custom_css;
     document.head.appendChild(plugin_style);
 }

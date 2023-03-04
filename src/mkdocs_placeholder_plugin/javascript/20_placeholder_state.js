@@ -10,7 +10,7 @@ PlaceholderPlugin.store_checkbox_state = (placeholder_name, new_is_checked) => {
 
 PlaceholderPlugin.load_checkbox_state = (placeholder_name) => {
     stored_state = localStorage.getItem(`${placeholder_name}__STATE__`)
-    
+
     if (stored_state == null) {
         // no state is stored, so we check the default value
         data = PlaceholderData.checkbox_map[placeholder_name];
@@ -37,7 +37,7 @@ PlaceholderPlugin.store_dropdown_state = (placeholder_name, new_index) => {
 
 PlaceholderPlugin.load_dropdown_state = (placeholder_name) => {
     stored_state = localStorage.getItem(`${placeholder_name}__STATE__`)
-    
+
     data = PlaceholderData.dropdown_map[placeholder_name];
     if (stored_state == null) {
         // no state is stored, so we check the default value

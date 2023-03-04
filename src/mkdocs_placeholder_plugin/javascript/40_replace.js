@@ -26,7 +26,6 @@ PlaceholderPlugin.replace_everywhere_in_page = (root_element, search_regex, repl
 
     const new_value = root_element.innerHTML.replaceAll(search_regex, replacement_value);
     if (new_value != root_element.innerHTML) {
-        // @TODO: maybe cound if debugging is enabled
         root_element.innerHTML = new_value;
         return 1;
     } else {

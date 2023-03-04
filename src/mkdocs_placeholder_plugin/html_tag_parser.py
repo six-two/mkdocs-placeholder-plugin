@@ -30,7 +30,7 @@ class HtmlTagParser(HTMLParser):
                 raise Exception(f"Attribute '{key}' defined multiple times")
             else:
                 attributes[key] = value or ""
-        
+
         self.results.append(ParsedHtmlTag(tag, attributes))
 
 

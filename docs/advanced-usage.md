@@ -6,7 +6,7 @@ You can set some extra attributes for placeholders:
 
 ```yaml
 FIRST_NAME:
-    default: John 
+    default: John
     description: What should I call you?
     read_only: false
     replace_everywhere: false
@@ -36,7 +36,7 @@ RANDOM:
 
     ```yaml
     FIRST_NAME:
-        default: John 
+        default: John
     ```
 
 === "default-function"

@@ -69,7 +69,7 @@ for (const checkbox of Object.values(PlaceholderData.checkbox_map)) {
     assert_field_type("checked", "string", checkbox);
     // The value to use if the checkbox is unchecked
     assert_field_type("unchecked", "string", checkbox);
-    
+
     assert_field_type("default_value", "boolean", checkbox);
 }
 

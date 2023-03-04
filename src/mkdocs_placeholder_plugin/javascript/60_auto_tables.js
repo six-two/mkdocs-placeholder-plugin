@@ -37,7 +37,7 @@ PlaceholderPlugin.generate_automatic_placeholder_table = (element, columns, used
 
     const apply_actions = [];
     for (placeholder_name of used_placeholders) {
-        if (PlaceholderData.auto_table_hide_read_only && 
+        if (PlaceholderData.auto_table_hide_read_only &&
                     PlaceholderData.common_map[placeholder_name].read_only) {
             debug(`auto_table: Skipping ${placeholder_name} because it is read-only`)
             continue
@@ -82,7 +82,7 @@ PlaceholderPlugin.generate_automatic_placeholder_table = (element, columns, used
                 const button = createChildElement(cell, "button");
                 // const dbg_cntr = PlaceholderPlugin.increment_debug_counter();
                 // debug(dbg_cntr, button);
-        
+
                 button.classList.add("placeholder-input-apply-button", "md-button", "md-button--primary");
                 button.addEventListener("click", () => {
                     debug("Apply button clicked");

@@ -134,10 +134,10 @@ ERROR:
   default-function: "alert(1"
   description: Broken on purpose, should cause an error
 
-TEST: 
+TEST:
   description: An test value, by default '123'
   default: 123
-LINK: 
+LINK:
   default: https://www.example.com/test/page
   replace_everywhere: true
 

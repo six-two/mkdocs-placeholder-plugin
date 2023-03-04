@@ -76,7 +76,7 @@ Unless otherwise specified, the input field will be a regular textbox that allow
 So for example if you have the following in your `placeholder-plugin.yaml`, the input field will be a textbox:
 
 ```yaml
-LINK: 
+LINK:
   default: https://www.example.com/test/page
 ```
 

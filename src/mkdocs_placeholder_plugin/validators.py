@@ -79,7 +79,7 @@ def validator_rule_to_dict(r: ValidatorRule) -> dict:
             data["regex"] = r.regex_string
         else:
             raise PluginError("Error in rule: You need to either specify 'match_function' or 'regex_string', but both are empty")
-    
+
     return data
 
 class ValidationResults(NamedTuple):
@@ -103,7 +103,7 @@ def assert_matches_one_validator(validators: list[Validator], value: str) -> Non
             else:
                 # One of the rules matches perfectly
                 return
-    
+
     if has_rule_without_errors:
         # Only show the options where there are only warnings and no errors
         for result in results:

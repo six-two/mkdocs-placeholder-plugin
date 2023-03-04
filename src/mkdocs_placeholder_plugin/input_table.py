@@ -51,7 +51,7 @@ class InputTableGenerator:
 
     def parse_placeholder_table_tag(self, full_tag_html: str) -> PlaceholderTableSettings:
         parsed = parse_html_tag(full_tag_html)
-        
+
         if parsed.tag != "placeholdertable":
             raise Exception(f"Expected placeholdertable tag, but got '{parsed.tag}'")
 
@@ -83,7 +83,7 @@ class InputTableGenerator:
         """
         This tries to be a "smart" implementation. As such it actually performs replacements,
         since they may (by default) introduce new placeholders.
-        Basically it performs all replacements as they normally would be done and checks for each placeholder, 
+        Basically it performs all replacements as they normally would be done and checks for each placeholder,
         if the text was changed afterwards.
         """
         used_placeholders: list[str] = []
@@ -106,7 +106,7 @@ class InputTableGenerator:
             if placeholder_names == ["auto"]:
                 # auto detect placeholders
                 placeholder_names = self.auto_detect_placeholders_used_in_page(page_markdown)
-            
+
             # resolve given names to placeholders
             try:
                 placeholder_entries = [self.placeholders[name] for name in placeholder_names]
@@ -149,7 +149,7 @@ class InputTableGenerator:
                 # escape potentially dangerous characters that could mess up the table syntax
                 cell = cell.replace("|", "&#124;").replace("\r", " ").replace("\n", " ")
                 rows[index+2].append(cell)
-        
+
         if self.add_apply_table_column and "input" in column_list:
             apply_row = []
             for column in column_list:

@@ -37,7 +37,7 @@ class InputTagHandler:
                     new_value = self.replace_function(self, old_value, parsed)
                     if new_value != old_value:
                         html = html[:start] + new_value + html[end:]
-                    
+
                     # Continue searching after the end of the tag
                     search_start_pos = start + len(new_value)
                 else:
@@ -45,7 +45,7 @@ class InputTagHandler:
                     search_start_pos = start + 1
             else:
                 return html
-                
+
 
     def find_where_tag_ends(self, html: str, start: int) -> Optional[tuple[int,ParsedHtmlTag]]:
         search_pos = start
@@ -63,7 +63,7 @@ class InputTagHandler:
                 except:
                     # Either the tag has not ended, or the it contains multiple tags
                     search_pos = end
-        
+
         # If not successful after a couple attempts, print a warning
         warning(f"{self.location} - Could not find end of tag")
         return None

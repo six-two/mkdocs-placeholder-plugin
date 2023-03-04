@@ -86,7 +86,7 @@ def load_placeholder_data(path: str) -> dict[str, Placeholder]:
             data = yaml.safe_load(f)
 
         placeholders: dict[str,Placeholder] = {}
-        
+
         if type(data) != dict:
             raise PluginError(f"[placeholder] Config file error: Expected root element of type 'dict', but got '{type(data).__name__}'")
         for key, value in data.items():
@@ -102,11 +102,11 @@ def load_placeholder_data(path: str) -> dict[str, Placeholder]:
                 placeholders[key] = parse_placeholder_dict(key, {"default": value})
             else:
                 raise PluginError(f"Expected a single value or object for key '{key}', but got type {type(value).__name__}")
-            
+
             # Check that the variable name matches expected format
             if not VARIABLE_NAME_REGEX.match(key):
                 warning(f"Potentially problematic variable name: '{key}'. A valid name should only contain capital letters and underscores.")
-        
+
         return placeholders
     else:
         raise PluginError(f"Placeholder data file '{path}' does not exist")
@@ -162,11 +162,11 @@ def parse_defaults(data: dict[str,Any], values: dict[str,str]) -> tuple[str, str
     try:
         default_value = str(data["default"])
         if default_function:
-            raise PluginError(f"Both 'default' and 'default-function' are defined")
+            raise PluginError("Both 'default' and 'default-function' are defined")
     except KeyError:
         default_value = ""
         if not default_function and not values:
-            raise PluginError(f"Missing key 'default' or 'default-function'")
+            raise PluginError("Missing key 'default' or 'default-function'")
     return default_value, default_function
 
 
@@ -187,11 +187,11 @@ def determine_input_type(values: dict[str,str], default_value: str) -> InputType
     if values:
         if set(values.keys()) == {"checked", "unchecked"}:
             if default_value not in ["", "checked", "unchecked"]:
-                raise PluginError(f"Field 'default': Allowed values for check boxes are '' (empty string), 'checked', 'unchecked'")
+                raise PluginError("Field 'default': Allowed values for check boxes are '' (empty string), 'checked', 'unchecked'")
             return InputType.Checkbox
         else:
             if default_value != "" and default_value not in values.keys():
-                raise PluginError(f"Field 'default': Allowed values for a dropdown box are '' (empty string), or one of the keys defined in the 'values' field")
+                raise PluginError("Field 'default': Allowed values for a dropdown box are '' (empty string), or one of the keys defined in the 'values' field")
             return InputType.Dropdown
     else:
         return InputType.Field
@@ -209,7 +209,7 @@ def parse_validator_list(data: dict[str,Any], input_type: InputType, default_val
                 validator_data_list = validators
             else:
                 raise PluginError(f"Field 'validators': Should be either a string or a list, but is type {type(validators).__name__}")
-            
+
             for validator in validator_data_list:
                 if type(validator) == str:
                     # This is a validator preset
@@ -270,14 +270,14 @@ def parse_validator_rule(data: dict[str,Any]) -> ValidatorRule:
                 if type(regex) != str:
                     raise PluginError(f"Wrong type for key 'regex': Expected 'string', got '{type(regex).__name__}'")
                 elif not regex:
-                    raise PluginError(f"Key 'regex' can not be an empty string")
+                    raise PluginError("Key 'regex' can not be an empty string")
         else:
             if "match_function" in data:
                 match_function = data["match_function"]
                 if type(match_function) != str:
                     raise PluginError(f"Wrong type for key 'match_function': Expected 'string', got '{type(match_function).__name__}'")
                 elif not match_function:
-                    raise PluginError(f"Key 'match_function' can not be an empty string")
+                    raise PluginError("Key 'match_function' can not be an empty string")
             else:
                 raise PluginError("Missing key: you need to specify either 'regex' or 'match_function'")
 
