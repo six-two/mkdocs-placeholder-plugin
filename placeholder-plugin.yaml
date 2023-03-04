@@ -47,6 +47,9 @@ VALIDATOR_IPV4_CIDR:
 VALIDATOR_IPV4_DASHES:
   default: 127.0.0.1-32
   validators: ipv4_range_dashes
+VALIDATOR_IPV6_ADDRESS:
+  default: 2001:0db8:85a3:0000:0000:8a2e:0370:7334
+  validators: ipv6_address
 VALIDATOR_PATH_LINUX:
   default: ~/.bash_profile
   validators: path_linux
@@ -72,6 +75,11 @@ MULTI_VALIDATORS:
   - ipv4_address
   - domain
   - hostname
+  - name: IPv6 loopback
+    rules:
+    - regex: "^::1$"
+      should_match: true
+      error_message: "Only the value '::1' is accepted"
 CUSTOM_VALIDATORS:
   default: A12
   description: "Custom validators"

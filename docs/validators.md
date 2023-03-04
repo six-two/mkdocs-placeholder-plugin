@@ -99,7 +99,7 @@ If at least one validator only has warnings, only messages for the validators th
 
 Placeholder specification:
 
-```
+```yaml
 MULTI_VALIDATORS:
   default: "127.0.0.1"
   description: "Multiple validators: mest be an IPv4 address, domain name, or hostname"
@@ -107,6 +107,11 @@ MULTI_VALIDATORS:
   - ipv4_address
   - domain
   - hostname
+  - name: IPv6 loopback
+    rules:
+    - regex: "^::1$"
+      should_match: true
+      error_message: "Only the value '::1' is accepted"
 ```
 
 Coresponding input element:

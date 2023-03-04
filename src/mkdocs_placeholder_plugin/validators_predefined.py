@@ -4,11 +4,15 @@ from .validators import Validator, must_match, must_not_match, should_match, sho
 IPV4_SEGMENT = "(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)"
 IPV4_ADDRESS = f"{IPV4_SEGMENT}(?:\\.{IPV4_SEGMENT}){{3}}"
 CIDR_SUFFIX = "/(3[0-2]|[12]?[0-9])"
-URL_REGEX = "[a-zA-Z0-9-]+://(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*\(\),]|(?:%[0-9a-fA-F][0-9a-fA-F]))+(#\S*)?"
-RULE_URL_NO_WHITESPACE = must_not_match("\s", "URLs may not contain whitespace. Please URL encode it. For example a space should be replaced with '%20'")
+URL_REGEX = r"[a-zA-Z0-9-]+://(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*\(\),]|(?:%[0-9a-fA-F][0-9a-fA-F]))+(#\S*)?"
+RULE_URL_NO_WHITESPACE = must_not_match(r"\s", "URLs may not contain whitespace. Please URL encode it. For example a space should be replaced with '%20'")
 RULE_NOT_EMPTY = must_match("^.+$", "Can not be empty")
 RULE_WINDOS_NAME_PROHIBITED = must_not_match('[<>:"|?*]', 'Can not contain prohibited characters: \'<>:"|?*\'')
-RULE_WARN_WHITESPACE = should_not_match("\s", "Should not contain whitespace")
+RULE_WARN_WHITESPACE = should_not_match(r"\s", "Should not contain whitespace")
+
+# Source: https://ihateregex.io/expr/ipv6/
+# Not great, does not match that well
+MEDIOCRE_IPV6_REGEX = r"(([0-9a-fA-F]{1,4}:){7,7}[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,7}:|([0-9a-fA-F]{1,4}:){1,6}:[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,5}(:[0-9a-fA-F]{1,4}){1,2}|([0-9a-fA-F]{1,4}:){1,4}(:[0-9a-fA-F]{1,4}){1,3}|([0-9a-fA-F]{1,4}:){1,3}(:[0-9a-fA-F]{1,4}){1,4}|([0-9a-fA-F]{1,4}:){1,2}(:[0-9a-fA-F]{1,4}){1,5}|[0-9a-fA-F]{1,4}:((:[0-9a-fA-F]{1,4}){1,6})|:((:[0-9a-fA-F]{1,4}){1,7}|:)|fe80:(:[0-9a-fA-F]{0,4}){0,4}%[0-9a-zA-Z]{1,}|::(ffff(:0{1,4}){0,1}:){0,1}((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])|([0-9a-fA-F]{1,4}:){1,4}:((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9]))"
 
 def generate_url_http_validator() -> Validator:
     # source: https://urlregex.com. Modified to handle the fragment part (what comes after #)
@@ -71,6 +75,17 @@ def generate_url_validator() -> Validator:
         rules=[
             RULE_URL_NO_WHITESPACE,
             should_match(f"^{URL_REGEX}$", "Expected an value like smb://example.com:10445/share/some-file.txt"),
+        ]
+    )
+
+def generate_ipv6_validator() -> Validator:
+    return Validator(
+        name="IPv6 address",
+        rules=[
+            must_match("^[0-9a-fA-F:.\\[\\]]+$", "Only numbers, the letters A-F, colons, dots, and square brackets are allowed"),
+            should_match(f"^{MEDIOCRE_IPV6_REGEX}$", "Should probably look like '2001:0db8:85a3:0000:0000:8a2e:0370:7334' or '::1'"),
+            should_not_match(f"^{IPV4_ADDRESS}$", "Should not be an IPv4 address. If you want a IPv4-mapped IPv6 address, prefix it with '::FFFF:' like this: '::FFFF:123.4.56.78'"),
+
         ]
     )
 
@@ -157,6 +172,7 @@ VALIDATOR_PRESETS = {
     "ipv4_address": generate_ipv4_validator(),
     "ipv4_range_cidr": generate_ipv4_range_cidr_validator(),
     "ipv4_range_dashes": generate_ipv4_range_dash_validator(),
+    "ipv6_address": generate_ipv6_validator(),
     "path_linux": generate_path_linux_validator(),
     "path_windows": generate_path_windows_validator(),
     "port_number": generate_port_validator(),
