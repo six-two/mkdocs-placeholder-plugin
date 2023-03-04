@@ -18,3 +18,5 @@ It is also generatedwith JavaScript:
 xXSS_DROPDOWN_ALLx
 
 xVALIDATOR_IPV4_ADDRESSx
+
+xVALIDATOR_FILE_WINDOWSx

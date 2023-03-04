@@ -1,6 +1,13 @@
 PlaceholderPlugin.validate_input = (value, placeholder_name) => {
     const messages = [];
-    const validator_list = PlaceholderData.textbox_map[placeholder_name].validators;
+
+    // Return if the type does not support validators
+    const data = PlaceholderData.textbox_map[placeholder_name];
+    if (data == undefined) {
+        return messages;
+    }
+
+    const validator_list = data.validators;
     if (validator_list) {
         for (const validator of validator_list) {
             const new_messages = PlaceholderPlugin.get_validator_error_messages(value, validator);
@@ -156,10 +163,10 @@ PlaceholderPlugin.show_tooltip = (input_field, rating, message) => {
 }
 
 // apply_value: if set to true, this value will be set if it passes muster, otherwise a popup will be shown
-// @TODO later: performance improvements: cache regex, only apply to fields that actually have validators set
+// Returns "false" if the value has an error, so for example page reloading should be cancelled.
 PlaceholderPlugin.validate_input_field = (input_field, placeholder_name, apply_value) => {
     const status = PlaceholderPlugin.validate_input(input_field.value, placeholder_name);
-    debug("Validation:", placeholder_name, input_field.value, status);
+    debug("Validation: name =", placeholder_name, ", value =", input_field.value, ", results =", status);
     if (status && status.length != 0) {
         const [rating, message] = status;
 
@@ -167,7 +174,7 @@ PlaceholderPlugin.validate_input_field = (input_field, placeholder_name, apply_v
 
         if (rating == "error" && apply_value) {
             alert(`Failed to apply value for placeholder ${placeholder_name} because it does not pass validation.\n${message}`);
-            return;
+            return false;
         }
     } else {
         PlaceholderPlugin.remove_tooltip(input_field);
@@ -177,4 +184,5 @@ PlaceholderPlugin.validate_input_field = (input_field, placeholder_name, apply_v
         PlaceholderPlugin.store_textbox_state(placeholder_name, input_field.value);
         PlaceholderPlugin.on_placeholder_change();
     }
+    return true;
 }

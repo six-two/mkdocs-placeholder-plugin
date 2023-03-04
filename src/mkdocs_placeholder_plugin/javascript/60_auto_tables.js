@@ -56,7 +56,11 @@ PlaceholderPlugin.generate_automatic_placeholder_table = (element, columns, used
                 const input = createChildElement(cell, "input");
                 const action = PlaceholderPlugin.prepare_input_field_for_placeholder(placeholder_name, input);
                 if (typeof(action) == "function") {
-                    apply_actions.push(action);
+                    apply_actions.push({
+                        "element": input,
+                        "placeholder": placeholder_name,
+                        "function": action
+                    });
                 }
             } else if (column == "description-or-name") {
                 const text = PlaceholderData.common_map[placeholder_name].description || placeholder_name;
@@ -82,10 +86,17 @@ PlaceholderPlugin.generate_automatic_placeholder_table = (element, columns, used
                 button.classList.add("placeholder-input-apply-button", "md-button", "md-button--primary");
                 button.addEventListener("click", () => {
                     debug("Apply button clicked");
-                    for (pre_apply_function of apply_actions) {
-                        pre_apply_function();
+                    let reload = true;
+                    for (const action of apply_actions) {
+                        debug("Pre apply function for", action.element);
+                        if (!action.function()) {
+                            // If there is a severe error in a field, so that it does not get stored, then disable the reload
+                            reload = false;
+                        }
                     }
-                    PlaceholderPlugin.reload_page();
+                    if (reload) {
+                        PlaceholderPlugin.reload_page();
+                    }
                 });
                 debug(`Apply button has ${apply_actions.length} actions assigned`);
                 appendTextNode(button, "Apply new values");

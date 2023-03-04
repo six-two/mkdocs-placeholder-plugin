@@ -10,7 +10,7 @@ PlaceholderPlugin.prepare_textbox_field = (placeholder_name, input_element) => {
     // Restore the stored state
     input_element.value = localStorage.getItem(placeholder_name) || placeholder_name + " is undefined";
 
-    let data = PlaceholderData.textbox_map[placeholder_name];
+    const data = PlaceholderData.textbox_map[placeholder_name];
     if (data["read_only"]) {
         // disable the checkbox
         input_element.disabled = "1";
@@ -41,7 +41,7 @@ PlaceholderPlugin.prepare_textbox_field = (placeholder_name, input_element) => {
                 }
             });
             // Return an action to perform when the apply button is clicked
-            return () => PlaceholderPlugin.validate_input_field(placeholder_name, input_element.value, true);
+            return () => PlaceholderPlugin.validate_input_field(input_element, placeholder_name, true)
         }
     }
 };
@@ -49,8 +49,8 @@ PlaceholderPlugin.prepare_textbox_field = (placeholder_name, input_element) => {
 // For checkbox fields
 PlaceholderPlugin.prepare_checkbox_field = (placeholder_name, input_element) => {
     // Restore the stored state
-    data = PlaceholderData.checkbox_map[placeholder_name];
-    last_state = PlaceholderPlugin.load_checkbox_state(placeholder_name);
+    const data = PlaceholderData.checkbox_map[placeholder_name];
+    const last_state = PlaceholderPlugin.load_checkbox_state(placeholder_name);
     input_element.type = "checkbox";
     input_element.checked = last_state;
     if (data["read_only"]) {
@@ -71,10 +71,10 @@ PlaceholderPlugin.prepare_dropdown_field = (placeholder_name, input_element) => 
     // Restore the stored state
     const new_node = document.createElement("select");
     new_node.classList.add("placeholder-dropdown"); 
-    data = PlaceholderData.dropdown_map[placeholder_name];
-    option_list = data["options"];
+    const data = PlaceholderData.dropdown_map[placeholder_name];
+    const option_list = data["options"];
 
-    for (var i = 0; i < option_list.length; i++) {
+    for (let i = 0; i < option_list.length; i++) {
         const option = document.createElement("option");
         option.text = option_list[i][0];
         new_node.appendChild(option);
@@ -83,7 +83,7 @@ PlaceholderPlugin.prepare_dropdown_field = (placeholder_name, input_element) => 
     input_element.parentNode.replaceChild(new_node, input_element);
 
     // Select the stored option
-    selected_index = PlaceholderPlugin.load_dropdown_state(placeholder_name);
+    const selected_index = PlaceholderPlugin.load_dropdown_state(placeholder_name);
     new_node.selectedIndex = selected_index;
 
     if (data["read_only"]) {
