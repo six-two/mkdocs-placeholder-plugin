@@ -18,7 +18,13 @@ URL (HTTP or HTTPS) | `url_http` | <input data-input-for="VALIDATOR_URL_HTTP">
 
 ## Test buttons
 
+### Invalid values on page load
+
 When you click this button and reload the page, you should see the value reset to the default and a warning message in the console:
 
 <button class="md-button md-button--primary" onclick="localStorage.setItem('VALIDATOR_DOMAIN', 'not-a-valid/domain.')">Assign invalid value to domain input field</button>
+
+### Disable page reload
+
+<button class="md-button md-button--primary" onclick="PlaceholderPlugin.debug_disable_reload()">Debug: Disable page reload</button>
 

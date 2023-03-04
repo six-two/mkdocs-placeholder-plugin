@@ -1,8 +1,5 @@
 # Tests: Automatic input tables
 
-!!! note "XSS dropdown value"
-    xXSS_DROPDOWN_ALLx
-
 <button class="md-button md-button--primary" onclick="PlaceholderPlugin.debug_disable_reload()">Debug: Disable page reload</button>
 
 
@@ -15,3 +12,9 @@
 It is also generatedwith JavaScript:
 
 <div class="auto-input-table" data-columns="description-or-name,input"></div>
+
+### Placeholders
+
+xXSS_DROPDOWN_ALLx
+
+xVALIDATOR_IPV4_ADDRESSx

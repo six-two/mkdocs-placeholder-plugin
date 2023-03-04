@@ -97,12 +97,14 @@ PlaceholderPlugin.is_accepted_for_placeholder = (value, placeholder_name) => {
     const validator_list = PlaceholderData.textbox_map[placeholder_name].validators;
     if (validator_list) {
         for (const validator of validator_list) {
-            if (!PlaceholderPlugin.is_accepted_by_validator(value, validator)) {
-                return false;
+            if (PlaceholderPlugin.is_accepted_by_validator(value, validator)) {
+                return true;
             }
         }
+        return false;
+    } else {
+        return true;
     }
-    return true;
 }
 
 PlaceholderPlugin.is_accepted_by_validator = (value, validator) => {

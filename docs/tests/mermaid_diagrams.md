@@ -59,6 +59,3 @@ sequenceDiagram
   end
   Note right of xCOMB_FIRST_NAMEx: xTESTx
 ```
-
-
-@TODO: Create simple diagrams for all officially supported types

@@ -6,7 +6,8 @@ You can also warn users, that values may break stuff (for example if a value con
 ## Predefined validators
 
 There exists a (hopefully growing) number of predefined validators.
-You can directly specify the names of the validators that you want to use.
+You can simply specify the name of the validator that you want to use.
+You can see (and try out) the full list of predefined validators [on this page](./tests/validators.md).
 
 ### Example
 
@@ -25,7 +26,6 @@ Try it out:
 
 <input data-input-for="VALIDATOR_IPV4_ADDRESS">
 
-You can see (and try out) the available validators [on this page](./tests/validators.md).
 
 ## Custom validators
 

@@ -117,6 +117,7 @@ PlaceholderPlugin.prepare_input_field_for_placeholder = (placeholder_name, input
         return PlaceholderPlugin.prepare_textbox_field(placeholder_name, input);
     } else {
         console.warn(`Unknown placeholder referenced in input element: '${placeholder_name}'`);
+        input.value = `ERROR_UNDEFINED_PLACEHOLDER: ${placeholder_name}`;
     }
 }
 
