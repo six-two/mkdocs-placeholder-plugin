@@ -186,5 +186,12 @@ Starting with version 0.2.2 you can add the following tag into your page:
 
 These tags will be detected by the JavaScript.
 Then a row for each placeholder, that was actually used on the site will be generated and added as children to the element.
-Currently only limited features are supported (no support for `reload_on_change` and `add_apply_table_column`, etc).
+Currently some features of the static tables may not be supported, but they should be in future releases.
 
+Valid column names for `data-columns` are:
+
+- `description`
+- `description-or-name`
+- `input`
+- `name`
+- `value`

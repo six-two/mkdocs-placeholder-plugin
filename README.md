@@ -26,6 +26,9 @@ The corresponding documentation is hosted at <https://dev.mkdocs-placeholder-plu
 
 ### HEAD
 
+- Bugfixes:
+    - `auto_placeholder_tables_javascript` had no effect
+
 ### Version 0.2.4
 
 - Added input validation:

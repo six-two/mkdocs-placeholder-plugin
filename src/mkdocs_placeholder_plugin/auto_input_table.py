@@ -23,11 +23,14 @@ class AutoTableInserter:
         self.admonitions = plugin_config.auto_placeholder_tables_collapsible
 
     def add_to_page(self, markdown: str) -> str:
-        if self.input_table_generator:
-            table_markdown = self.input_table_generator.create_placeholder_input_table(self.settings, markdown)
-        else:
+        if self.input_table_string:
+            # We use the javascript version, so we just need to add the same string for each page.
+            # But we check if the page contains any placeholders, so that we can skip pages we do not need to modify
             page_has_placeholders = self.input_table_generator.auto_detect_placeholders_used_in_page(markdown)
             table_markdown = self.input_table_string if page_has_placeholders else ""
+        else:
+            # Generate a custom placeholder input table for this page
+            table_markdown = self.input_table_generator.create_placeholder_input_table(self.settings, markdown)
 
         if table_markdown:
             if self.admonitions:
