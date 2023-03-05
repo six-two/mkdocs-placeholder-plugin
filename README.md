@@ -26,6 +26,8 @@ The corresponding documentation is hosted at <https://dev.mkdocs-placeholder-plu
 
 ### HEAD
 
+### Version 0.2.5
+
 - When an JavaScript generated `auto-input-table` is empty, now a info box is shown (instead of nothing / an empty table).
 - Bugfixes:
     - `auto_placeholder_tables_javascript` had no effect.
@@ -92,3 +94,23 @@ The corresponding documentation is hosted at <https://dev.mkdocs-placeholder-plu
 - Show a warning if an `input` element references a non-existent variable
 - Show a warning if a variable name does not match the recommended format
 - Perform type checks/conversions when loading placeholder data from the data file
+
+## Process for releases
+
+This is just for me :)
+
+1. Run linters:
+    ```
+    mypy src
+    ```
+    ```
+    pyflakes src
+    ```
+2. Update the changelog in this README file.
+3. Update version number in `setup.cfg`.
+4. Build and update package.
+5. Create a commit for the release (`Version 0.X.Y`) and push it.
+6. Update the `latest-release` branch, so that the documentation website gets updated:
+    ```
+    git branch --force latest-release HEAD
+    ```
