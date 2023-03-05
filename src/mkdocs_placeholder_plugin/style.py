@@ -26,6 +26,14 @@ table tr td select.placeholder-dropdown {
 table tr td input.input-for-variable[type="checkbox"] {
     min-width: initial;
 }
+
+.auto-input-table .info-message {
+    background-color: lightgray;
+    color: black;
+    border: 1px solid gray;
+    border-radius: 4px;
+    padding: 4px;
+}
 """
 
 # MkDocs Material specific code

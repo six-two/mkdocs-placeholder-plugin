@@ -7,22 +7,38 @@ PlaceholderPlugin.TABLE_CELL_HEADINGS = {
 }
 
 PlaceholderPlugin.generate_automatic_placeholder_table = (element, columns, used_placeholders) => {
-    if (used_placeholders.length == 0) {
-        // Do not create an empty table
-        return;
-    }
-
+    
     // Helper functions to simplify the following code
     const appendTextNode = (element, text) => {
         element.appendChild(document.createTextNode(text));
     }
-
+    
     const createChildElement = (parent, tag_name) => {
         const child = document.createElement(tag_name);
         parent.appendChild(child);
         return child;
     }
 
+    let placeholders_to_show = used_placeholders;
+    if (PlaceholderData.auto_table_hide_read_only) {
+        placeholders_to_show = placeholders_to_show.filter(placeholder_name => !PlaceholderData.common_map[placeholder_name].read_only);
+    }
+
+    if (placeholders_to_show.length == 0) {
+        // Do not create an empty table. Instead show a warning on the page
+        const div = createChildElement(element, "div");
+        div.classList.add("info-message");
+        if (used_placeholders.length == 0) {
+            appendTextNode(div, "Input table empty: No placeholders are used on this page")
+        } else if (used_placeholders.length == 1) {
+            // Special case to fix the gramar
+            appendTextNode(div, `Input table empty: 1 placeholders was used, but it is read-only`);
+        } else {
+            appendTextNode(div, `Input table empty: ${used_placeholders.length} placeholders were used, but are all read-only`);
+        }
+        return;
+    }
+    
     info("Creating automatic input table at", element, "with columns", columns);
     // element.innerHTML = ""; // remove all children
     const table = createChildElement(element, "table");
@@ -36,7 +52,7 @@ PlaceholderPlugin.generate_automatic_placeholder_table = (element, columns, used
     }
 
     const apply_actions = [];
-    for (placeholder_name of used_placeholders) {
+    for (placeholder_name of placeholders_to_show) {
         if (PlaceholderData.auto_table_hide_read_only &&
                     PlaceholderData.common_map[placeholder_name].read_only) {
             debug(`auto_table: Skipping ${placeholder_name} because it is read-only`)

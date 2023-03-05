@@ -26,6 +26,7 @@ The corresponding documentation is hosted at <https://dev.mkdocs-placeholder-plu
 
 ### HEAD
 
+- When an JavaScript generated `auto-input-table` is empty, now a info box is shown (instead of nothing / an empty table).
 - Bugfixes:
     - `auto_placeholder_tables_javascript` had no effect
 
