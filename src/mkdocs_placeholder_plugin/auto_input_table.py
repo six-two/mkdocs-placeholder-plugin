@@ -11,6 +11,8 @@ class AutoTableInserter:
             entries=["auto"],
             show_readonly=False
         )
+        self.hide_read_only = not plugin_config.table_default_show_readonly
+        self.read_only_placeholder_names = set([x.name for x in placeholders.values() if x.read_only])
         self.input_table_generator = InputTableGenerator(placeholders, plugin_config.table_default_show_readonly,
                                         plugin_config.table_default_type, plugin_config.add_apply_table_column)
         if plugin_config.auto_placeholder_tables_javascript:
@@ -24,10 +26,7 @@ class AutoTableInserter:
 
     def add_to_page(self, markdown: str) -> str:
         if self.input_table_string:
-            # We use the javascript version, so we just need to add the same string for each page.
-            # But we check if the page contains any placeholders, so that we can skip pages we do not need to modify
-            page_has_placeholders = self.input_table_generator.auto_detect_placeholders_used_in_page(markdown)
-            table_markdown = self.input_table_string if page_has_placeholders else ""
+            table_markdown = self.get_javascript_table_for_page(markdown)
         else:
             # Generate a custom placeholder input table for this page
             table_markdown = self.input_table_generator.create_placeholder_input_table(self.settings, markdown)
@@ -41,3 +40,19 @@ class AutoTableInserter:
         else:
             # No entries in table -> no placeholders on page -> we do not need to modify it
             return markdown
+
+    def get_javascript_table_for_page(self, markdown: str) -> str:
+        # We use the javascript version, so we just need to add the same string for each page.
+        # But we check if the page contains any placeholders that should be shown, so that we can skip pages we do not need to modify
+        used_placeholders = self.input_table_generator.auto_detect_placeholders_used_in_page(markdown)
+        if used_placeholders and self.hide_read_only:
+            # This checks whether all placeholders are readonly
+            for placeholder in used_placeholders:
+                if placeholder not in self.read_only_placeholder_names:
+                    # At least one non-read-only placeholder exists -> show the table
+                    return self.input_table_string
+            # All placeholders are read only and should not be shown -> do not show the table
+            return ""
+        else:
+            # Nothing needs to be hidden, so the check is straight forward
+            return self.input_table_string if used_placeholders else ""
