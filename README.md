@@ -113,4 +113,5 @@ This is just for me :)
 6. Update the `latest-release` branch, so that the documentation website gets updated:
     ```
     git branch --force latest-release HEAD
+    git push origin latest-release
     ```
