@@ -77,3 +77,6 @@ markdown_extensions:
   # for tabs
   - pymdownx.tabbed:
       alternate_style: true
+
+watch:
+- placeholder-plugin.yaml

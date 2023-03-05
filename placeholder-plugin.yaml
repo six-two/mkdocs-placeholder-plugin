@@ -73,6 +73,7 @@ MULTI_VALIDATORS:
   description: "Multiple validators: one of IPv4 address, domain name, and hostname"
   validators:
   - ipv4_address
+  # - ipv4_address # duplicate, should cause a warning
   - domain
   - hostname
   - name: IPv6 loopback
@@ -161,6 +162,7 @@ CHECKBOX:
     checked: "Checkbox checked"
     unchecked: "Checkbox NOT Checked"
   read_only: true
+  # validators: ipv4_address # should cause a warning and then be ignored
 QUOTE_CHECKBOX:
   description: Use double quotes?
   default: checked
@@ -188,8 +190,8 @@ READ_ONLY_DROPDOWN:
     "C": "c"
 
 
-# This should cause an warning:
-Bad_Name Format: please do not use a variable name like this
+# # This should cause an warning:
+# Bad_Name Format: please do not use a variable name like this
 
 # This should cause an error if uncommented
 #BAD_VALUE: [1, 2, 3]
@@ -219,11 +221,12 @@ XSS_THREE: "</input><script>confirm(3)</script>" # Similar to first
 PIPE_IN_DESCRIPTION:
   default: ""
   description: <s>Pipes | in || description
-"<s>BAD_NAME<script>confirm(3)</script>": "bad name"
 XSS_DROPDOWN:
   values:
     "<s>1": "<s>one<svg/onload=alert(1)>"
     "</option>2": "</option>two"
+# # Should cause a warning
+# "<s>BAD_NAME<script>confirm(3)</script>": "bad name"
 
 # TEST COMBINED VARIABLES
 # This one needs to be specified first, since it includes the other variables
@@ -241,3 +244,9 @@ COMB_DOMAIN:
 PLACEHOLDERTABLE:
   default: placeholdertable
   read_only: true
+
+# ERROR_VALIDATOR_NO_RULES:
+#   default: Empty rules are not allowed
+#   validators:
+#   - name: Will cause error
+#     rules: []

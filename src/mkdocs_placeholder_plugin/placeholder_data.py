@@ -138,7 +138,7 @@ def parse_placeholder_dict(name: str, data: dict[str,Any]) -> Placeholder:
         values = parse_values(data)
         default_value, default_function = parse_defaults(data, values)
         input_type = determine_input_type(values, default_value)
-        validator_list = parse_validator_list(data, input_type, default_value)
+        validator_list = parse_validator_list(name, data, input_type, default_value)
 
         return Placeholder(
             name=name,
@@ -153,7 +153,7 @@ def parse_placeholder_dict(name: str, data: dict[str,Any]) -> Placeholder:
         )
     except Exception as ex:
         message = f"Missing key {ex}" if type(ex) == KeyError else str(ex)
-        raise PluginError(f"Failed to parse placeholder '{name}': {message}\n\nCaused by placeholder data: {json.dumps(data, indent=4)}")
+        raise PluginError(f"Failed to parse placeholder '{name}': {message}\n\nCaused by placeholder {name}")
 
 
 def parse_defaults(data: dict[str,Any], values: dict[str,str]) -> tuple[str, str]:
@@ -197,8 +197,8 @@ def determine_input_type(values: dict[str,str], default_value: str) -> InputType
         return InputType.Field
 
 
-def parse_validator_list(data: dict[str,Any], input_type: InputType, default_value: str) -> list[Validator]:
-    validator_list = []
+def parse_validator_list(placeholder_name: str, data: dict[str,Any], input_type: InputType, default_value: str) -> list[Validator]:
+    validator_list: list[Validator] = []
     # Validators only exist for textboxes:
     if input_type == InputType.Field:
         if "validators" in data:
@@ -227,6 +227,15 @@ def parse_validator_list(data: dict[str,Any], input_type: InputType, default_val
             if validator_list:
                 assert_matches_one_validator(validator_list, default_value)
 
+                validator_names = [v.name for v in validator_list]
+                duplicate_names = [x for x in validator_names if validator_names.count(x) > 1]
+                if duplicate_names:
+                    pretty_names_list = ", ".join(sorted(set(duplicate_names)))
+                    warning(f"Placeholder {placeholder_name} has multiple validators with the same name(s). Are they redundant? Duplicate(s): {pretty_names_list}")
+    else:
+        if "validators" in data:
+            warning(f"Placeholder {placeholder_name} has field 'validators', but is not a text field. Any validators for it will be ignored.")
+
     return validator_list
 
 
@@ -239,6 +248,9 @@ def parse_validator_object(data: dict[str,Any]) -> Validator:
         rules_data = data["rules"]
         if type(rules_data) != list:
             raise PluginError(f"Wrong type for key 'rules_data': Expected 'list', got '{type(rules_data).__name__}'")
+
+        if not rules_data:
+            raise PluginError("Validators neet to have at least a rule, but received an empty list")
 
         rules = [parse_validator_rule(x) for x in rules_data]
         return Validator(
