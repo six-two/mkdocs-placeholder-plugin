@@ -169,3 +169,9 @@ mkdocs-theme.yml
 
 # IDE configuration
 .vscode/
+
+# JavaScript modules
+node_modules/
+
+# Output of Typescript build
+src/mkdocs_placeholder_plugin/javascript/70_typescript_output.js
