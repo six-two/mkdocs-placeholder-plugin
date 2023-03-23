@@ -1,10 +1,4 @@
-import { escapeHTML } from "./test";
+import { parse_settings } from "./parse_settings";
 
-const world = 'world';
-
-function hello(who: string = world): string {
-  return escapeHTML(`<b>Hello ${who}!</b>`);
-}
-
-document.write(hello());
-alert(hello());
+const settings = parse_settings((window as any).PlaceholderPlugin.raw_data);
+console.info("Settings", settings);
