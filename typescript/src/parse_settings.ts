@@ -8,8 +8,7 @@ const assert_field_type = (name: string, expected_type_str: string, parent_objec
     const value = parent_object[name];
     const actual_type_str = typeof(value);
     if (actual_type_str != expected_type_str) {
-        const msg = `Type mismatch: ${name} should be ${expected_type_str}, but is ${actual_type_str}.\nProblematic object: ${JSON.stringify(parent_object)}`;
-        throw new Error(msg);
+        throw new Error(`Type mismatch: ${name} should be ${expected_type_str}, but is ${actual_type_str}.\nProblematic object: ${JSON.stringify(parent_object)}`);
     } else {
         return value;
     }
@@ -44,19 +43,24 @@ const get_array_field = (name: string, element_type: string, parent_object: any)
     }
 }
 
-
+export interface PluginConfig {
+    placeholders: Map<string,Placeholder>;
+    textboxes: Map<string,TextboxPlaceholder>;
+    checkboxes: Map<string,CheckboxPlaceholder>;
+    dropdowns: Map<string,DropdownPlaceholder>;
+    settings: PluginSettings,
+}
 
 export interface PluginSettings {
     debug: boolean;
     // apply_button: boolean;
-    // delay_millis: number;
+    delay_millis: number;
     // reload_on_change: boolean; // To be maybe removed in the future
-    // placeholders: Map<string,Placeholder>;
-    // textboxes: Map<string,Placeholder>;
 }
 
 export interface BasePlaceholer {
     type: string;
+    name: string;
     description: string;
     read_only: boolean;
     allow_inner_html: boolean;
@@ -73,20 +77,68 @@ export interface CheckboxPlaceholder extends BasePlaceholer {
     checked_by_default: boolean;
 }
 
-export type Placeholder = TextboxPlaceholder | CheckboxPlaceholder;
+export interface DropdownPlaceholder extends BasePlaceholer {
+    options: DropdownOption[];
+    default_index: number;
+}
 
-export const parse_settings = (data: any): PluginSettings => {
+export interface DropdownOption {
+    display_name: string;
+    value: string;
+}
+
+
+export type Placeholder = TextboxPlaceholder | CheckboxPlaceholder | DropdownPlaceholder;
+
+export const parse_config = (data: any): PluginConfig => {
+    const placeholder_map: Map<string,Placeholder> = new Map<string,Placeholder>();
+    const textboxes: Map<string,TextboxPlaceholder> = new Map<string,TextboxPlaceholder>();
+    const checkboxes: Map<string,CheckboxPlaceholder> = new Map<string,CheckboxPlaceholder>();
+    const dropdowns: Map<string,DropdownPlaceholder> = new Map<string,DropdownPlaceholder>();
+
+    const placeholder_data = get_array_field("placeholders", "object", data);
+    for (const pd of placeholder_data) {
+        const placeholder = parse_any_placeholder(pd);
+
+        // Add the placeholder to the correct lists
+        placeholder_map.set(placeholder.name, placeholder);
+        if (placeholder.type == "textbox") {
+            textboxes.set(placeholder.name, placeholder as TextboxPlaceholder);
+        } else if (placeholder.type == "checkbox") {
+            checkboxes.set(placeholder.name, placeholder as CheckboxPlaceholder);
+        } else if (placeholder.type == "dropdown") {
+            dropdowns.set(placeholder.name, placeholder as DropdownPlaceholder);
+        } else {
+            console.warn("Unknown placeholder type:", placeholder.type);
+        }
+    }
+
     return {
-        "debug": get_boolean_field("debug", data),
         // @TODO resume here
+        "placeholders": placeholder_map,
+        "textboxes": textboxes,
+        "checkboxes": checkboxes,
+        "dropdowns": dropdowns,
+        "settings": parse_settings(data),
+
     }
 }
+
+const parse_settings = (data: any): PluginSettings => {
+    return {
+        "debug": get_boolean_field("debug", data),
+        "delay_millis": get_number_field("delay_millis", data),
+
+    }
+}
+
 
 const parse_any_placeholder = (data: any): Placeholder => {
     const type = get_string_field("type", data);
     // Parse fields that are shared between all placeholders
     let parsed = {
         "type": type,
+        "name": get_string_field("name", data),
         "description": get_string_field("description", data),
         "read_only": get_boolean_field("read_only", data),
         "allow_inner_html": get_boolean_field("allow_inner_html", data),
@@ -97,7 +149,8 @@ const parse_any_placeholder = (data: any): Placeholder => {
         return finish_parse_textbox(parsed, data);
     } else if (type == "checkbox") {
         return finish_parse_checkbox(parsed, data);
-        // @TODO: add dropdown too
+    } else if (type == "dropdown") {
+        return finish_parse_dropdown(parsed, data);
     } else {
         throw new Error(`Unsupported placeholder type '${type}'`);
     }
@@ -142,4 +195,27 @@ const finish_parse_checkbox = (parsed: BasePlaceholer, data: any): CheckboxPlace
         ...parsed,
     }
 }
+
+const finish_parse_dropdown = (parsed: BasePlaceholer, data: any): DropdownPlaceholder => {
+    const raw_options = get_array_field("options", "object", data);
+    const options: DropdownOption[] = [];
+    for (const option of raw_options) {
+        options.push({
+            display_name: get_string_field("display_name", option),
+            value: get_string_field("value", option),
+        });
+    }
+    const default_index = get_number_field("default_index", data);
+    if (default_index < 0) {
+        throw new Error(`Invalid value: "default_index" should not be negative, but is ${default_index}.\nProblematic object: ${JSON.stringify(data)}`);
+    } else if (default_index >= options.length) {
+        throw new Error(`Invalid value: "default_index" should be smaller than the number of options (${options.length}), but is ${default_index}.\nProblematic object: ${JSON.stringify(data)}`);
+    }
+    return {
+        "options": options,
+        "default_index": default_index,
+        ...parsed,
+    }
+}
+
 
