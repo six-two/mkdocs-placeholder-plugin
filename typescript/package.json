@@ -6,7 +6,6 @@
     "webpack-cli": "^5.0.1"
   },
   "scripts": {
-    "buildold": "tsc --outFile ../src/mkdocs_placeholder_plugin/javascript/70_typescript_output.js",
     "build": "webpack --mode production"
   }
 }

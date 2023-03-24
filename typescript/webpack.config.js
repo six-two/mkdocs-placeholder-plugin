@@ -15,7 +15,7 @@ module.exports = {
     extensions: ['.tsx', '.ts', '.js'],
   },
   output: {
-    filename: "70_typescript_output.js",
-    path: path.resolve(__dirname, "../src/mkdocs_placeholder_plugin/javascript/"),
+    filename: "bundle.min.js",
+    path: path.resolve(__dirname, "build/"),
   }
 };
