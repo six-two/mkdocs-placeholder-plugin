@@ -1,3 +1,4 @@
+import { load_checkbox_state, load_dropdown_state } from "./state_manager";
 // This should be a more type safe reimplementation of 10_parse_data.js.
 // It has some breaking changes, since I try to improve how the javascript code works
 
@@ -61,6 +62,7 @@ export interface BasePlaceholer {
     description: string;
     read_only: boolean;
     allow_inner_html: boolean;
+    current_value: string;
 }
 
 export interface TextboxPlaceholder extends BasePlaceholer {
@@ -72,11 +74,13 @@ export interface CheckboxPlaceholder extends BasePlaceholer {
     value_checked: string;
     value_unchecked: string;
     checked_by_default: boolean;
+    current_is_checked: boolean;
 }
 
 export interface DropdownPlaceholder extends BasePlaceholer {
     options: DropdownOption[];
     default_index: number;
+    current_index: number;
 }
 
 export interface DropdownOption {
@@ -138,15 +142,22 @@ const parse_any_placeholder = (data: any): Placeholder => {
         "description": get_string_field("description", data),
         "read_only": get_boolean_field("read_only", data),
         "allow_inner_html": get_boolean_field("allow_inner_html", data),
+        "current_value": "UNINITIALIZED", // should be replaced by the 'load_*_state' funcion, that is called later on in this function
     };
 
     // Parse the type specific attributes
     if (type === "textbox") {
-        return finish_parse_textbox(parsed, data);
+        const placeholder = finish_parse_textbox(parsed, data);
+        // @TODO
+        return placeholder;
     } else if (type == "checkbox") {
-        return finish_parse_checkbox(parsed, data);
+        const placeholder = finish_parse_checkbox(parsed, data);
+        load_checkbox_state(placeholder);
+        return placeholder
     } else if (type == "dropdown") {
-        return finish_parse_dropdown(parsed, data);
+        const placeholder = finish_parse_dropdown(parsed, data);
+        load_dropdown_state(placeholder);
+        return placeholder;
     } else {
         throw new Error(`Unsupported placeholder type '${type}'`);
     }
@@ -187,7 +198,8 @@ const finish_parse_checkbox = (parsed: BasePlaceholer, data: any): CheckboxPlace
     return {
         "value_checked": get_string_field("value_checked", data),
         "value_unchecked": get_string_field("value_unchecked", data),
-        "checked_by_default": get_boolean_field("checked_by_default", data),    
+        "checked_by_default": get_boolean_field("checked_by_default", data),
+        "current_is_checked": false, // should be replaced by the 'load_*_state' function, that should be called on the result
         ...parsed,
     }
 }
@@ -210,6 +222,7 @@ const finish_parse_dropdown = (parsed: BasePlaceholer, data: any): DropdownPlace
     return {
         "options": options,
         "default_index": default_index,
+        "current_index": 0, // should be replaced by the 'load_*_state' function, that should be called on the result
         ...parsed,
     }
 }
