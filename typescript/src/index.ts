@@ -1,4 +1,4 @@
-import { parse_settings } from "./parse_settings";
+import { parse_config } from "./parse_settings";
 
-const settings = parse_settings((window as any).PlaceholderPlugin.raw_data);
+const settings = parse_config((window as any).PlaceholderConfig);
 console.info("Settings", settings);

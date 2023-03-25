@@ -39,6 +39,7 @@ def copy_assets_to_mkdocs_site_directory(config: MkDocsConfig, plugin_config: Pl
     theme_name = config.theme.name or "mkdocs"
     placeholder_data_json = generate_placeholder_json(theme_name, placeholders, plugin_config)
     text = text.replace("__MKDOCS_PLACEHOLDER_PLUGIN_JSON__", placeholder_data_json)
+    text = text.replace("__MKDOCS_PLACEHOLDER_PLUGIN_NEW_JSON__", generate_new_placeholder_json(theme_name, placeholders, plugin_config))
 
     # write back the results
     parent_dir = os.path.dirname(custom_js_path)
@@ -114,5 +115,63 @@ def generate_placeholder_json(theme_name: str, placeholders: dict[str, Placehold
         "auto_table_hide_read_only": not plugin_config.table_default_show_readonly,
         "reload": plugin_config.reload_on_change,
         "debug": plugin_config.debug_javascript,
+    }
+    return json.dumps(result_object, indent=None, sort_keys=False)
+
+
+def generate_new_placeholder_json(theme_name: str, placeholders: dict[str, Placeholder], plugin_config: PlaceholderPluginConfig) -> str:
+    """
+    Generate the JSON string, that will replace the placeholder in the JavaScript file
+    """
+    placeholder_data_list = []
+    for placeholder in placeholders.values():
+        placeholder_data = {
+            "name": placeholder.name,
+            "description": placeholder.description,
+            "read_only": placeholder.read_only,
+            "allow_inner_html": placeholder.replace_everywhere,
+        }
+        if placeholder.input_type == InputType.Checkbox:
+            placeholder_data.update({
+                "type": "checkbox",
+                "value_checked": placeholder.values["checked"],
+                "value_unchecked": placeholder.values["unchecked"],
+                "checked_by_default": bool(placeholder.default_value == "checked"),
+            })
+        elif placeholder.input_type == InputType.Dropdown:
+            # Figure out the index of the item selected by default
+            default_index = 0
+            for index, value in enumerate(placeholder.values.keys()):
+                if placeholder.default_value == value:
+                    default_index = index
+
+            placeholder_data.update({
+                "type": "dropdown",
+                "default_index": default_index,
+                "options": [{"display_name": key, "value": value} for key, value in placeholder.values.items()],
+            })
+        elif placeholder.input_type == InputType.Field:
+            placeholder_data.update({
+                "type": "textbox",
+                "validators": [v.name for v in placeholder.validator_list],
+            })
+
+            if placeholder.default_function:
+                placeholder_data["default_function"] = placeholder.default_function
+            else:
+                placeholder_data["default_value"] = placeholder.default_value
+
+        else:
+            raise Exception(f"Unexpected input type: {placeholder.input_type}")
+
+        placeholder_data_list.append(placeholder_data)
+
+
+    result_object = {
+        "placeholder_list": placeholder_data_list,
+        "settings": {
+            "debug": plugin_config.debug_javascript,
+            "delay_millis": plugin_config.replace_delay_millis,
+        },
     }
     return json.dumps(result_object, indent=None, sort_keys=False)

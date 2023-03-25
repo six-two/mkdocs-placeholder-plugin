@@ -1,9 +1,6 @@
 // This should be a more type safe reimplementation of 10_parse_data.js.
 // It has some breaking changes, since I try to improve how the javascript code works
 
-// do first level type checking (does not work for children of objects/lists)
-const input_data = (window as any).PlaceholderPlugin.raw_data;
-
 const assert_field_type = (name: string, expected_type_str: string, parent_object: any): any => {
     const value = parent_object[name];
     const actual_type_str = typeof(value);
@@ -96,7 +93,7 @@ export const parse_config = (data: any): PluginConfig => {
     const checkboxes: Map<string,CheckboxPlaceholder> = new Map<string,CheckboxPlaceholder>();
     const dropdowns: Map<string,DropdownPlaceholder> = new Map<string,DropdownPlaceholder>();
 
-    const placeholder_data = get_array_field("placeholders", "object", data);
+    const placeholder_data = get_array_field("placeholder_list", "object", data);
     for (const pd of placeholder_data) {
         const placeholder = parse_any_placeholder(pd);
 
@@ -113,14 +110,13 @@ export const parse_config = (data: any): PluginConfig => {
         }
     }
 
+    const settings_data = assert_field_type("settings", "object", data);
     return {
-        // @TODO resume here
         "placeholders": placeholder_map,
         "textboxes": textboxes,
         "checkboxes": checkboxes,
         "dropdowns": dropdowns,
-        "settings": parse_settings(data),
-
+        "settings": parse_settings(settings_data),
     }
 }
 
@@ -128,7 +124,7 @@ const parse_settings = (data: any): PluginSettings => {
     return {
         "debug": get_boolean_field("debug", data),
         "delay_millis": get_number_field("delay_millis", data),
-
+        // @TODO resume here
     }
 }
 
