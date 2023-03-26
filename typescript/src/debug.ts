@@ -24,23 +24,28 @@ export const reload_page = () => {
     }
 }
 
-export const create_logging = (enable_debug: boolean) => {
+const noop_logger = {
+    "log": noop,
+    "info": noop,
+    "debug": noop,
+};
+
+export const init_logging = (enable_debug: boolean): void => {
     if (enable_debug) {
         // Write debugging messages to console
-        return {
+        logger = {
             "log": internal_log,
             "info": internal_info,
             "debug": internal_debug,
         }
     } else {
         // If debugging is disabled, make the functions do nothing
-        return {
-            "log": noop,
-            "info": noop,
-            "debug": noop,
-        }
+        logger = noop_logger;
+        return 
     }
 }
+
+export let logger = noop_logger;
 
 
 // You can call this manually from the browser's console to temporarily disable reloads and debug the application

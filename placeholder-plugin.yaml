@@ -128,7 +128,7 @@ PASSWORD:
   description: A randomly generated password updated anytime you clear your localStorage
 
 RANDOM:
-  default-function: "Math.floor(Math.random()*100)"
+  default-function: "`${Math.floor(Math.random()*100)}`"
   description: A random number between 0 and 99
 
 ERROR:

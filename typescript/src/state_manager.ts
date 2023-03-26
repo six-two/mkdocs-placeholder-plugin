@@ -1,4 +1,5 @@
-import { CheckboxPlaceholder, DropdownPlaceholder } from "./parse_settings";
+import { CheckboxPlaceholder, DropdownPlaceholder, TextboxPlaceholder } from "./parse_settings";
+import { logger } from "./debug";
 
 // These functions are here to make it easier to change the storage backend (for example locasstorage -> cookies)
 // and to make it possible to potentially have better debugging
@@ -85,39 +86,56 @@ export const load_dropdown_state = (placeholder: DropdownPlaceholder): void => {
     placeholder.current_value = placeholder.options[placeholder.current_index].value;
 }
 
-// @TODO: resume here
 
-PlaceholderPlugin.store_textbox_state = (placeholder_name, new_value) => {
-    const is_validation_ok = PlaceholderPlugin.is_accepted_for_placeholder(new_value, placeholder_name);
-    info(`Set textbox ${placeholder_name} to '${new_value}'. Validation ok? ${is_validation_ok}`);
+const is_valid_value_for_placeholder = (placeholder: TextboxPlaceholder, new_value: string): boolean => {
+    console.warn("@TODO: implement validation in is_valid_value_for_placeholder");
+    return true;
+}
+
+export const store_textbox_state = (placeholder: TextboxPlaceholder, new_value: string): void => {
+    const is_validation_ok = is_valid_value_for_placeholder(placeholder, new_value);
+    logger.info(`Set textbox ${placeholder.name} to '${new_value}'. Validation ok? ${is_validation_ok}`);
     if (is_validation_ok) {
-        localStorage.setItem(placeholder_name, new_value);
+        store_value(`${placeholder.name}_TEXT`, new_value);
     } else {
-        throw new Error(`Validation error: Value '${is_validation_ok}' is not valid for placeholder ${placeholder_name}`);
+        throw new Error(`Validation error: Value '${new_value}' is not valid for placeholder ${placeholder.name}`);
     }
 }
 
-PlaceholderPlugin.load_textbox_state = (placeholder_name) => {
-    let value = localStorage.getItem(placeholder_name);
-    if (!value) {
-        value = PlaceholderPlugin.default_textbox_value(placeholder_name);
-    }
-    debug(`Read textbox ${placeholder_name}: '${value}'`);
-    return value;
-}
-
-PlaceholderPlugin.default_textbox_value = (placeholder_name) => {
-    let value = PlaceholderData.textbox_map[placeholder_name].value;
-    if (value == undefined) {
-        const value_fn = PlaceholderData.textbox_map[placeholder_name].value_function;
-        try {
-            // convert the result to string
-            value = `${eval(value_fn)}`;
-            debug(`Evaluating value_function: '${value_fn}' -> '${value}'`);
-        } catch (error) {
-            value = "EVALUATION_ERROR";
-            console.error(`Error while evaluating value_function: '${value_fn}'\nError message: ${error}`);
+export const load_textbox_state = (placeholder: TextboxPlaceholder): void => {
+    const stored_state = load_value(`${placeholder.name}_TEXT`);
+    if (stored_state != null) {
+        if (is_valid_value_for_placeholder(placeholder, stored_state)) {
+            placeholder.current_value = stored_state;
+            return; // Do not use the default value / function
+        } else {
+            console.warn(`Stored value for placeholder ${placeholder.name} is invalid: '${stored_state}'. Will revert to default.`);
+            // Should we remove the value? Idk
         }
     }
-    return value;
+
+    // Use a default value
+    if (placeholder.default_value != undefined) {
+        placeholder.current_value = placeholder.default_value;
+        if (!is_valid_value_for_placeholder(placeholder, placeholder.default_value)) {
+            console.warn(`Default value for placeholder '${placeholder.name}' is invalid: '${placeholder.default_value}'`);
+        }
+    } else if (placeholder.default_function) {
+        try {
+            const result = placeholder.default_function();
+            placeholder.current_value = result;
+            try {
+                // store the function result, since it may be different with each invocation (such as a randomly generated password)
+                store_textbox_state(placeholder, result);
+            } catch (error) {
+                console.warn(`Default function for placeholder '${placeholder.name}' returned invalid value: '${result}'`);
+            }
+        } catch (error) {
+            // This will be called if the placeholder's custom function fails
+            console.error(`Error while loading default textbox state for placeholder ${placeholder.name}:`, error);
+            placeholder.current_value = "DEFAULT_FUNCTION_ERROR";            
+        }
+    } else {
+        throw new Error(`Either 'default_value' or 'default_function' needs to be set for placeholder ${placeholder.name}`);
+    }
 }

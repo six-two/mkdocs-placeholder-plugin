@@ -1,4 +1,4 @@
-import { load_checkbox_state, load_dropdown_state } from "./state_manager";
+import { load_checkbox_state, load_dropdown_state, load_textbox_state } from "./state_manager";
 // This should be a more type safe reimplementation of 10_parse_data.js.
 // It has some breaking changes, since I try to improve how the javascript code works
 
@@ -54,6 +54,12 @@ export interface PluginSettings {
     // apply_button: boolean;
     delay_millis: number;
     // reload_on_change: boolean; // To be maybe removed in the future
+    // How normal placeholders are marked
+    normal_prefix: string;
+    normal_suffix: string;
+    // How placeholders using the innerHTML method are marked
+    html_prefix: string;
+    html_suffix: string;
 }
 
 export interface BasePlaceholer {
@@ -63,10 +69,15 @@ export interface BasePlaceholer {
     read_only: boolean;
     allow_inner_html: boolean;
     current_value: string;
+    // How often it is used on the page. This does not necessarily need to be accurate, but 0 should always mean that it is not used on the page.
+    count_on_page: number;
+    // Whether a placeholder change can be done entirely dynamic, or whether it requires a complete reload of the page
+    reload_page_on_change: boolean;
 }
 
 export interface TextboxPlaceholder extends BasePlaceholer {
-    default_function: () => string;
+    default_function?: () => string;
+    default_value?: string;
     validators: string[];//TODO Validator type
 }
 
@@ -128,6 +139,12 @@ const parse_settings = (data: any): PluginSettings => {
     return {
         "debug": get_boolean_field("debug", data),
         "delay_millis": get_number_field("delay_millis", data),
+        // How normal placeholders are marked
+        "normal_prefix": "x",
+        "normal_suffix": "x",
+        // How placeholders using the innerHTML method are marked
+        "html_prefix": "i",
+        "html_suffix": "i",
         // @TODO resume here
     }
 }
@@ -143,12 +160,14 @@ const parse_any_placeholder = (data: any): Placeholder => {
         "read_only": get_boolean_field("read_only", data),
         "allow_inner_html": get_boolean_field("allow_inner_html", data),
         "current_value": "UNINITIALIZED", // should be replaced by the 'load_*_state' funcion, that is called later on in this function
+        "count_on_page": 0, // Will be incremented by the replace functions
+        "reload_page_on_change": false, // May be changed by the replace function
     };
 
     // Parse the type specific attributes
     if (type === "textbox") {
         const placeholder = finish_parse_textbox(parsed, data);
-        // @TODO
+        load_textbox_state(placeholder);
         return placeholder;
     } else if (type == "checkbox") {
         const placeholder = finish_parse_checkbox(parsed, data);
@@ -167,13 +186,12 @@ const parse_any_placeholder = (data: any): Placeholder => {
 
 const finish_parse_textbox = (parsed: BasePlaceholer, data: any): TextboxPlaceholder => {
     const validator_names = get_array_field("validators", "string", data);
-    let default_fn;
+    let default_function, default_value;
     if (data["default_value"] != undefined) {
-        const default_value = get_string_field("default_value", data);
-        default_fn = () => default_value;
+        default_value = get_string_field("default_value", data);
     } else {
         const default_js_code = get_string_field("default_function", data);
-        default_fn = () => {
+        default_function = () => {
             // Wrap the function, so that we can ensure that errors are properly handled
             try {
                 const result = eval(default_js_code);
@@ -183,12 +201,13 @@ const finish_parse_textbox = (parsed: BasePlaceholer, data: any): TextboxPlaceho
                     return result;
                 }
             } catch (error) {
-                throw new Error(`Failed to evaluate custom code '${default_js_code}': ${error}`);
+                throw new Error(`Failed to evaluate default_function '${default_js_code}' of placeholder ${parsed.name}: ${error}`);
             }
         }
     }
     return {
-        "default_function": default_fn,
+        "default_value": default_value,
+        "default_function": default_function,
         validators: validator_names,
         ...parsed,
     }
