@@ -1,8 +1,9 @@
 import { load_checkbox_state, load_dropdown_state, load_textbox_state } from "./state_manager";
+import { InputValidator, parse_validator } from "./validator";
 // This should be a more type safe reimplementation of 10_parse_data.js.
 // It has some breaking changes, since I try to improve how the javascript code works
 
-const assert_field_type = (name: string, expected_type_str: string, parent_object: any): any => {
+export const assert_field_type = (name: string, expected_type_str: string, parent_object: any): any => {
     const value = parent_object[name];
     const actual_type_str = typeof(value);
     if (actual_type_str != expected_type_str) {
@@ -13,11 +14,11 @@ const assert_field_type = (name: string, expected_type_str: string, parent_objec
 }
 
 // These functions are here to make sure, that I the type checker can properly work (since they have a specific return type)
-const get_string_field = (name: string, parent_object: any): string => {
+export const get_string_field = (name: string, parent_object: any): string => {
     return assert_field_type(name, "string", parent_object);
 }
 
-const get_boolean_field = (name: string, parent_object: any): boolean => {
+export const get_boolean_field = (name: string, parent_object: any): boolean => {
     return assert_field_type(name, "boolean", parent_object);
 }
 
@@ -25,7 +26,7 @@ const get_number_field = (name: string, parent_object: any): number => {
     return assert_field_type(name, "number", parent_object);
 }
 
-const get_array_field = (name: string, element_type: string, parent_object: any): any[] => {
+export const get_array_field = (name: string, element_type: string, parent_object: any): any[] => {
     const array = parent_object[name];
     if (Array.isArray(array)) {
         for (const [index, entry] of array.entries()) {
@@ -87,7 +88,7 @@ export interface TextboxPlaceholder extends BasePlaceholer {
     type: InputType;
     default_function?: () => string;
     default_value?: string;
-    validators: string[];//TODO Validator type
+    validators: InputValidator[];
 }
 
 export interface CheckboxPlaceholder extends BasePlaceholer {
@@ -124,9 +125,20 @@ export const parse_config = (data: any): PluginConfig => {
     const checkboxes: Map<string,CheckboxPlaceholder> = new Map<string,CheckboxPlaceholder>();
     const dropdowns: Map<string,DropdownPlaceholder> = new Map<string,DropdownPlaceholder>();
 
+    const validator_map = new Map<string,InputValidator>();
+    const validator_data_list = get_array_field("validators", "object", data);
+    for (const validator_data of validator_data_list) {
+        const validator = parse_validator(validator_data);
+        if (validator_map.has(validator.id)) {
+            throw new Error(`Multiple validators with id '${validator.id}'`);
+        } else {
+            validator_map.set(validator.id, validator);
+        }
+    }
+
     const placeholder_data = get_array_field("placeholder_list", "object", data);
     for (const pd of placeholder_data) {
-        const placeholder = parse_any_placeholder(pd);
+        const placeholder = parse_any_placeholder(pd, validator_map);
 
         // Add the placeholder to the correct lists
         placeholder_map.set(placeholder.name, placeholder);
@@ -167,7 +179,7 @@ const parse_settings = (data: any): PluginSettings => {
 }
 
 
-const parse_any_placeholder = (data: any): Placeholder => {
+const parse_any_placeholder = (data: any, validator_map: Map<string,InputValidator>): Placeholder => {
     const type = get_string_field("type", data);
     // Parse fields that are shared between all placeholders
     let parsed = {
@@ -185,7 +197,7 @@ const parse_any_placeholder = (data: any): Placeholder => {
 
     // Parse the type specific attributes
     if (type === "textbox") {
-        const placeholder = finish_parse_textbox(parsed, data);
+        const placeholder = finish_parse_textbox(parsed, data, validator_map);
         load_textbox_state(placeholder);
         return placeholder;
     } else if (type == "checkbox") {
@@ -202,8 +214,7 @@ const parse_any_placeholder = (data: any): Placeholder => {
 }
 
 
-const finish_parse_textbox = (parsed: BasePlaceholer, data: any): TextboxPlaceholder => {
-    const validator_names = get_array_field("validators", "string", data);
+const finish_parse_textbox = (parsed: BasePlaceholer, data: any, validator_map: Map<string,InputValidator>): TextboxPlaceholder => {
     let default_function, default_value;
     if (data["default_value"] != undefined) {
         default_value = get_string_field("default_value", data);
@@ -212,6 +223,7 @@ const finish_parse_textbox = (parsed: BasePlaceholer, data: any): TextboxPlaceho
         default_function = () => {
             // Wrap the function, so that we can ensure that errors are properly handled
             try {
+                // do not use function, since it only needs to be called at most once
                 const result = eval(default_js_code);
                 if (typeof(result) != "string") {
                     throw new Error(`Custom function '${default_js_code}' should return a string, but it returned a ${typeof(result)}: ${result}`);
@@ -223,13 +235,26 @@ const finish_parse_textbox = (parsed: BasePlaceholer, data: any): TextboxPlaceho
             }
         }
     }
+
+    const validator_names: string[] = get_array_field("validators", "string", data);
+    const validator_list: InputValidator[] = [];
+    for (const name of validator_names) {
+        const validator = validator_map.get(name);
+        if (validator) {
+            validator_list.push(validator);
+        } else {
+            const known_validators = Array.from(validator_map.keys()).join(", ");
+            throw new Error(`No validator with id '${name}' was found. Known validators are ${known_validators}`);
+        }
+    }
+
     return {
         ...parsed,
         "type": InputType.Textbox,
         "default_value": default_value,
         "default_function": default_function,
         "allow_recursive": get_boolean_field("allow_recursive", data),
-        validators: validator_names,
+        "validators": validator_list,
     }
 }
 

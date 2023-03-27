@@ -179,5 +179,6 @@ def generate_new_placeholder_json(theme_name: str, placeholders: dict[str, Place
             "debug": plugin_config.debug_javascript,
             "delay_millis": plugin_config.replace_delay_millis,
         },
+        # @TODO resume here: add "validators"
     }
     return json.dumps(result_object, indent=None, sort_keys=False)
