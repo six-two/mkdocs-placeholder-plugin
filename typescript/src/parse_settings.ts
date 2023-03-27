@@ -60,6 +60,8 @@ export interface PluginSettings {
     // How placeholders using the innerHTML method are marked
     html_prefix: string;
     html_suffix: string;
+    // How many replacements in a placeholder are ok, before it is stopped due to likely being an infinite recursion
+    max_recursion: number;
 }
 
 export interface BasePlaceholer {
@@ -67,7 +69,12 @@ export interface BasePlaceholer {
     description: string;
     read_only: boolean;
     allow_inner_html: boolean;
+    // Allow replacing placeholders within the value of this
+    allow_recursive: boolean;
+    // the value as it is stored (with placeholders in the value not replaced)
     current_value: string;
+    // the value after any placeholders it contains are recursively replaced (if allow_recursive is true)
+    expanded_value: string;
     // How often it is used on the page. This does not necessarily need to be accurate, but 0 should always mean that it is not used on the page.
     count_on_page: number;
     // Whether a placeholder change can be done entirely dynamic, or whether it requires a complete reload of the page
@@ -155,6 +162,7 @@ const parse_settings = (data: any): PluginSettings => {
         "html_prefix": "i",
         "html_suffix": "i",
         // @TODO resume here
+        max_recursion: 64,
     }
 }
 
@@ -167,7 +175,9 @@ const parse_any_placeholder = (data: any): Placeholder => {
         "description": get_string_field("description", data),
         "read_only": get_boolean_field("read_only", data),
         "allow_inner_html": get_boolean_field("allow_inner_html", data),
+        "allow_recursive": false, // should be replaced by the 'load_*_state' funcion, that is called later on in this function
         "current_value": "UNINITIALIZED", // should be replaced by the 'load_*_state' funcion, that is called later on in this function
+        "expanded_value": "UNINITIALIZED", // should be replaced by the 'load_*_state' funcion, that is called later on in this function
         "count_on_page": 0, // Will be incremented by the replace functions
         "reload_page_on_change": false, // May be changed by the replace function
         "current_inputs": [], // Will be set, when input fields are processed
@@ -192,7 +202,6 @@ const parse_any_placeholder = (data: any): Placeholder => {
 }
 
 
-
 const finish_parse_textbox = (parsed: BasePlaceholer, data: any): TextboxPlaceholder => {
     const validator_names = get_array_field("validators", "string", data);
     let default_function, default_value;
@@ -215,22 +224,24 @@ const finish_parse_textbox = (parsed: BasePlaceholer, data: any): TextboxPlaceho
         }
     }
     return {
+        ...parsed,
         "type": InputType.Textbox,
         "default_value": default_value,
         "default_function": default_function,
+        "allow_recursive": get_boolean_field("allow_recursive", data),
         validators: validator_names,
-        ...parsed,
     }
 }
 
 const finish_parse_checkbox = (parsed: BasePlaceholer, data: any): CheckboxPlaceholder => {
     return {
+        ...parsed,
         "type": InputType.Checkbox,
         "value_checked": get_string_field("value_checked", data),
         "value_unchecked": get_string_field("value_unchecked", data),
         "checked_by_default": get_boolean_field("checked_by_default", data),
         "current_is_checked": false, // should be replaced by the 'load_*_state' function, that should be called on the result
-        ...parsed,
+        "allow_recursive": true, // values are all user supplied, so recursive mode is assumed
     }
 }
 
@@ -250,11 +261,12 @@ const finish_parse_dropdown = (parsed: BasePlaceholer, data: any): DropdownPlace
         throw new Error(`Invalid value: "default_index" should be smaller than the number of options (${options.length}), but is ${default_index}.\nProblematic object: ${JSON.stringify(data)}`);
     }
     return {
+        ...parsed,
         "type": InputType.Dropdown,
         "options": options,
         "default_index": default_index,
         "current_index": 0, // should be replaced by the 'load_*_state' function, that should be called on the result
-        ...parsed,
+        "allow_recursive": true, // values are all user supplied, so recursive mode is assumed
     }
 }
 

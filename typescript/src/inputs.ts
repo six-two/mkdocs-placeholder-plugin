@@ -2,30 +2,36 @@ import { logger, reload_page } from "./debug";
 import { CheckboxPlaceholder, DropdownPlaceholder, InputType, Placeholder, PluginConfig, TextboxPlaceholder } from "./parse_settings";
 import { store_checkbox_state, store_dropdown_state, store_textbox_state } from "./state_manager";
 
-export const initialize_input_fields = (config: PluginConfig): void => {
+export const initialize_all_input_fields = (config: PluginConfig): void => {
     const input_list: NodeListOf<HTMLInputElement> = document.querySelectorAll("input[data-input-for]");
-    for (let input of input_list) {
-        const placeholder_name = input.getAttribute("data-input-for");
+    for (let input_element of input_list) {
+        const placeholder_name = input_element.getAttribute("data-input-for");
         if (placeholder_name == null) {
             throw new Error("How can this be, the selector forces the 'data-input-for' attribute to exist");
         }
-        input.classList.add("input-for-variable");
+        
         const placeholder = config.placeholders.get(placeholder_name)
-
         if (placeholder) {
-            if (placeholder.type == InputType.Checkbox) {
-                initialize_input_checkbox(config, placeholder as CheckboxPlaceholder, input);
-            } else if (placeholder.type == InputType.Dropdown) {
-                initialize_input_dropdown(config, placeholder as DropdownPlaceholder, input);
-            } else if (placeholder.type == InputType.Textbox) {
-                initialize_input_textbox(config, placeholder as TextboxPlaceholder, input);
-            } else {
-                console.error(`Placeholder ${placeholder.name} has unknown type '${placeholder.type}'`);
-            }
+            prepare_input_field(config, placeholder, input_element);
         } else {
             console.warn(`Unknown placeholder referenced in input element: '${placeholder_name}'`);
-            input.value = `ERROR_UNDEFINED_PLACEHOLDER: ${placeholder_name}`;
+            input_element.classList.add("input-for-variable");
+            input_element.value = `ERROR_UNDEFINED_PLACEHOLDER: ${placeholder_name}`;
         }
+    }
+}
+
+export const prepare_input_field = (config: PluginConfig, placeholder: Placeholder, input_element: HTMLInputElement): void => {
+    input_element.classList.add("input-for-variable");
+
+    if (placeholder.type == InputType.Checkbox) {
+        initialize_input_checkbox(config, placeholder as CheckboxPlaceholder, input_element);
+    } else if (placeholder.type == InputType.Dropdown) {
+        initialize_input_dropdown(config, placeholder as DropdownPlaceholder, input_element);
+    } else if (placeholder.type == InputType.Textbox) {
+        initialize_input_textbox(config, placeholder as TextboxPlaceholder, input_element);
+    } else {
+        console.error(`Placeholder ${placeholder.name} has unknown type '${placeholder.type}'`);
     }
 }
 

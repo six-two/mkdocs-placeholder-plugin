@@ -7,6 +7,17 @@
 # Switch to the directory of this file
 cd "$( dirname "${BASH_SOURCE[0]}" )"
 
+# Bundle/transpile the JavaScript file(s). This is similar to `build.sh`
+cd typescript/
+npm install
+npm run build
+cd ..
+
+# Copy the JavaScript build output to the expected locations
+[[ ! -d src/mkdocs_placeholder_plugin/assets/ ]] && mkdir src/mkdocs_placeholder_plugin/assets/
+cp typescript/build/placeholder.min.js* src/mkdocs_placeholder_plugin/assets/
+
+
 # install the dependencies
 python3 -m pip install -r requirements.txt
 # also install the latest (dev) version of this package

@@ -158,6 +158,7 @@ def generate_new_placeholder_json(theme_name: str, placeholders: dict[str, Place
         elif placeholder.input_type == InputType.Field:
             placeholder_data.update({
                 "type": "textbox",
+                "allow_recursive": False, # @TODO: read from config
                 "validators": [v.name for v in placeholder.validator_list],
             })
 

@@ -1,13 +1,24 @@
 import { parse_config, PluginConfig } from "./parse_settings";
 import { init_logging, logger } from "./debug";
 import { replace_placeholders_in_subtree } from "./replacer";
-import { initialize_input_fields } from "./inputs";
+import { initialize_all_input_fields } from "./inputs";
 import { export_api_functions } from "./api";
+import { initialize_auto_tables } from "./auto_tables";
 
 export const main = () => {
     const config = parse_config((window as any).PlaceholderPluginConfigJson);
     
     init_logging(config.settings.debug);
+
+    console.warn("@TODO: set the expanded_value for all placeholders to the correct value")
+    for (const placeholder of config.placeholders.values()) {
+        if (placeholder.allow_recursive) {
+            placeholder.expanded_value = placeholder.current_value; // this is wrong, but I will fix it later
+        } else {
+            placeholder.expanded_value = placeholder.current_value;
+        }
+    }
+
     logger.info("PluginConfig", config);
 
     export_api_functions(config);
@@ -32,8 +43,8 @@ export const main = () => {
 const do_plugin_stuff = (config: PluginConfig) => {
     replace_placeholders_in_subtree(document.body, config);
 
-    initialize_input_fields(config);
+    initialize_all_input_fields(config);
 
-    // PlaceholderPlugin.initialize_auto_tables(used_placeholders); //@TODO
+    initialize_auto_tables(config);
 }
 
