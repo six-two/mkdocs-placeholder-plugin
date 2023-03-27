@@ -63,7 +63,6 @@ export interface PluginSettings {
 }
 
 export interface BasePlaceholer {
-    type: string;
     name: string;
     description: string;
     read_only: boolean;
@@ -73,15 +72,19 @@ export interface BasePlaceholer {
     count_on_page: number;
     // Whether a placeholder change can be done entirely dynamic, or whether it requires a complete reload of the page
     reload_page_on_change: boolean;
+    // The input elements for this placeholder
+    current_inputs: Element[];
 }
 
 export interface TextboxPlaceholder extends BasePlaceholer {
+    type: InputType;
     default_function?: () => string;
     default_value?: string;
     validators: string[];//TODO Validator type
 }
 
 export interface CheckboxPlaceholder extends BasePlaceholer {
+    type: InputType
     value_checked: string;
     value_unchecked: string;
     checked_by_default: boolean;
@@ -89,6 +92,7 @@ export interface CheckboxPlaceholder extends BasePlaceholer {
 }
 
 export interface DropdownPlaceholder extends BasePlaceholer {
+    type: InputType;
     options: DropdownOption[];
     default_index: number;
     current_index: number;
@@ -99,6 +103,11 @@ export interface DropdownOption {
     value: string;
 }
 
+export enum InputType {
+    Textbox = "TEXTBOX",
+    Checkbox = "CHECKBOX",
+    Dropdown = "DROPDOWN",
+}
 
 export type Placeholder = TextboxPlaceholder | CheckboxPlaceholder | DropdownPlaceholder;
 
@@ -114,11 +123,11 @@ export const parse_config = (data: any): PluginConfig => {
 
         // Add the placeholder to the correct lists
         placeholder_map.set(placeholder.name, placeholder);
-        if (placeholder.type == "textbox") {
+        if (placeholder.type == InputType.Textbox) {
             textboxes.set(placeholder.name, placeholder as TextboxPlaceholder);
-        } else if (placeholder.type == "checkbox") {
+        } else if (placeholder.type == InputType.Checkbox) {
             checkboxes.set(placeholder.name, placeholder as CheckboxPlaceholder);
-        } else if (placeholder.type == "dropdown") {
+        } else if (placeholder.type == InputType.Dropdown) {
             dropdowns.set(placeholder.name, placeholder as DropdownPlaceholder);
         } else {
             console.warn("Unknown placeholder type:", placeholder.type);
@@ -154,7 +163,6 @@ const parse_any_placeholder = (data: any): Placeholder => {
     const type = get_string_field("type", data);
     // Parse fields that are shared between all placeholders
     let parsed = {
-        "type": type,
         "name": get_string_field("name", data),
         "description": get_string_field("description", data),
         "read_only": get_boolean_field("read_only", data),
@@ -162,6 +170,7 @@ const parse_any_placeholder = (data: any): Placeholder => {
         "current_value": "UNINITIALIZED", // should be replaced by the 'load_*_state' funcion, that is called later on in this function
         "count_on_page": 0, // Will be incremented by the replace functions
         "reload_page_on_change": false, // May be changed by the replace function
+        "current_inputs": [], // Will be set, when input fields are processed
     };
 
     // Parse the type specific attributes
@@ -206,6 +215,7 @@ const finish_parse_textbox = (parsed: BasePlaceholer, data: any): TextboxPlaceho
         }
     }
     return {
+        "type": InputType.Textbox,
         "default_value": default_value,
         "default_function": default_function,
         validators: validator_names,
@@ -215,6 +225,7 @@ const finish_parse_textbox = (parsed: BasePlaceholer, data: any): TextboxPlaceho
 
 const finish_parse_checkbox = (parsed: BasePlaceholer, data: any): CheckboxPlaceholder => {
     return {
+        "type": InputType.Checkbox,
         "value_checked": get_string_field("value_checked", data),
         "value_unchecked": get_string_field("value_unchecked", data),
         "checked_by_default": get_boolean_field("checked_by_default", data),
@@ -239,6 +250,7 @@ const finish_parse_dropdown = (parsed: BasePlaceholer, data: any): DropdownPlace
         throw new Error(`Invalid value: "default_index" should be smaller than the number of options (${options.length}), but is ${default_index}.\nProblematic object: ${JSON.stringify(data)}`);
     }
     return {
+        "type": InputType.Dropdown,
         "options": options,
         "default_index": default_index,
         "current_index": 0, // should be replaced by the 'load_*_state' function, that should be called on the result

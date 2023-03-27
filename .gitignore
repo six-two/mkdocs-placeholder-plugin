@@ -175,3 +175,4 @@ node_modules/
 
 # Output of Typescript build
 src/mkdocs_placeholder_plugin/assets/placeholder.min.js*
+typescript/javascript
