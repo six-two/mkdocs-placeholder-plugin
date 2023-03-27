@@ -1,4 +1,5 @@
 from functools import wraps
+import os
 import traceback
 from typing import Callable
 # pip dependency
@@ -86,6 +87,11 @@ class PlaceholderPlugin(BasePlugin[PlaceholderPluginConfig]):
         extra_js = config.extra_javascript
         if custom_js_path not in extra_js:
             extra_js.append(custom_js_path)
+
+        # @TODO: fix later
+        relative_site_dir = os.path.dirname(self.config.placeholder_js)
+        config.extra_javascript.append(f"{relative_site_dir}/placeholder.min.js")
+
 
         # Immediatley parse the placeholder file, so that all following methods can use the information
         placeholder_file = self.config.placeholder_file

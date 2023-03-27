@@ -2,6 +2,7 @@ const path = require('path');
 
 module.exports = {
   entry: './src/index.ts',
+  devtool: "source-map",
   module: {
     rules: [
       {
@@ -15,7 +16,7 @@ module.exports = {
     extensions: ['.tsx', '.ts', '.js'],
   },
   output: {
-    filename: "bundle.min.js",
+    filename: "placeholder.min.js",
     path: path.resolve(__dirname, "build/"),
   }
 };

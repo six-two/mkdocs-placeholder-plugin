@@ -10,7 +10,10 @@ fi
 
 # Build Typescript code
 podman run -it --rm -v "$(pwd)/typescript:/mnt" localhost/placeholder-npm:latest
-cp typescript/build/bundle.min.js src/mkdocs_placeholder_plugin/javascript/70_typescript_output.js
+# Copy output files
+[[ ! -d src/mkdocs_placeholder_plugin/assets/ ]] && mkdir src/mkdocs_placeholder_plugin/assets/
+cp typescript/build/placeholder.min.js* src/mkdocs_placeholder_plugin/assets/
+
 
 # Build python plugin
 pip install .

@@ -26,6 +26,10 @@ The corresponding documentation is hosted at <https://dev.mkdocs-placeholder-plu
 
 ### HEAD
 
+- Currently rewriting the JavaScript code to be more reliable
+
+**Due to the rewrite, many features temporarily are not working. Please use the stable version (0.2.5) for now.**
+
 ### Version 0.2.5
 
 - When an JavaScript generated `auto-input-table` is empty, now a info box is shown (instead of nothing / an empty table).

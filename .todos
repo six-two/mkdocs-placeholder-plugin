@@ -1,5 +1,8 @@
+- dynamic replacements
 - Optional extra buttons for the global placeholder state (reset, import, export)
 - Clean up the config file options to be more intuitive
 - Static replacement on a per placeholder basis
 - Formatters (such as for bash-shell) for escaping characters that may break the command that a placeholder is part of
-
+- Advanced placeholders (placeholders for not often used/very technical fields) whose visibility can be toggled in auto tables
+- new validators: mac address, email
+- decouple from mkdocs -> make it easy to port to other site generators

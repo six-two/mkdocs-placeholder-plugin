@@ -174,4 +174,4 @@ mkdocs-theme.yml
 node_modules/
 
 # Output of Typescript build
-src/mkdocs_placeholder_plugin/javascript/70_typescript_output.js
+src/mkdocs_placeholder_plugin/assets/placeholder.min.js*
