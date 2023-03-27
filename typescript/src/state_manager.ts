@@ -66,7 +66,7 @@ export const store_dropdown_state = (placeholder: DropdownPlaceholder, new_index
 }
 
 export const load_dropdown_state = (placeholder: DropdownPlaceholder): void => {
-    const stored_state = load_value(`${placeholder.name}_IS_CHECKED`);
+    const stored_state = load_value(`${placeholder.name}_INDEX`);
     if (stored_state == null) {
         // No stored state -> use default value
         placeholder.current_index = placeholder.default_index;

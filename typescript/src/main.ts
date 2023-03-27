@@ -2,12 +2,15 @@ import { parse_config, PluginConfig } from "./parse_settings";
 import { init_logging, logger } from "./debug";
 import { replace_placeholders_in_subtree } from "./replacer";
 import { initialize_input_fields } from "./inputs";
+import { export_api_functions } from "./api";
 
 export const main = () => {
     const config = parse_config((window as any).PlaceholderPluginConfigJson);
     
     init_logging(config.settings.debug);
     logger.info("PluginConfig", config);
+
+    export_api_functions(config);
 
     const delay_millis = config.settings.delay_millis;
     

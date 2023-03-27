@@ -93,18 +93,23 @@ const initialize_input_textbox = (config: PluginConfig, placeholder: TextboxPlac
         input_element.disabled = true;
         input_element.style.cursor = "not-allowed";
     } else {
-        if (!placeholder.validators) {
-            // No validators -> no need to handle exception when validation fails
-            input_element.addEventListener("keypress", e => {
-                if (e.key === "Enter") {
-                    logger.debug("Textbox change confirmed with Enter key for ", placeholder.name, "- new value:", input_element.value);
+        const on_keypress = (event: KeyboardEvent) => {
+            if (event.key === "Enter") {
+                logger.debug("Textbox change confirmed with Enter key for ", placeholder.name, "- new value:", input_element.value);
+                if (validate_textbox_input_field(placeholder, input_element)) {
                     store_textbox_state(placeholder, input_element.value);
                     on_placeholder_change(placeholder);
-                } else if (e.key == "Escape") {
-                    logger.debug("Resetting input field for ", placeholder.name, " to current placeholder value");
-                    input_element.value = placeholder.current_value;
                 }
-            });
+            } else if (event.key === "Escape") {
+                // @TODO: why does this not get triggered? Is it intercepted by something else?
+                logger.debug("Resetting input field for ", placeholder.name, " to current placeholder value");
+                input_element.value = placeholder.current_value;
+            }
+        };
+
+        if (!placeholder.validators) {
+            // No validators -> no need to handle exception when validation fails
+            input_element.addEventListener("keypress", on_keypress)
         } else {
             // Check if initial value is valid
             validate_textbox_input_field(placeholder, input_element);
@@ -113,14 +118,7 @@ const initialize_input_textbox = (config: PluginConfig, placeholder: TextboxPlac
             input_element.addEventListener("input", () => {
                 validate_textbox_input_field(placeholder, input_element);
             });
-            input_element.addEventListener("keypress", e => {
-                if (e.key === "Enter") {
-                    logger.debug("Textbox change confirmed with Enter key for ", placeholder.name, "- new value:", input_element.value);
-                    if (validate_textbox_input_field(placeholder, input_element)) {
-                        on_placeholder_change(placeholder);
-                    }
-                }
-            });
+            input_element.addEventListener("keypress", on_keypress);
         }
     }
 
