@@ -50,6 +50,7 @@ def must_not_match(regex_string: str, error_message: str) -> ValidatorRule:
 
 
 class Validator(NamedTuple):
+    id: str
     name: str
     rules: list[ValidatorRule]
 
@@ -57,7 +58,8 @@ class Validator(NamedTuple):
 def validator_to_dict(v: Validator) -> dict:
     try:
         return {
-            "name": v.name,
+            "id": v.id,
+            "display_name": v.name,
             "rules": [validator_rule_to_dict(r) for r in v.rules],
         }
     except Exception as ex:

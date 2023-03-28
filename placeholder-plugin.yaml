@@ -77,6 +77,7 @@ MULTI_VALIDATORS:
   - domain
   - hostname
   - name: IPv6 loopback
+    id: ipv6_loopback
     rules:
     - regex: "^::1$"
       should_match: true
@@ -86,6 +87,7 @@ CUSTOM_VALIDATORS:
   description: "Custom validators"
   validators:
   - name: Excel cell name
+    id: Excel
     rules:
     - regex: "^[A-Za-z]+"
       should_match: true
@@ -106,6 +108,7 @@ SOMETHING_NICE:
   description: Please say something nice :)
   validators:
   - name: Something nice
+    id: nice
     rules:
     - regex: "fuck|shit|ass|jerk"
       should_match: false

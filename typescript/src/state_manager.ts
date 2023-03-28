@@ -1,5 +1,6 @@
 import { CheckboxPlaceholder, DropdownPlaceholder, TextboxPlaceholder } from "./parse_settings";
 import { logger } from "./debug";
+import { is_valid_value_for_placeholder } from "./validator";
 
 // These functions are here to make it easier to change the storage backend (for example locasstorage -> cookies)
 // and to make it possible to potentially have better debugging
@@ -86,11 +87,6 @@ export const load_dropdown_state = (placeholder: DropdownPlaceholder): void => {
     placeholder.current_value = placeholder.options[placeholder.current_index].value;
 }
 
-
-const is_valid_value_for_placeholder = (placeholder: TextboxPlaceholder, new_value: string): boolean => {
-    console.warn("@TODO: implement validation in is_valid_value_for_placeholder");
-    return true;
-}
 
 export const store_textbox_state = (placeholder: TextboxPlaceholder, new_value: string): void => {
     const is_validation_ok = is_valid_value_for_placeholder(placeholder, new_value);

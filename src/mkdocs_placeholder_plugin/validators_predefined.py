@@ -17,6 +17,7 @@ MEDIOCRE_IPV6_REGEX = r"(([0-9a-fA-F]{1,4}:){7,7}[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1
 def generate_url_http_validator() -> Validator:
     # source: https://urlregex.com. Modified to handle the fragment part (what comes after #)
     return Validator(
+        id="url_http",
         name="URL (HTTP / HTTPS)",
         rules=[
             must_match("^https?://", "Needs to start with 'http://' or 'https://'"),
@@ -27,6 +28,7 @@ def generate_url_http_validator() -> Validator:
 
 def generate_file_name_linux_validator() -> Validator:
     return Validator(
+        id="file_name_linux",
         name="File name",
         rules=[
             RULE_NOT_EMPTY,
@@ -37,6 +39,7 @@ def generate_file_name_linux_validator() -> Validator:
 
 def generate_file_name_windows_validator() -> Validator:
     return Validator(
+        id="file_name_windows",
         name="File name",
         rules=[
             RULE_NOT_EMPTY,
@@ -49,6 +52,7 @@ def generate_file_name_windows_validator() -> Validator:
 
 def generate_path_linux_validator() -> Validator:
     return Validator(
+        id="path_linux",
         name="File path (Linux)",
         rules=[
             RULE_NOT_EMPTY,
@@ -58,6 +62,7 @@ def generate_path_linux_validator() -> Validator:
 
 def generate_path_windows_validator() -> Validator:
     return Validator(
+        id="path_windows",
         name="File path (Windows)",
         rules=[
             RULE_NOT_EMPTY,
@@ -71,6 +76,7 @@ def generate_path_windows_validator() -> Validator:
 def generate_url_validator() -> Validator:
     # source: https://urlregex.com. Modified to handle the fragment part (what comes after #)
     return Validator(
+        id="url_any",
         name="URL (any protocol)",
         rules=[
             RULE_URL_NO_WHITESPACE,
@@ -80,6 +86,7 @@ def generate_url_validator() -> Validator:
 
 def generate_ipv6_validator() -> Validator:
     return Validator(
+        id="ipv6_address",
         name="IPv6 address",
         rules=[
             must_match("^[0-9a-fA-F:.\\[\\]]+$", "Only numbers, the letters A-F, colons, dots, and square brackets are allowed"),
@@ -92,6 +99,7 @@ def generate_ipv6_validator() -> Validator:
 
 def generate_ipv4_validator() -> Validator:
     return Validator(
+        id="ipv4_address",
         name="IPv4 address",
         rules=[
             must_match("^[0-9.]+$", "Only numbers and dots are allowed"),
@@ -103,6 +111,7 @@ def generate_ipv4_validator() -> Validator:
 
 def generate_ipv4_range_cidr_validator() -> Validator:
     return Validator(
+        id="ipv4_range_cidr",
         name="IPv4 adress range (CIDR notation)",
         rules=[
             must_match("^[0-9./]+$", "Only numbers, dots and a slash are allowed"),
@@ -119,6 +128,7 @@ def generate_ipv4_range_dash_validator() -> Validator:
     IPV4_SEGMENT_DASH = f"{IPV4_SEGMENT}(-{IPV4_SEGMENT})?"
     IPV4_ADDRESS_DASHES = f"{IPV4_SEGMENT_DASH}(?:\\.{IPV4_SEGMENT_DASH}){{3}}"
     return Validator(
+        id="ipv4_range_dashes",
         name="IPv4 adress range (dash)",
         rules=[
             must_match("^[0-9-.]+$", "Only numbers, dots and minuses are allowed"),
@@ -134,6 +144,7 @@ def generate_ipv4_range_dash_validator() -> Validator:
 def generate_port_validator() -> Validator:
     port_regex="^((6553[0-5])|(655[0-2][0-9])|(65[0-4][0-9]{2})|(6[0-4][0-9]{3})|([1-5][0-9]{4})|([0-5]{0,5})|([0-9]{1,4}))$"
     return Validator(
+        id="port_number",
         name="TCP/UDP port",
         rules=[
             must_match("^[0-9]+$", "Only numbers are allowed"),
@@ -148,6 +159,7 @@ RULE_DOMAIN_LENGTH = should_not_match("[a-zA-Z0-9-]{64}", "Subdomains should not
 
 def generate_domain_name_validator() -> Validator:
     return Validator(
+        id="domain",
         name="Domain name",
         rules=[
             RULE_DOMAIN_CHARS, RULE_DOMAIN_START, RULE_DOMAIN_END, RULE_DOMAIN_LENGTH,
@@ -157,6 +169,7 @@ def generate_domain_name_validator() -> Validator:
 
 def generate_hostname_validator() -> Validator:
     return Validator(
+        id="hostname",
         name="Hostname",
         rules=[
             RULE_DOMAIN_CHARS, RULE_DOMAIN_START, RULE_DOMAIN_END, RULE_DOMAIN_LENGTH

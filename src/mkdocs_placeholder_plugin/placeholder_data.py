@@ -241,6 +241,10 @@ def parse_validator_list(placeholder_name: str, data: dict[str,Any], input_type:
 
 def parse_validator_object(data: dict[str,Any]) -> Validator:
     try:
+        id = data["id"]
+        if type(id) != str:
+            raise PluginError(f"Wrong type for key 'name': Expected 'string', got '{type(id).__name__}'")
+
         name = data["name"]
         if type(name) != str:
             raise PluginError(f"Wrong type for key 'name': Expected 'string', got '{type(name).__name__}'")
@@ -254,6 +258,7 @@ def parse_validator_object(data: dict[str,Any]) -> Validator:
 
         rules = [parse_validator_rule(x) for x in rules_data]
         return Validator(
+            id=id,
             name=name,
             rules=rules,
         )
