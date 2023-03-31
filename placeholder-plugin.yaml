@@ -118,7 +118,7 @@ SOMETHING_NICE:
       should_match: false
       error_message: Can we talk about something else?
     - severity: warn
-      match_function: "value == 'sh*t'" # should work
+      match_function: "return value == 'sh*t';" # should work
       # match_function: "value == 'sh*t';window" # Causes error because wrong result type
       # match_function: "value == 'sh*t" # Causes error because of syntax error (missing closing quote)
       # regex: will cause an error if is uncommented because of conflict with match_function

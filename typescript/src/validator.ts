@@ -1,3 +1,4 @@
+import { logger } from "./debug";
 import { get_array_field, get_boolean_field, get_string_field, TextboxPlaceholder } from "./parse_settings";
 
 export interface InputValidator {
@@ -64,7 +65,7 @@ const is_valid_value = (validator: InputValidator, value: string): boolean => {
 }
 
 export const is_valid_value_for_placeholder = (placeholder: TextboxPlaceholder, value: string) => {
-    if (placeholder.validators) {
+    if (placeholder.validators.length > 0) {
         for (const validator of placeholder.validators) {
             if (is_valid_value(validator, value)) {
                 // a single validator accepting it is enough
@@ -79,7 +80,7 @@ export const is_valid_value_for_placeholder = (placeholder: TextboxPlaceholder, 
 }
 
 
-export const validate_value = (validator: InputValidator, value: string): ValidatorResult => {
+const validate_value = (validator: InputValidator, value: string): ValidatorResult => {
     const warnings = []
     const errors = []
     for (const rule of validator.rules) {
@@ -103,15 +104,16 @@ export const validate_value = (validator: InputValidator, value: string): Valida
 const validate_placeholder_value = (placeholder: TextboxPlaceholder, value: string): PlaceholderValidatorResult => {
     const result_list = [];
     let has_no_error = false; // whether at least one placeholder has no errors
-    if (placeholder.validators) {
+    if (placeholder.validators.length > 0) {
         for (const validator of placeholder.validators) {
             const result = validate_value(validator, value);
             result_list.push(result);
 
-            if (result.errors.length == 0 && result.warnings.length == 0) {
-                return placeholder_is_good(placeholder);
-            } else if (result.errors.length == 0) {
+            if (result.errors.length == 0) {
                 has_no_error = true;
+                if (result.warnings.length == 0) {
+                    return placeholder_is_good(placeholder);
+                }
             }
         }
 
@@ -123,7 +125,7 @@ const validate_placeholder_value = (placeholder: TextboxPlaceholder, value: stri
     } else {
         return {
             "rating": PlaceholderValidatity.NoValidator,
-            "message": "",
+            "message": "No validators are specified for this placeholder",
         }
     }
 }
@@ -149,7 +151,7 @@ const placeholder_is_warning = (result_list: ValidatorResult[]): PlaceholderVali
         }
     }
     return {
-        "rating": PlaceholderValidatity.Error,
+        "rating": PlaceholderValidatity.Warning,
         "message": lines.join("\n"),
     }
 }
@@ -162,7 +164,7 @@ const placeholder_is_good = (placeholder: TextboxPlaceholder): PlaceholderValida
     } else {
         message = "Expecting one of the following: ";
         for (const v of placeholder.validators) {
-            message += ` - ${v.display_name}`;
+            message += `\n - ${v.display_name}`;
         }
     }
     return {
@@ -176,7 +178,7 @@ const placeholder_is_good = (placeholder: TextboxPlaceholder): PlaceholderValida
 const parse_rule = (data: any, validator_id: string): ValidatorRule => {
     const severity_str = get_string_field("severity", data);
     let severity;
-    if (severity_str == "warning") {
+    if (severity_str == "warning" || severity_str == "warn") {
         severity = ValidatorSeverity.Warning;
     } else if (severity_str == "error") {
         severity = ValidatorSeverity.Error;
@@ -215,48 +217,32 @@ const parse_rule = (data: any, validator_id: string): ValidatorRule => {
 }
 
 
-// @TODO: port the following
-
-PlaceholderPlugin.remove_tooltip = (input_field) => {
-    // Remove highlighting
-    input_field.classList.remove("validation-error", "validation-warn", "validation-ok");
-
-    // Remove tooltip
-    input_field.title = "";
-}
-
-PlaceholderPlugin.show_tooltip = (input_field, rating, message) => {
+const update_tooltip = (input_field: HTMLInputElement, validation_result: PlaceholderValidatorResult): void => {
     // Set highlighting
-    input_field.classList.remove("validation-error", "validation-warn", "validation-ok");
-    input_field.classList.add(`validation-${rating}`);
+    input_field.classList.remove("validation-error", "validation-warn", "validation-ok", "validation-none");
+    if (validation_result.rating == PlaceholderValidatity.Good) {
+        input_field.classList.add(`validation-ok`);
+    } else if (validation_result.rating == PlaceholderValidatity.Warning) {
+        input_field.classList.add(`validation-warn`);
+    } else if (validation_result.rating == PlaceholderValidatity.Error) {
+        input_field.classList.add(`validation-error`);
+    } else if (validation_result.rating == PlaceholderValidatity.NoValidator) {
+        input_field.classList.add(`validation-none`);
+    } else {
+        console.warn(`Unknown placeholder validity: ${validation_result.rating}`);
+    }
 
     // Set tooltip
-    input_field.title = message;
+    input_field.title = validation_result.message;
 }
 
-// apply_value: if set to true, this value will be set if it passes muster, otherwise a popup will be shown
 // Returns "false" if the value has an error, so for example page reloading should be cancelled.
-PlaceholderPlugin.validate_input_field = (input_field, placeholder_name, apply_value, reload_on_apply = true) => {
-    const status = PlaceholderPlugin.validate_input(input_field.value, placeholder_name);
-    debug("Validation: name =", placeholder_name, ", value =", input_field.value, ", results =", status);
-    if (status && status.length != 0) {
-        const [rating, message] = status;
+export const validate_textbox_input_field = (placeholder: TextboxPlaceholder, input_field: HTMLInputElement) => {
+    const result = validate_placeholder_value(placeholder, input_field.value);
+    update_tooltip(input_field, result);
 
-        PlaceholderPlugin.show_tooltip(input_field, rating, message);
+    logger.debug("Validation: name =", placeholder.name, ", value =", input_field.value, ", results =", result.rating);
 
-        if (rating == "error" && apply_value) {
-            alert(`Failed to apply value for placeholder ${placeholder_name} because it does not pass validation.\n${message}`);
-            return false;
-        }
-    } else {
-        PlaceholderPlugin.remove_tooltip(input_field);
-    }
-
-    if (apply_value) {
-        PlaceholderPlugin.store_textbox_state(placeholder_name, input_field.value);
-        if (reload_on_apply) {
-            PlaceholderPlugin.on_placeholder_change();
-        }
-    }
-    return true;
+    const can_accept_value = result.rating != PlaceholderValidatity.Error;
+    return can_accept_value;
 }

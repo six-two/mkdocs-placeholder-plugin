@@ -32,6 +32,13 @@ def copy_assets_to_mkdocs_site_directory(config: MkDocsConfig, plugin_config: Pl
         with open(input_file, "r") as f:
             text = f.read()
 
+    if plugin_config.placeholder_css:
+        theme_name = config.theme.name or "mkdocs"
+        css_path = os.path.join(config.site_dir, plugin_config.placeholder_css)
+        css_text = generate_style_sheet(theme_name)
+        with open(css_path, "a") as f:
+            f.write(css_text)
+
     # Add extra JS
     if (plugin_config.placeholder_extra_js):
         with open(plugin_config.placeholder_extra_js, "r") as f:
@@ -40,8 +47,7 @@ def copy_assets_to_mkdocs_site_directory(config: MkDocsConfig, plugin_config: Pl
         text = "///// Custom extra JS code /////\n" + extra_js + "\n///// Normal JS code /////\n" + text
 
     # Generate placeholder data and inject them in the JavaScript file
-    theme_name = config.theme.name or "mkdocs"
-    text = text.replace("__MKDOCS_PLACEHOLDER_PLUGIN_NEW_JSON__", generate_new_placeholder_json(theme_name, placeholders, plugin_config))
+    text = text.replace("__MKDOCS_PLACEHOLDER_PLUGIN_NEW_JSON__", generate_new_placeholder_json(placeholders, plugin_config))
 
     # write back the results
     parent_dir = os.path.dirname(custom_js_path)
@@ -61,7 +67,7 @@ def get_resource_path(name: str) -> str:
     return os.path.join(current_dir, name)
 
 
-def generate_new_placeholder_json(theme_name: str, placeholders: dict[str, Placeholder], plugin_config: PlaceholderPluginConfig) -> str:
+def generate_new_placeholder_json(placeholders: dict[str, Placeholder], plugin_config: PlaceholderPluginConfig) -> str:
     """
     Generate the JSON string, that will replace the placeholder in the JavaScript file
     """
@@ -98,7 +104,7 @@ def generate_new_placeholder_json(theme_name: str, placeholders: dict[str, Place
             placeholder_data.update({
                 "type": "textbox",
                 "allow_recursive": False, # @TODO: read from config
-                "validators": [v.name for v in placeholder.validator_list],
+                "validators": [v.id for v in placeholder.validator_list],
             })
 
             if placeholder.default_function:
@@ -121,6 +127,6 @@ def generate_new_placeholder_json(theme_name: str, placeholders: dict[str, Place
             "debug": plugin_config.debug_javascript,
             "delay_millis": plugin_config.replace_delay_millis,
         },
-        "validators": validator_map.values(),
+        "validators": list(validator_map.values()),
     }
     return json.dumps(result_object, indent=None, sort_keys=False)

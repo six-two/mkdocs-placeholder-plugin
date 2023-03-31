@@ -83,10 +83,13 @@ class PlaceholderPlugin(BasePlugin[PlaceholderPluginConfig]):
         set_warnings_enabled(self.config.show_warnings)
 
         # Make sure that the custom JS is included on every page
-        custom_js_path = self.config.placeholder_js
-        extra_js = config.extra_javascript
-        if custom_js_path not in extra_js:
-            extra_js.append(custom_js_path)
+        if self.config.placeholder_js not in config.extra_javascript:
+            config.extra_javascript.append(self.config.placeholder_js)
+
+        # Make sure that the custom CSS is included on every page
+        if self.config.placeholder_css:
+            if self.config.placeholder_css not in config.extra_css:
+                config.extra_css.append(self.config.placeholder_css)
 
         # @TODO: fix later
         relative_site_dir = os.path.dirname(self.config.placeholder_js)

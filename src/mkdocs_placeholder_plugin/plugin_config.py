@@ -32,6 +32,8 @@ class PlaceholderPluginConfig(Config):
     placeholder_extra_js = Type(str, default="")
     # Replace delay millis
     replace_delay_millis = Type(int, default=0)
+    # CSS file. If it exists, the contents will be appended to. add empty string to not include the default styles
+    placeholder_css = Type(str, default="assets/javascripts/placeholder-plugin.css")
     # Default values for place4holder input tables
     table_default_show_readonly = Type(bool, default=False)
     table_default_type = Type(str, default="simple")

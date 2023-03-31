@@ -4,9 +4,9 @@
 cd "$( dirname "${BASH_SOURCE[0]}" )"
 
 # On MacOS the podman VM needs to be started first
-if [[ "$(uname)" == "Darwin" ]]; then
-    podman machine start
-fi
+# if [[ "$(uname)" == "Darwin" ]]; then
+#     podman machine start
+# fi
 
 # Build Typescript code
 podman run -it --rm -v "$(pwd)/typescript:/mnt" localhost/placeholder-npm:latest
@@ -19,4 +19,4 @@ cp typescript/build/placeholder.min.js* src/mkdocs_placeholder_plugin/assets/
 pip install .
 
 # Start the web server
-mkdocs serve
+mkdocs serve "$@"

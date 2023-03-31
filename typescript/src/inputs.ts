@@ -1,6 +1,7 @@
 import { logger, reload_page } from "./debug";
 import { CheckboxPlaceholder, DropdownPlaceholder, InputType, Placeholder, PluginConfig, TextboxPlaceholder } from "./parse_settings";
 import { store_checkbox_state, store_dropdown_state, store_textbox_state } from "./state_manager";
+import { validate_textbox_input_field } from "./validator";
 
 export const initialize_all_input_fields = (config: PluginConfig): void => {
     const input_list: NodeListOf<HTMLInputElement> = document.querySelectorAll("input[data-input-for]");
@@ -113,7 +114,7 @@ const initialize_input_textbox = (config: PluginConfig, placeholder: TextboxPlac
             }
         };
 
-        if (!placeholder.validators) {
+        if (placeholder.validators.length == 0) {
             // No validators -> no need to handle exception when validation fails
             input_element.addEventListener("keypress", on_keypress)
         } else {
@@ -122,6 +123,8 @@ const initialize_input_textbox = (config: PluginConfig, placeholder: TextboxPlac
 
             // Listen for state changes
             input_element.addEventListener("input", () => {
+                // The text was probably modified, so we need to update the validator
+
                 validate_textbox_input_field(placeholder, input_element);
             });
             input_element.addEventListener("keypress", on_keypress);
@@ -132,10 +135,6 @@ const initialize_input_textbox = (config: PluginConfig, placeholder: TextboxPlac
     placeholder.current_inputs.push(input_element);
 }
 
-const validate_textbox_input_field = (placeholder: Placeholder, input_element: HTMLInputElement): boolean => {
-    console.warn("@TODO: implement propperly: input validation");
-    return true;// return whether the value can be accepted
-}
 
 const on_placeholder_change = (placeholder: Placeholder) => {
     // console.warn("@TODO: implement propperly: dynamic page updating");
