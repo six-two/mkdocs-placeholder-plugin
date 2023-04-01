@@ -63,7 +63,8 @@ const dynamic_replace = (root_element: Element, search_regex: RegExp, placeholde
         }
     }
     
-    const replacement_value = `<span class="placeholder-value" data-placeholder="${escapeHTML(placeholder.name)}">${escapeHTML(placeholder.current_value)}</span>`;
+    // Do not put in the value yet, otherwise it may be replaced by other placeholders
+    const replacement_value = `<span class="placeholder-value" data-placeholder="${escapeHTML(placeholder.name)}">TEMPORARY PLACEHOLDER</span>`;
     for (const node of nodes_to_modify) {
         if (node.nodeValue) {
             const replaced_str = escapeHTML(node.nodeValue).replace(search_regex, replacement_value);
@@ -76,10 +77,7 @@ const dynamic_replace = (root_element: Element, search_regex: RegExp, placeholde
 }
 
 const do_dynamic_replace = (root_element: Element, placeholder: Placeholder, config: PluginConfig): void => {
-    const prefix = config.settings.dynamic_prefix;
-    const suffix = config.settings.dynamic_suffix;
-    const regex = RegExp(prefix + placeholder.name + suffix, "g");
-    const count = dynamic_replace(root_element, regex, placeholder);
+    const count = dynamic_replace(root_element, placeholder.regex_dynamic, placeholder);
     if (count > 0) {
         logger.debug(`Replaced ${placeholder.name} via dynamic method at least ${count} time(s)`);
         placeholder.count_on_page += count;
@@ -87,10 +85,7 @@ const do_dynamic_replace = (root_element: Element, placeholder: Placeholder, con
 }
 
 const do_normal_replace = (root_element: Element, placeholder: Placeholder, config: PluginConfig): void => {
-    const prefix = config.settings.normal_prefix;
-    const suffix = config.settings.normal_suffix;
-    const regex = RegExp(prefix + placeholder.name + suffix, "g");
-    const count = dynamic_replace(root_element, regex, placeholder);
+    const count = dynamic_replace(root_element, placeholder.regex_normal, placeholder);
     if (count > 0) {
         logger.debug(`Replaced ${placeholder.name} via normal (dynamic) method at least ${count} time(s)`);
         placeholder.count_on_page += count;
@@ -98,10 +93,7 @@ const do_normal_replace = (root_element: Element, placeholder: Placeholder, conf
 }
 
 const do_static_replace = (root_element: Element, placeholder: Placeholder, config: PluginConfig): void => {
-    const prefix = config.settings.static_prefix;
-    const suffix = config.settings.static_suffix;
-    const regex = RegExp(prefix + placeholder.name + suffix, "g");
-    const count = static_replace(root_element, regex, placeholder.current_value);
+    const count = static_replace(root_element, placeholder.regex_static, placeholder.expanded_value);
     if (count > 0) {
         logger.debug(`Replaced ${placeholder.name} via static method at least ${count} time(s)`);
         placeholder.count_on_page += count;
@@ -110,10 +102,7 @@ const do_static_replace = (root_element: Element, placeholder: Placeholder, conf
 }
 
 const do_html_replace = (root_element: Element, placeholder: Placeholder, config: PluginConfig): void => {
-    const prefix = config.settings.html_prefix;
-    const suffix = config.settings.html_suffix;
-    const regex = RegExp(prefix + placeholder.name + suffix, "g");
-    const count = inner_html_replace(root_element, regex, placeholder.current_value);
+    const count = inner_html_replace(root_element, placeholder.regex_html, placeholder.expanded_value);
     if (count > 0) {
         logger.debug(`Replaced ${placeholder.name} via innerHTML method at least ${count} time(s)`);
         placeholder.count_on_page += count;

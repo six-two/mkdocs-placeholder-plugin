@@ -73,6 +73,12 @@ export interface BasePlaceholer {
     description: string;
     read_only: boolean;
     allow_inner_html: boolean;
+    // Regexes for finding placeholder in page
+    regex_dynamic: RegExp;
+    regex_html: RegExp;
+    regex_normal: RegExp;
+    regex_static: RegExp;
+
     // Allow replacing placeholders within the value of this
     allow_recursive: boolean;
     // the value as it is stored (with placeholders in the value not replaced)
@@ -139,9 +145,12 @@ export const parse_config = (data: any): PluginConfig => {
         }
     }
 
+    const settings_data = assert_field_type("settings", "object", data);
+    const settings = parse_settings(settings_data);
+
     const placeholder_data = get_array_field("placeholder_list", "object", data);
     for (const pd of placeholder_data) {
-        const placeholder = parse_any_placeholder(pd, validator_map);
+        const placeholder = parse_any_placeholder(pd, validator_map, settings);
 
         // Add the placeholder to the correct lists
         placeholder_map.set(placeholder.name, placeholder);
@@ -156,13 +165,12 @@ export const parse_config = (data: any): PluginConfig => {
         }
     }
 
-    const settings_data = assert_field_type("settings", "object", data);
     return {
         "placeholders": placeholder_map,
         "textboxes": textboxes,
         "checkboxes": checkboxes,
         "dropdowns": dropdowns,
-        "settings": parse_settings(settings_data),
+        "settings": settings,
     }
 }
 
@@ -170,6 +178,7 @@ const parse_settings = (data: any): PluginSettings => {
     return {
         "debug": get_boolean_field("debug", data),
         "delay_millis": get_number_field("delay_millis", data),
+        // @TODO: If I let users specify prefixes, I will need to make sure, that they do not contain regex characters or escape them
         // How normal placeholders are marked
         "normal_prefix": "x",
         "normal_suffix": "x",
@@ -188,11 +197,18 @@ const parse_settings = (data: any): PluginSettings => {
 }
 
 
-const parse_any_placeholder = (data: any, validator_map: Map<string,InputValidator>): Placeholder => {
+const parse_any_placeholder = (data: any, validator_map: Map<string,InputValidator>, settings: PluginSettings): Placeholder => {
     const type = get_string_field("type", data);
     // Parse fields that are shared between all placeholders
+    const name = get_string_field("name", data);
     let parsed = {
-        "name": get_string_field("name", data),
+        "name": name,
+        // The regexes for the different replace methods. Stored here so that I only need to compile them once
+        "regex_dynamic": RegExp(settings.dynamic_prefix + name + settings.dynamic_suffix, "g"),
+        "regex_html": RegExp(settings.html_prefix + name + settings.html_suffix, "g"),
+        "regex_normal": RegExp(settings.normal_prefix + name + settings.normal_suffix, "g"),
+        "regex_static": RegExp(settings.static_prefix + name + settings.static_suffix, "g"),
+        // 
         "description": get_string_field("description", data),
         "read_only": get_boolean_field("read_only", data),
         "allow_inner_html": get_boolean_field("allow_inner_html", data),
