@@ -43,6 +43,9 @@ export const main = () => {
 const do_plugin_stuff = (config: PluginConfig) => {
     replace_placeholders_in_subtree(document.body, config);
 
+    // @TODO: set input_elements and output_elements for all placeholders
+    // @TODO: update_all_dynamic_output_elements
+
     initialize_all_input_fields(config);
 
     initialize_auto_tables(config);

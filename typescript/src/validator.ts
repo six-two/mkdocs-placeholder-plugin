@@ -65,6 +65,7 @@ const is_valid_value = (validator: InputValidator, value: string): boolean => {
 }
 
 export const is_valid_value_for_placeholder = (placeholder: TextboxPlaceholder, value: string) => {
+    // @TODO decide: validate normal value or expanded value? Needs to be checked for every function call
     if (placeholder.validators.length > 0) {
         for (const validator of placeholder.validators) {
             if (is_valid_value(validator, value)) {

@@ -1,5 +1,6 @@
 import { load_checkbox_state, load_dropdown_state, load_textbox_state } from "./state_manager";
 import { InputValidator, parse_validator } from "./validator";
+import { DependencyGraph } from "./dependency_graph";
 // This should be a more type safe reimplementation of 10_parse_data.js.
 // It has some breaking changes, since I try to improve how the javascript code works
 
@@ -47,7 +48,8 @@ export interface PluginConfig {
     textboxes: Map<string,TextboxPlaceholder>;
     checkboxes: Map<string,CheckboxPlaceholder>;
     dropdowns: Map<string,DropdownPlaceholder>;
-    settings: PluginSettings,
+    settings: PluginSettings;
+    dependency_graph: DependencyGraph;
 }
 
 export interface PluginSettings {
@@ -63,9 +65,6 @@ export interface PluginSettings {
     static_suffix: string;
     dynamic_prefix: string;
     dynamic_suffix: string;
-
-    // How many replacements in a placeholder are ok, before it is stopped due to likely being an infinite recursion
-    max_recursion: number;
 }
 
 export interface BasePlaceholer {
@@ -78,6 +77,8 @@ export interface BasePlaceholer {
     regex_html: RegExp;
     regex_normal: RegExp;
     regex_static: RegExp;
+    // Elements on the page to update if the value changes
+    output_elements: HTMLElement[];
 
     // Allow replacing placeholders within the value of this
     allow_recursive: boolean;
@@ -90,7 +91,6 @@ export interface BasePlaceholer {
     // Whether a placeholder change can be done entirely dynamic, or whether it requires a complete reload of the page
     reload_page_on_change: boolean;
     // The input elements for this placeholder
-    current_inputs: Element[];
 }
 
 export interface TextboxPlaceholder extends BasePlaceholer {
@@ -98,6 +98,7 @@ export interface TextboxPlaceholder extends BasePlaceholer {
     default_function?: () => string;
     default_value?: string;
     validators: InputValidator[];
+    input_elements: HTMLInputElement[];
 }
 
 export interface CheckboxPlaceholder extends BasePlaceholer {
@@ -106,6 +107,7 @@ export interface CheckboxPlaceholder extends BasePlaceholer {
     value_unchecked: string;
     checked_by_default: boolean;
     current_is_checked: boolean;
+    input_elements: HTMLInputElement[];
 }
 
 export interface DropdownPlaceholder extends BasePlaceholer {
@@ -113,6 +115,7 @@ export interface DropdownPlaceholder extends BasePlaceholer {
     options: DropdownOption[];
     default_index: number;
     current_index: number;
+    input_elements: HTMLSelectElement[];
 }
 
 export interface DropdownOption {
@@ -165,12 +168,15 @@ export const parse_config = (data: any): PluginConfig => {
         }
     }
 
+    const graph = new DependencyGraph(placeholder_map);
+
     return {
         "placeholders": placeholder_map,
         "textboxes": textboxes,
         "checkboxes": checkboxes,
         "dropdowns": dropdowns,
         "settings": settings,
+        "dependency_graph": graph,
     }
 }
 
@@ -191,8 +197,6 @@ const parse_settings = (data: any): PluginSettings => {
         // How placeholders using the dynamic replacement methodare marked
         "dynamic_prefix": "d",
         "dynamic_suffix": "d",
-        // @TODO resume here
-        max_recursion: 64,
     }
 }
 
@@ -217,7 +221,7 @@ const parse_any_placeholder = (data: any, validator_map: Map<string,InputValidat
         "expanded_value": "UNINITIALIZED", // should be replaced by the 'load_*_state' funcion, that is called later on in this function
         "count_on_page": 0, // Will be incremented by the replace functions
         "reload_page_on_change": false, // May be changed by the replace function
-        "current_inputs": [], // Will be set, when input fields are processed
+        "output_elements": [], // Will be set, when the page is searched
     };
 
     // Parse the type specific attributes
@@ -275,10 +279,11 @@ const finish_parse_textbox = (parsed: BasePlaceholer, data: any, validator_map: 
 
     return {
         ...parsed,
-        "type": InputType.Textbox,
-        "default_value": default_value,
-        "default_function": default_function,
         "allow_recursive": get_boolean_field("allow_recursive", data),
+        "default_function": default_function,
+        "default_value": default_value,
+        "input_elements": [],
+        "type": InputType.Textbox,
         "validators": validator_list,
     }
 }
@@ -286,12 +291,13 @@ const finish_parse_textbox = (parsed: BasePlaceholer, data: any, validator_map: 
 const finish_parse_checkbox = (parsed: BasePlaceholer, data: any): CheckboxPlaceholder => {
     return {
         ...parsed,
-        "type": InputType.Checkbox,
-        "value_checked": get_string_field("value_checked", data),
-        "value_unchecked": get_string_field("value_unchecked", data),
+        "allow_recursive": true, // values are all user supplied, so recursive mode is assumed
         "checked_by_default": get_boolean_field("checked_by_default", data),
         "current_is_checked": false, // should be replaced by the 'load_*_state' function, that should be called on the result
-        "allow_recursive": true, // values are all user supplied, so recursive mode is assumed
+        "input_elements": [],
+        "value_checked": get_string_field("value_checked", data),
+        "value_unchecked": get_string_field("value_unchecked", data),
+        "type": InputType.Checkbox,
     }
 }
 
@@ -312,11 +318,12 @@ const finish_parse_dropdown = (parsed: BasePlaceholer, data: any): DropdownPlace
     }
     return {
         ...parsed,
-        "type": InputType.Dropdown,
-        "options": options,
-        "default_index": default_index,
-        "current_index": 0, // should be replaced by the 'load_*_state' function, that should be called on the result
         "allow_recursive": true, // values are all user supplied, so recursive mode is assumed
+        "current_index": 0, // should be replaced by the 'load_*_state' function, that should be called on the result
+        "default_index": default_index,
+        "input_elements": [],
+        "options": options,
+        "type": InputType.Dropdown,
     }
 }
 

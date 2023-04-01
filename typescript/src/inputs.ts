@@ -52,11 +52,11 @@ const initialize_input_checkbox = (config: PluginConfig, placeholder: CheckboxPl
     }
 
     // Store this input element
-    placeholder.current_inputs.push(input_element);
+    placeholder.input_elements.push(input_element);
 }
 
 const initialize_input_dropdown = (config: PluginConfig, placeholder: DropdownPlaceholder, input_element: HTMLInputElement): void => {
-    const new_node = document.createElement("select");
+    const new_node: HTMLSelectElement = document.createElement("select");
     new_node.classList.add("placeholder-dropdown");
 
     for (const option of placeholder.options) {
@@ -88,7 +88,7 @@ const initialize_input_dropdown = (config: PluginConfig, placeholder: DropdownPl
     }
 
     // Store this input element
-    placeholder.current_inputs.push(new_node);
+    placeholder.input_elements.push(new_node);
 }
 
 const initialize_input_textbox = (config: PluginConfig, placeholder: TextboxPlaceholder, input_element: HTMLInputElement): void => {
@@ -132,12 +132,12 @@ const initialize_input_textbox = (config: PluginConfig, placeholder: TextboxPlac
     }
 
     // Store this input element
-    placeholder.current_inputs.push(input_element);
+    placeholder.input_elements.push(input_element);
 }
 
 
 const on_placeholder_change = (placeholder: Placeholder) => {
-    // console.warn("@TODO: implement propperly: dynamic page updating");
+    console.warn("@TODO: implement propperly: dynamic page updating");
     reload_page(); // for now we just use the full reload
 }
 

@@ -124,4 +124,12 @@ export const replace_placeholders_in_subtree = (root_element: Element, config: P
     }
 }
 
+export const replace_placeholder_in_string = (text: string, placeholder: Placeholder): string => {
+    // This funtion will perform replacements, but will ignore the replacement type (all will be simple/direct replace)
+    return text.replace(placeholder.regex_dynamic, placeholder.expanded_value)
+        .replace(placeholder.regex_html, placeholder.expanded_value)
+        .replace(placeholder.regex_normal, placeholder.expanded_value)
+        .replace(placeholder.regex_static, placeholder.expanded_value);
+}
+
 

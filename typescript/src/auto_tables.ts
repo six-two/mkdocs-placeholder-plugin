@@ -1,6 +1,6 @@
 import { logger } from "./debug";
 import { prepare_input_field } from "./inputs";
-import { PluginConfig } from "./parse_settings";
+import { Placeholder, PluginConfig } from "./parse_settings";
 
 const TABLE_CELL_HEADINGS: Map<string, string> = new Map();
 TABLE_CELL_HEADINGS.set("name", "Name");
@@ -20,13 +20,9 @@ const createChildElement = (parent: Element, tag_name: string): HTMLElement => {
     return child;
 }
 
-const generate_automatic_placeholder_table = (element: Element, columns: string[], config: PluginConfig) => {
-    const placeholders_to_show = [];
-    for (const placeholder of config.placeholders.values()) {
-        if (placeholder.count_on_page > 0 && placeholder.read_only == false) {
-            placeholders_to_show.push(placeholder)
-        }
-    }
+const generate_automatic_placeholder_table = (element: Element, columns: string[], config: PluginConfig, placeholders_to_show: Placeholder[]) => {
+    // Remove the current contents. This enables the plugin to generate fallback contents in case the JavaScript code does not work
+    element.innerHTML = "";
 
     if (placeholders_to_show.length == 0) {
         // Do not create an empty table. Instead show a warning on the page
@@ -86,9 +82,12 @@ const generate_automatic_placeholder_table = (element: Element, columns: string[
 
 export const initialize_auto_tables = (config: PluginConfig) => {
     const element_list = document.querySelectorAll("div.auto-input-table");
-    for (let element of element_list) {
-        const columns_str = element.getAttribute("data-columns") || "name,input";
-        const columns = columns_str.includes(",")? columns_str.split(",") : [columns_str];
-        generate_automatic_placeholder_table(element, columns, config);
+    if (element_list.length > 0) {
+        const used_placeholders = config.dependency_graph.get_all_used_placeholders().filter(x => !x.read_only);
+        for (let element of element_list) {
+            const columns_str = element.getAttribute("data-columns") || "name,input";
+            const columns = columns_str.includes(",")? columns_str.split(",") : [columns_str];
+            generate_automatic_placeholder_table(element, columns, config, used_placeholders);
+        }
     }
 };
