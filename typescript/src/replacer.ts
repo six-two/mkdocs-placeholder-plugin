@@ -5,7 +5,7 @@ import { Placeholder, PluginConfig } from "./parse_settings";
 type Replacer = (root_element: Element, search_regex: RegExp, replacement_value: string) => number;
 
 // Replace a specific placeholder and return the estimated number of occurences (underestimated, may actually be higher)
-const direct_replace: Replacer = (root_element, search_regex, replacement_value) => {
+const static_replace: Replacer = (root_element, search_regex, replacement_value) => {
     const walker = document.createTreeWalker(root_element, NodeFilter.SHOW_TEXT);
     let node;
     let count = 0;
@@ -47,18 +47,63 @@ const inner_html_replace: Replacer = (root_element, search_regex, replacement_va
     }
 };
 
-const dynamic_replace: Replacer = (root_element, search_regex, replacement_value) => {
-    console.warn("@TODO Dynamic replacement not implemented yet");
-    return 0;
+const dynamic_replace = (root_element: Element, search_regex: RegExp, placeholder: Placeholder) => {
+    const walker = document.createTreeWalker(root_element, NodeFilter.SHOW_TEXT);
+    let node;
+    if (!search_regex.global) {
+        console.warn(`You should set the global flag for the regex. Context: replacing '${search_regex.source}' with '${placeholder.current_value}'`);
+    }
+    const nodes_to_modify = [];
+    while (node = walker.nextNode()) {
+        if (node.nodeValue) {
+            if (node.nodeValue.match(search_regex)) {
+                // Do not modify in-place while iterating over the DOM
+                nodes_to_modify.push(node);
+            }
+        }
+    }
+    
+    const replacement_value = `<span class="placeholder-value" data-placeholder="${escapeHTML(placeholder.name)}">${escapeHTML(placeholder.current_value)}</span>`;
+    for (const node of nodes_to_modify) {
+        if (node.nodeValue) {
+            const replaced_str = escapeHTML(node.nodeValue).replace(search_regex, replacement_value);
+            const new_node = document.createElement("span");
+            new_node.innerHTML = replaced_str;
+            node.parentElement?.replaceChild(new_node, node);
+        }
+    }
+    return nodes_to_modify.length;
+}
+
+const do_dynamic_replace = (root_element: Element, placeholder: Placeholder, config: PluginConfig): void => {
+    const prefix = config.settings.dynamic_prefix;
+    const suffix = config.settings.dynamic_suffix;
+    const regex = RegExp(prefix + placeholder.name + suffix, "g");
+    const count = dynamic_replace(root_element, regex, placeholder);
+    if (count > 0) {
+        logger.debug(`Replaced ${placeholder.name} via dynamic method at least ${count} time(s)`);
+        placeholder.count_on_page += count;
+    }
 }
 
 const do_normal_replace = (root_element: Element, placeholder: Placeholder, config: PluginConfig): void => {
     const prefix = config.settings.normal_prefix;
     const suffix = config.settings.normal_suffix;
     const regex = RegExp(prefix + placeholder.name + suffix, "g");
-    const count = direct_replace(root_element, regex, placeholder.current_value);
+    const count = dynamic_replace(root_element, regex, placeholder);
     if (count > 0) {
-        logger.debug(`Replaced ${placeholder.name} via direct method at least ${count} time(s)`);
+        logger.debug(`Replaced ${placeholder.name} via normal (dynamic) method at least ${count} time(s)`);
+        placeholder.count_on_page += count;
+    }
+}
+
+const do_static_replace = (root_element: Element, placeholder: Placeholder, config: PluginConfig): void => {
+    const prefix = config.settings.static_prefix;
+    const suffix = config.settings.static_suffix;
+    const regex = RegExp(prefix + placeholder.name + suffix, "g");
+    const count = static_replace(root_element, regex, placeholder.current_value);
+    if (count > 0) {
+        logger.debug(`Replaced ${placeholder.name} via static method at least ${count} time(s)`);
         placeholder.count_on_page += count;
         placeholder.reload_page_on_change = true;
     }
@@ -80,7 +125,10 @@ const do_html_replace = (root_element: Element, placeholder: Placeholder, config
 // Replace all placeholders in the given order and return which placeholders actually were actually found in the page
 export const replace_placeholders_in_subtree = (root_element: Element, config: PluginConfig): void => {
     for (const placeholder of config.placeholders.values()) {
+        do_dynamic_replace(root_element, placeholder, config);
         do_normal_replace(root_element, placeholder, config);
+        do_static_replace(root_element, placeholder, config);
+
         if (placeholder.allow_inner_html) {
             do_html_replace(root_element, placeholder, config);
         }

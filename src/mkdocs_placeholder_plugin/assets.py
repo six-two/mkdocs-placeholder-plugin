@@ -10,6 +10,13 @@ from .style import generate_style_sheet
 from .validators import validator_to_dict
 
 
+def _write_to_file(config: MkDocsConfig, relative_path: str, contents: str, open_mode: str) -> None:
+    file_path = os.path.join(config.site_dir, relative_path)
+    parent_dir = os.path.dirname(file_path)
+    os.makedirs(parent_dir, exist_ok=True)
+    with open(file_path, open_mode) as f:
+        f.write(contents)
+
 def copy_assets_to_mkdocs_site_directory(config: MkDocsConfig, plugin_config: PlaceholderPluginConfig, placeholders: dict[str, Placeholder]):
     """
     Copy the JavaScript file to the site (if necessary) and replace the placeholder string with the actual data
@@ -22,22 +29,14 @@ def copy_assets_to_mkdocs_site_directory(config: MkDocsConfig, plugin_config: Pl
             text = f.read()
     else:
         # use the default file supplied by the plugin
-        # text = ""
-        # current_dir = os.path.dirname(__file__)
-        # js_dir = os.path.join(current_dir, "javascript")
-        # for file_name in sorted(os.listdir(js_dir)):
-        #     with open(os.path.join(js_dir, file_name), "r") as f:
-        #         text += f.read()
         input_file = get_resource_path("assets/placeholder-data.js")
         with open(input_file, "r") as f:
             text = f.read()
 
     if plugin_config.placeholder_css:
         theme_name = config.theme.name or "mkdocs"
-        css_path = os.path.join(config.site_dir, plugin_config.placeholder_css)
-        css_text = generate_style_sheet(theme_name)
-        with open(css_path, "a") as f:
-            f.write(css_text)
+        css_text = generate_style_sheet(theme_name, plugin_config.debug_javascript)
+        _write_to_file(config, plugin_config.placeholder_css, css_text, "a")
 
     # Add extra JS
     if (plugin_config.placeholder_extra_js):
@@ -48,13 +47,9 @@ def copy_assets_to_mkdocs_site_directory(config: MkDocsConfig, plugin_config: Pl
 
     # Generate placeholder data and inject them in the JavaScript file
     text = text.replace("__MKDOCS_PLACEHOLDER_PLUGIN_NEW_JSON__", generate_new_placeholder_json(placeholders, plugin_config))
+    _write_to_file(config, plugin_config.placeholder_js, text, "w")
 
-    # write back the results
     parent_dir = os.path.dirname(custom_js_path)
-    os.makedirs(parent_dir, exist_ok=True)
-    with open(custom_js_path, "w") as f:
-        f.write(text)
-
     shutil.copy(get_resource_path("assets/placeholder.min.js"), parent_dir)
     shutil.copy(get_resource_path("assets/placeholder.min.js.map"), parent_dir)
 

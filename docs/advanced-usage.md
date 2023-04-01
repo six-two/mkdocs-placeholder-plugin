@@ -14,7 +14,7 @@ FIRST_NAME:
 
 ```yaml
 RANDOM:
-  default-function: "Math.floor(Math.random()*100)"
+  default-function: "return Math.floor(Math.random()*100);"
   description: A random number between 0 and 99
 ```
 
@@ -67,7 +67,7 @@ RANDOM:
     3. In your placeholder's definition, set `default-function` to invoke the function with your desired arguments:
         ```yaml
         PASSWORD:
-            default-function: "generate_placeholder_password(10)"
+            default-function: "return generate_placeholder_password(10)"
             description: A randomly generated password updated anytime you clear your localStorage
         ```
 

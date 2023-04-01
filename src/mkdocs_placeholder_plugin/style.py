@@ -51,7 +51,25 @@ MATERIAL_STYLE = """
 }
 """
 
-def generate_style_sheet(theme_name: str):
+HIGHLIGHT_STYLE = """
+.placeholder-value {
+    background-color: #aaa;
+    padding: 3px;
+    border-radius: 3px;
+}
+"""
+
+def generate_style_sheet(theme_name: str, debug: bool):
+    theme = _generate_theme_style_sheet(theme_name)
+    
+    if debug:
+        # For highlighting stuff, useful during debugging
+        theme += HIGHLIGHT_STYLE
+
+    return theme
+
+
+def _generate_theme_style_sheet(theme_name: str):
     if theme_name == "material":
         # MkDocs for Material screws up the look of imput elements (makes them look really bad)
         # So I implemented some rough fixes that should fit in with the users color choices

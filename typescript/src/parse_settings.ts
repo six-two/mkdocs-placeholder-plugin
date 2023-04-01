@@ -52,15 +52,18 @@ export interface PluginConfig {
 
 export interface PluginSettings {
     debug: boolean;
-    // apply_button: boolean;
     delay_millis: number;
-    // reload_on_change: boolean; // To be maybe removed in the future
-    // How normal placeholders are marked
+
+    // How different placeholder types are marked
     normal_prefix: string;
     normal_suffix: string;
-    // How placeholders using the innerHTML method are marked
     html_prefix: string;
     html_suffix: string;
+    static_prefix: string;
+    static_suffix: string;
+    dynamic_prefix: string;
+    dynamic_suffix: string;
+
     // How many replacements in a placeholder are ok, before it is stopped due to likely being an infinite recursion
     max_recursion: number;
 }
@@ -173,6 +176,12 @@ const parse_settings = (data: any): PluginSettings => {
         // How placeholders using the innerHTML method are marked
         "html_prefix": "i",
         "html_suffix": "i",
+        // How placeholders using the direct/static replacement methodare marked
+        "static_prefix": "s",
+        "static_suffix": "s",
+        // How placeholders using the dynamic replacement methodare marked
+        "dynamic_prefix": "d",
+        "dynamic_suffix": "d",
         // @TODO resume here
         max_recursion: 64,
     }

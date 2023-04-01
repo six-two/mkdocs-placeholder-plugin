@@ -146,24 +146,4 @@ If this is not done, the first option will be selected by default.
 
 ### Via JavaScript
 
-You can update the values of placeholders at any time by changing the values in the `localStorage`:
-
-```html
-<script>
-localStorage.setItem("YEAR", ""+new Date().getFullYear());
-</script>
-```
-
-Sometimes you may also want a random value, that stays the same after it is set.
-This can be implemented like this:
-
-```html
-<script>
-if (!localStorage.getItem("RANDOM")) {
-    localStorage.setItem("RANDOM", ""+Math.floor(Math.random() * 100));
-}
-</script>
-```
-
-This is possible, since the plugin (unless configured otherwise) will only run when the web page is fully loaded (it is waiting for the `window.onload` event).
-If a value is set by that time, it will **not** be overwritten. Only when no value is set previously, the default value will be set.
+@TODO: outdated, please use `default-function` for the placeholer
