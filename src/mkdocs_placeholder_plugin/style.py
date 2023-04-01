@@ -20,7 +20,8 @@ input.input-for-variable.validation-warn {
 table tr td button.placeholder-input-apply-button,
 table tr td input.input-for-variable,
 table tr td select.placeholder-dropdown {
-    min-width: max(200px, 100%);
+    min-width: min(30vw, 200px);
+    max-width: initial;
 }
 
 table tr td input.input-for-variable[type="checkbox"] {
