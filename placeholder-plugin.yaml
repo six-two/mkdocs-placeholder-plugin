@@ -66,6 +66,12 @@ VALIDATOR_URL_HTTP:
   default: "http://www.example.com/page?a=123&b=c#chapter-2"
   validators: url_http
 
+# Test for nested placeholders
+
+A: <A B=xBx C=xCx>
+B: <B C=xCx>
+C: <C D=xDx>
+D: <D>
 
 ## Combined validators
 MULTI_VALIDATORS:

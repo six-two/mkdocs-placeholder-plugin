@@ -1,3 +1,4 @@
+import { logger } from "./debug";
 import { Placeholder, PluginConfig } from "./parse_settings";
 import { replace_placeholder_in_string } from "./replacer";
 
@@ -34,6 +35,19 @@ export class DependencyGraph {
                 node.recalculate_expanded_value(true);
             }
         }
+    }
+
+    debug_print_representation() {
+        let text = "Dependency graph nodes (DEBUG view):";
+        for (const node of this.nodes.values()) {
+            const dependencies = node.downlinks.map(n => n.placeholder.name).join(", ");
+            if (dependencies.length == 0) {
+                text +=`\n${node.placeholder.name} (${node.placeholder.expanded_value}) has no dependencies`;
+            } else {
+                text +=`\n${node.placeholder.name} (${node.placeholder.expanded_value}) depends on ${dependencies}`;
+            }
+        }
+        logger.debug(text);
     }
 
     unmark_everything(): void {
@@ -89,6 +103,7 @@ export class DependencyGraph {
                     // This placeholders value contains a reference to the other node's placeholder
                     //  -> This node depends on the other node
                     node.downlinks.push(other_node);
+                    other_node.uplinks.push(node);
                 }
             }
         }

@@ -98,7 +98,7 @@ def generate_new_placeholder_json(placeholders: dict[str, Placeholder], plugin_c
         elif placeholder.input_type == InputType.Field:
             placeholder_data.update({
                 "type": "textbox",
-                "allow_recursive": False, # @TODO: read from config
+                "allow_recursive": True, # @TODO: read from config
                 "validators": [v.id for v in placeholder.validator_list],
             })
 

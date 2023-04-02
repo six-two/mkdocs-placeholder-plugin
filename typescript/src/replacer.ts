@@ -122,6 +122,9 @@ export const replace_placeholders_in_subtree = (root_element: Element, config: P
             do_html_replace(root_element, placeholder, config);
         }
     }
+
+    find_dynamic_placeholder_wrappers(config);
+    replace_dynamic_placeholder_values(config);
 }
 
 export const replace_placeholder_in_string = (text: string, placeholder: Placeholder): string => {
@@ -130,6 +133,35 @@ export const replace_placeholder_in_string = (text: string, placeholder: Placeho
         .replace(placeholder.regex_html, placeholder.expanded_value)
         .replace(placeholder.regex_normal, placeholder.expanded_value)
         .replace(placeholder.regex_static, placeholder.expanded_value);
+}
+
+const replace_dynamic_placeholder_values = (config: PluginConfig) => {
+    for (const placeholder of config.placeholders.values()) {
+        for (const element of placeholder.output_elements) {
+            // Delete current contents
+            element.innerHTML = "";
+            // Add the value back as safely escaped text
+            const text = document.createTextNode(placeholder.expanded_value);
+            element.appendChild(text);
+        }
+    }
+}
+
+const find_dynamic_placeholder_wrappers = (config: PluginConfig) => {
+    const output_list: NodeListOf<HTMLElement> = document.querySelectorAll(".placeholder-value[data-placeholder]");
+    for (const element of output_list) {
+        const placeholder_name = element.getAttribute("data-placeholder");
+        if (placeholder_name) {
+            const placeholder = config.placeholders.get(placeholder_name);
+            if (placeholder) {
+                placeholder.output_elements.push(element);
+            } else {
+                console.warn(`No placeholder named '${placeholder_name}', that is referenced by element:`, element);
+            }
+        } else {
+            console.warn(`Element has empty/no attribute 'data-placeholder':`, element);
+        }
+    }
 }
 
 

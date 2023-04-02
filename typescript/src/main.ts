@@ -10,15 +10,6 @@ export const main = () => {
     
     init_logging(config.settings.debug);
 
-    console.warn("@TODO: set the expanded_value for all placeholders to the correct value")
-    for (const placeholder of config.placeholders.values()) {
-        if (placeholder.allow_recursive) {
-            placeholder.expanded_value = placeholder.current_value; // this is wrong, but I will fix it later
-        } else {
-            placeholder.expanded_value = placeholder.current_value;
-        }
-    }
-
     logger.info("PluginConfig", config);
 
     export_api_functions(config);
@@ -42,12 +33,9 @@ export const main = () => {
 
 const do_plugin_stuff = (config: PluginConfig) => {
     replace_placeholders_in_subtree(document.body, config);
-
-    // @TODO: set input_elements and output_elements for all placeholders
-    // @TODO: update_all_dynamic_output_elements
-
+    config.dependency_graph.debug_print_representation();
+    
     initialize_all_input_fields(config);
-
     initialize_auto_tables(config);
 }
 
