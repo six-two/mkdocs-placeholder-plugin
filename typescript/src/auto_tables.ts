@@ -69,6 +69,7 @@ const generate_automatic_placeholder_table = (element: Element, columns: string[
             } else if (column == "value") {
                 const dynamic_placeholer = create_dynamic_placeholder_element(placeholder);
                 cell.appendChild(dynamic_placeholer);
+                placeholder.output_elements.push(dynamic_placeholer);
             } else if (column == "input") {
                 const input = createChildElement(cell, "input") as HTMLInputElement;
                 prepare_input_field(config, placeholder, input);

@@ -48,6 +48,7 @@ const initialize_input_checkbox = (config: PluginConfig, placeholder: CheckboxPl
         input_element.addEventListener("change", () => {
             logger.debug("Checkbox change", placeholder.name, "- new value:", input_element.checked);
             store_checkbox_state(placeholder, input_element.checked);
+            placeholder.current_value = input_element.checked? placeholder.value_checked : placeholder.value_unchecked;
             on_placeholder_change(config, placeholder);
         });
     }
@@ -62,7 +63,7 @@ const initialize_input_dropdown = (config: PluginConfig, placeholder: DropdownPl
 
     for (const option of placeholder.options) {
         const option_element = document.createElement("option");
-        option_element.text = option.display_name;
+        option_element.text = option.display_name;// @TODO: allow placeholders in here
         new_node.appendChild(option_element);
     }
     // Replace input element entirely with the dropdown menu
@@ -84,6 +85,8 @@ const initialize_input_dropdown = (config: PluginConfig, placeholder: DropdownPl
         new_node.addEventListener("change", () => {
             logger.debug("Dropdown change", placeholder.name, "- new index:", new_node.selectedIndex);
             store_dropdown_state(placeholder, new_node.selectedIndex);
+            placeholder.current_index = new_node.selectedIndex;
+            placeholder.current_value = placeholder.options[new_node.selectedIndex].value;
             on_placeholder_change(config, placeholder);
         });
     }
@@ -106,6 +109,7 @@ const initialize_input_textbox = (config: PluginConfig, placeholder: TextboxPlac
                 logger.debug("Textbox change confirmed with Enter key for ", placeholder.name, "- new value:", input_element.value);
                 if (validate_textbox_input_field(placeholder, input_element)) {
                     store_textbox_state(placeholder, input_element.value);
+                    placeholder.current_value = input_element.value;
                     on_placeholder_change(config, placeholder);
                 }
             } else if (event.key === "Escape") {
@@ -125,7 +129,6 @@ const initialize_input_textbox = (config: PluginConfig, placeholder: TextboxPlac
             // Listen for state changes
             input_element.addEventListener("input", () => {
                 // The text was probably modified, so we need to update the validator
-
                 validate_textbox_input_field(placeholder, input_element);
             });
             input_element.addEventListener("keypress", on_keypress);
@@ -144,23 +147,47 @@ const on_placeholder_change = (config: PluginConfig, placeholder: Placeholder) =
     for (const ph of affected_placeholders) {
         require_reload = require_reload || ph.reload_page_on_change;
     }
+
+    logger.debug(`Change of ${placeholder.name} requires updates for placeholders:\n${affected_placeholders.map(p => ` - ${p.name}\n`).join("")}\nRequires reload: ${require_reload}`);
     if (require_reload) {
         reload_page(); // for now we just use the full reload
     } else {
         config.dependency_graph.on_placeholder_value_change(placeholder);
         // @TODO: update auto-tables, since downstream may be changed
 
-        // Update input elements
-        for (const ph of affected_placeholders) {
-            for (const input of ph.input_elements) {
-                // @TODO: update
+        // Update all input elements for the modified placeholder
+        if (placeholder.type == InputType.Checkbox) {
+            const ph = placeholder as CheckboxPlaceholder;
+            for (const input_element of ph.input_elements) {
+                input_element.checked = ph.current_is_checked;
             }
+        } else if (placeholder.type == InputType.Dropdown) {
+            const ph = placeholder as DropdownPlaceholder;
+            for (const input_element of ph.input_elements) {
+                input_element.selectedIndex = ph.current_index;
+            }
+        } else if (placeholder.type == InputType.Textbox) {
+            const ph = placeholder as TextboxPlaceholder;
+            for (const input_element of ph.input_elements) {
+                input_element.value = ph.current_value;
+            }
+        } else {
+            console.warn(`Placeholder ${placeholder.name} has unexpected type '${placeholder.type}'`);            
         }
+
+        // @TODO Not needed as long as the dropdown display name is static
+        // // Update input elements
+        // for (const ph of affected_placeholders) {
+        //     // Only dropdown's input elements can depend on other placeholders (the label)
+        //     if (ph.type == InputType.Dropdown) {
+        //         for (const input of (ph as DropdownPlaceholder).input_elements) {
+        //             // code here
+        //         }
+        //     }
+        // }
 
         // Update output elements
         replace_dynamic_placeholder_values(affected_placeholders);
-
-        // reload_page(); // for now we just use the full reload
     }
 }
 
