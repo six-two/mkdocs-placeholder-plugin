@@ -1,5 +1,6 @@
 import { logger, reload_page } from "./debug";
 import { CheckboxPlaceholder, DropdownPlaceholder, InputType, Placeholder, PluginConfig, TextboxPlaceholder } from "./parse_settings";
+import { replace_dynamic_placeholder_values } from "./replacer";
 import { store_checkbox_state, store_dropdown_state, store_textbox_state } from "./state_manager";
 import { validate_textbox_input_field } from "./validator";
 
@@ -47,7 +48,7 @@ const initialize_input_checkbox = (config: PluginConfig, placeholder: CheckboxPl
         input_element.addEventListener("change", () => {
             logger.debug("Checkbox change", placeholder.name, "- new value:", input_element.checked);
             store_checkbox_state(placeholder, input_element.checked);
-            on_placeholder_change(placeholder);
+            on_placeholder_change(config, placeholder);
         });
     }
 
@@ -83,7 +84,7 @@ const initialize_input_dropdown = (config: PluginConfig, placeholder: DropdownPl
         new_node.addEventListener("change", () => {
             logger.debug("Dropdown change", placeholder.name, "- new index:", new_node.selectedIndex);
             store_dropdown_state(placeholder, new_node.selectedIndex);
-            on_placeholder_change(placeholder);
+            on_placeholder_change(config, placeholder);
         });
     }
 
@@ -105,7 +106,7 @@ const initialize_input_textbox = (config: PluginConfig, placeholder: TextboxPlac
                 logger.debug("Textbox change confirmed with Enter key for ", placeholder.name, "- new value:", input_element.value);
                 if (validate_textbox_input_field(placeholder, input_element)) {
                     store_textbox_state(placeholder, input_element.value);
-                    on_placeholder_change(placeholder);
+                    on_placeholder_change(config, placeholder);
                 }
             } else if (event.key === "Escape") {
                 // @TODO: why does this not get triggered? Is it intercepted by something else?
@@ -136,8 +137,30 @@ const initialize_input_textbox = (config: PluginConfig, placeholder: TextboxPlac
 }
 
 
-const on_placeholder_change = (placeholder: Placeholder) => {
-    console.warn("@TODO: implement propperly: dynamic page updating");
-    reload_page(); // for now we just use the full reload
+const on_placeholder_change = (config: PluginConfig, placeholder: Placeholder) => {
+    const affected_placeholders = config.dependency_graph.get_all_upstream(placeholder);
+
+    let require_reload = false;
+    for (const ph of affected_placeholders) {
+        require_reload = require_reload || ph.reload_page_on_change;
+    }
+    if (require_reload) {
+        reload_page(); // for now we just use the full reload
+    } else {
+        config.dependency_graph.on_placeholder_value_change(placeholder);
+        // @TODO: update auto-tables, since downstream may be changed
+
+        // Update input elements
+        for (const ph of affected_placeholders) {
+            for (const input of ph.input_elements) {
+                // @TODO: update
+            }
+        }
+
+        // Update output elements
+        replace_dynamic_placeholder_values(affected_placeholders);
+
+        // reload_page(); // for now we just use the full reload
+    }
 }
 

@@ -47,6 +47,14 @@ const inner_html_replace: Replacer = (root_element, search_regex, replacement_va
     }
 };
 
+export const create_dynamic_placeholder_element = (placeholder: Placeholder): HTMLSpanElement => {
+    const span = document.createElement("span");
+    span.classList.add("placeholder-value");
+    span.dataset.placeholder = placeholder.name;
+    span.textContent = placeholder.expanded_value;
+    return span;
+}
+
 const dynamic_replace = (root_element: Element, search_regex: RegExp, placeholder: Placeholder) => {
     const walker = document.createTreeWalker(root_element, NodeFilter.SHOW_TEXT);
     let node;
@@ -124,7 +132,7 @@ export const replace_placeholders_in_subtree = (root_element: Element, config: P
     }
 
     find_dynamic_placeholder_wrappers(config);
-    replace_dynamic_placeholder_values(config);
+    replace_dynamic_placeholder_values([...config.placeholders.values()]);
 }
 
 export const replace_placeholder_in_string = (text: string, placeholder: Placeholder): string => {
@@ -135,8 +143,8 @@ export const replace_placeholder_in_string = (text: string, placeholder: Placeho
         .replace(placeholder.regex_static, placeholder.expanded_value);
 }
 
-const replace_dynamic_placeholder_values = (config: PluginConfig) => {
-    for (const placeholder of config.placeholders.values()) {
+export const replace_dynamic_placeholder_values = (placeholder_list: Placeholder[]) => {
+    for (const placeholder of placeholder_list) {
         for (const element of placeholder.output_elements) {
             // Delete current contents
             element.innerHTML = "";

@@ -1,6 +1,7 @@
 import { logger } from "./debug";
 import { prepare_input_field } from "./inputs";
 import { Placeholder, PluginConfig } from "./parse_settings";
+import { create_dynamic_placeholder_element } from "./replacer";
 
 const TABLE_CELL_HEADINGS: Map<string, string> = new Map();
 TABLE_CELL_HEADINGS.set("name", "Name");
@@ -66,7 +67,8 @@ const generate_automatic_placeholder_table = (element: Element, columns: string[
             } else if (column == "description") {
                 appendTextNode(cell, placeholder.description);
             } else if (column == "value") {
-                appendTextNode(cell, placeholder.expanded_value);
+                const dynamic_placeholer = create_dynamic_placeholder_element(placeholder);
+                cell.appendChild(dynamic_placeholer);
             } else if (column == "input") {
                 const input = createChildElement(cell, "input") as HTMLInputElement;
                 prepare_input_field(config, placeholder, input);

@@ -3,16 +3,6 @@ import { Placeholder, PluginConfig } from "./parse_settings";
 import { replace_placeholder_in_string } from "./replacer";
 
 
-const recursive_add_placeholders_to_list = (list: Placeholder[], node: GraphNode) => {
-    if (!list.includes(node.placeholder)) {
-        list.push(node.placeholder);
-        // Also add all downstream dependencies to the list
-        for (const child of node.downlinks) {
-            recursive_add_placeholders_to_list(list, child);
-        }
-    }
-}
-
 // Should be a directed acyclical graph
 export class DependencyGraph {
     private nodes: Map<string, GraphNode>;
@@ -81,6 +71,25 @@ export class DependencyGraph {
         }
     }
 
+    get_all_marked(): Placeholder[] {
+        const marked: Placeholder[] = [];
+        for (const node of this.nodes.values()) {
+            if (node.marked) {
+                marked.push(node.placeholder);
+            }
+        }
+        return marked;
+    }
+
+    get_all_upstream(placeholder: Placeholder): Placeholder[] {
+        this.unmark_everything()
+
+        const node = this.get_node(placeholder);
+        node.recursive_mark_upstream();
+
+        return this.get_all_marked();
+    }
+
     update_placeholder_downlinks(placeholder: Placeholder) {
         if (placeholder.allow_recursive == false) {
             // By definition, non-recursive placeholders can not rely on other placeholders
@@ -111,14 +120,15 @@ export class DependencyGraph {
 
     get_all_used_placeholders(): Placeholder[] {
         // Also includes all placeholders used by the placeholders that were included
-        const list: Placeholder[] = [];
+        this.unmark_everything()
+
+        // Mark all used placeholders and their downstream nodes
         for (const node of this.nodes.values()) {
             if (node.placeholder.count_on_page > 0) {
-                // Also add all downstream dependencies to the list
-                recursive_add_placeholders_to_list(list, node);
+                node.recursive_mark_downstream()
             }
         }
-        return list;
+        return this.get_all_marked();
     }
 
     has_loop() {
@@ -200,6 +210,20 @@ class GraphNode {
             for (const uplink_node of this.uplinks) {
                 uplink_node.recalculate_expanded_value(recursive);
             }
+        }
+    }
+
+    recursive_mark_upstream() {
+        this.marked = true;
+        for (const node of this.uplinks) {
+            node.recursive_mark_upstream();
+        }
+    }
+
+    recursive_mark_downstream() {
+        this.marked = true;
+        for (const node of this.downlinks) {
+            node.recursive_mark_downstream();
         }
     }
 }
