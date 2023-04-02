@@ -1,5 +1,5 @@
 import { CheckboxPlaceholder, DropdownPlaceholder, TextboxPlaceholder } from "./parse_settings";
-import { logger } from "./debug";
+import { logger, reload_page } from "./debug";
 import { is_valid_value_for_placeholder } from "./validator";
 
 // These functions are here to make it easier to change the storage backend (for example locasstorage -> cookies)
@@ -44,6 +44,26 @@ export const load_checkbox_state = (placeholder: CheckboxPlaceholder): void => {
     
     // Now we update the actual value based on the state
     placeholder.current_value = placeholder.current_is_checked? placeholder.value_checked : placeholder.value_unchecked;
+}
+
+export const clear_state = () => {
+    // The easiest way would be to clear the whole storage, but that might break other plugins / scripts.
+    // So we only delete all items that start with our prefix
+    console.warn(`Clearing all localStorage items starting with '${STORAGE_PREFIX}'`);
+
+    let i = 0;
+    while (i < localStorage.length) {
+        const key = localStorage.key(i);
+        if (key?.startsWith(STORAGE_PREFIX)) {
+            // Delete the item
+            localStorage.removeItem(key);
+        } else {
+            // Not ours, so we skip it
+            i++;
+        }
+    }
+
+    reload_page();
 }
 
 const is_valid_index = (placeholder: DropdownPlaceholder, index: number): boolean => {

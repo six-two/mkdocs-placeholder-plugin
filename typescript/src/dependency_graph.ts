@@ -1,6 +1,7 @@
 import { logger } from "./debug";
 import { Placeholder, PluginConfig } from "./parse_settings";
 import { replace_placeholder_in_string } from "./replacer";
+import { clear_state } from "./state_manager";
 
 
 // Should be a directed acyclical graph
@@ -14,7 +15,15 @@ export class DependencyGraph {
         }
         // Needs to be in different loops to ensure that all nodes have been created first
         for (const placeholder of placeholders.values()) {
-            this.on_placeholder_value_change(placeholder);
+            try {
+                this.on_placeholder_value_change(placeholder);
+            } catch (e) {
+                console.error("Error while building dependency graph", e);
+                console.warn("Placeholder values may be inconsistent. Clearing your localStorage should fix this problem.");
+                if (confirm("We detected a problem with your placeholder values. Resetting them to the defaults should fix this. Should we reset your placeholders?")) {
+                    clear_state();
+                }
+            }
         }
 
         // Make sure that all expanded values are calculated

@@ -104,6 +104,12 @@ const initialize_input_textbox = (config: PluginConfig, placeholder: TextboxPlac
         input_element.disabled = true;
         input_element.style.cursor = "not-allowed";
     } else {
+        if (placeholder.default_value != undefined) {
+            input_element.placeholder = `Default: ${placeholder.default_value}`;
+        } else {
+            input_element.placeholder = "Dynamic default value";
+        }
+
         const on_keypress = (event: KeyboardEvent) => {
             if (event.key === "Enter") {
                 logger.debug("Textbox change confirmed with Enter key for ", placeholder.name, "- new value:", input_element.value);
@@ -170,6 +176,7 @@ const on_placeholder_change = (config: PluginConfig, placeholder: Placeholder) =
             const ph = placeholder as TextboxPlaceholder;
             for (const input_element of ph.input_elements) {
                 input_element.value = ph.current_value;
+                validate_textbox_input_field(ph, input_element);
             }
         } else {
             console.warn(`Placeholder ${placeholder.name} has unexpected type '${placeholder.type}'`);            
