@@ -32,6 +32,8 @@ The corresponding documentation is hosted at <https://dev.mkdocs-placeholder-plu
 
 ### HEAD
 
+### Version 0.3.0
+
 This release may be a bit buggy due to the rewrite and the documentation is not entirely accurate yet.
 I will update the docs after I also clean up / rewrite the python code (planed for v0.4.0).
 
