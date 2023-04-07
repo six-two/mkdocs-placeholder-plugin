@@ -27,6 +27,9 @@ However after changing them, you need to may need to reload the page to show the
 
 Below you can see the placeholders in action.
 
+<style id="style-highlight"></style>
+<button class="md-button md-button--primary" onclick="document.getElementById('style-highlight').innerHTML='.placeholder-value {background-color: orange;}'">Highlight placeholders</button>
+
 ## Transfer files
 
 You can transfer various files on linux systems using common command line tools.

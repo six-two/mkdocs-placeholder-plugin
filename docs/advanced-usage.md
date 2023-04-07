@@ -195,3 +195,19 @@ Valid column names for `data-columns` are:
 - `input`
 - `name`
 - `value`
+
+## Highlighting placeholders
+
+You may want to show users, which values they can cahnge via the input boxes.
+To do this, you can style the wrapper inserted by the dynamic replacement method.
+Since the wrapper has the class `placeholder-value`, you can add styling for it like this:
+
+```css
+.placeholder-value {
+    background-color: yellow;
+}
+```
+
+If you enable the JavaScript debug mode, you will automatically get the placeholders highlighted in gray.
+If you do not like that, you can undo the styling by overwriting it with more specific rules.
+You can find the debug highlight rules in the variable `HIGHLIGHT_STYLE` in `src/mkdocs_placeholder_plugin/style.py`.

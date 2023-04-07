@@ -32,7 +32,7 @@ For example:
 NAME: John Doe
 PLUGIN: MkDocs Placeholder Plugin
 RATING: great
-YEAR: 2022
+YEAR: 2023
 RANDOM: 5
 ```
 

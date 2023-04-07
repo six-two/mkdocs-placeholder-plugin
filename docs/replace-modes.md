@@ -1,8 +1,17 @@
 # Replace modes
 
 Replace modes define how placeholders are replaced in the page via the JavaScript code.
+Usually you will only need the default placeholders (`xPLACEHOLDER_NAMEx`), but you can use the other ones as well.
+You can mix and match them as you like on any page.
+However be advised, that some types do not support dynamic reloading, so the whole page would need to be reloaded if the placeholder (or any placeholder its value contains) are changed.
 
 ## Available modes
+
+### Normal
+
+|Default pattern|xPLACEHOLDER_NAMEx|
+
+Currently just is an alias for dynamic, but may change in the future.
 
 ### InnerHTML
 
@@ -34,12 +43,6 @@ This enables updating the element in-place and is necessary if you want to highl
 |Safe|true|
 
 Replaces element directly.
-
-### Normal
-
-|Default pattern|xPLACEHOLDER_NAMEx|
-
-Currently just is an alias for dynamic, but may change in the future.
 
 ## Nesting
 
