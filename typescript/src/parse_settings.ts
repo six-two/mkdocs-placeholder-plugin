@@ -268,8 +268,8 @@ const finish_parse_textbox = (parsed: BasePlaceholer, data: any, validator_map: 
         default_function = () => {
             // Wrap the function, so that we can ensure that errors are properly handled
             try {
-                // do not use function, since it only needs to be called at most once
-                const result = eval(default_js_code);
+                const compiled_function = new Function(default_js_code);
+                const result = compiled_function();
                 if (typeof(result) != "string") {
                     throw new Error(`Custom function '${default_js_code}' should return a string, but it returned a ${typeof(result)}: ${result}`);
                 } else {

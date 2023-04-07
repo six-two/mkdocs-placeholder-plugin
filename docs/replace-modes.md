@@ -6,16 +6,19 @@ Replace modes define how placeholders are replaced in the page via the JavaScrip
 
 ### InnerHTML
 
+|Default pattern|iPLACEHOLDER_NAMEi|
 |Change requires reload|true|
 |Replace locations|anywhere (whole DOM)|
 |Safe|false|
 
 Replaces the element **anywhere** in the pages HTML (inside inline scripts, inline sytles, HTML tags and attributes, etc).
 May lead to cross-site scripting attacks and other problems if you use it.
+To allow this, you need to set `replace_everywhere: true` for all placeholders, that use this feature.
 
 
 ### Dynamic
 
+|Default pattern|dPLACEHOLDER_NAMEd|
 |Change requires reload|false|
 |Replace locations|text nodes|
 |Safe|true|
@@ -25,6 +28,7 @@ This enables updating the element in-place and is necessary if you want to highl
 
 ### Direct / Static
 
+|Default pattern|sPLACEHOLDER_NAMEs|
 |Change requires reload|true|
 |Replace locations|text nodes|
 |Safe|true|
@@ -32,6 +36,8 @@ This enables updating the element in-place and is necessary if you want to highl
 Replaces element directly.
 
 ### Normal
+
+|Default pattern|xPLACEHOLDER_NAMEx|
 
 Currently just is an alias for dynamic, but may change in the future.
 

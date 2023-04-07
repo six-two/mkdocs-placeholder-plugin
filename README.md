@@ -24,11 +24,23 @@ The corresponding documentation is hosted at <https://dev.mkdocs-placeholder-plu
 
 ## Notable changes
 
+### TODOs
+
+- Rewrite python code and decouple it from MkDocs (to be able to use it with other projects).
+- Implement propper exception handling for TypeScript code to recover from / compartmentalize non-critical errors.
+- Update the documentation.
+
 ### HEAD
 
-- Currently rewriting the JavaScript code to be more reliable
+This release may be a bit buggy due to the rewrite and the documentation is not entirely accurate yet.
+I will update the docs after I also clean up / rewrite the python code (planed for v0.4.0).
 
-**Due to the rewrite, many features temporarily are not working. Please use the stable version (0.2.5) for now.**
+- Rewrote the JavaScript code in TypeScript:
+    - Packed and minified using Webpack, so the file is a bit smaller
+    - Should find stupid errors I make in code paths that I do not test (often)
+    - Sophisticated update logic: Instead of always reloading the page it tries to update the DOM in-place (if possible), which should improve user experience a bit and is much faster
+    - Recursive placeholders (placeholders that contain placeholders that contain placeholder...) no longer need to be specified in a speific order in the configuration file.
+    - A placeholder's `default-function` and a validator rule's `match_function` are now evaluated using [`new Function(...)`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function) instead of `eval(...)`, so you need to add a return statement.
 
 ### Version 0.2.5
 
