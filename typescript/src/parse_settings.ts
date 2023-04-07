@@ -50,6 +50,18 @@ export interface PluginConfig {
     dropdowns: Map<string,DropdownPlaceholder>;
     settings: PluginSettings;
     dependency_graph: DependencyGraph;
+    input_tables: InputTable[];
+}
+
+export interface InputTable {
+    table_element: HTMLElement;
+    columns: string[];
+    rows: InputTableRow[];
+}
+
+export interface InputTableRow {
+    element: HTMLElement;
+    placeholder: Placeholder;
 }
 
 export interface PluginSettings {
@@ -72,6 +84,8 @@ export interface BasePlaceholer {
     description: string;
     read_only: boolean;
     allow_inner_html: boolean;
+    // used for sorting placeholders
+    order_index: number;
     // Regexes for finding placeholder in page
     regex_dynamic: RegExp;
     regex_html: RegExp;
@@ -152,8 +166,8 @@ export const parse_config = (data: any): PluginConfig => {
     const settings = parse_settings(settings_data);
 
     const placeholder_data = get_array_field("placeholder_list", "object", data);
-    for (const pd of placeholder_data) {
-        const placeholder = parse_any_placeholder(pd, validator_map, settings);
+    for (let i = 0; i < placeholder_data.length; i++) {
+        const placeholder = parse_any_placeholder(placeholder_data[i], validator_map, settings, i);
 
         // Add the placeholder to the correct lists
         placeholder_map.set(placeholder.name, placeholder);
@@ -177,6 +191,7 @@ export const parse_config = (data: any): PluginConfig => {
         "dropdowns": dropdowns,
         "settings": settings,
         "dependency_graph": graph,
+        "input_tables": [],
     }
 }
 
@@ -201,12 +216,13 @@ const parse_settings = (data: any): PluginSettings => {
 }
 
 
-const parse_any_placeholder = (data: any, validator_map: Map<string,InputValidator>, settings: PluginSettings): Placeholder => {
+const parse_any_placeholder = (data: any, validator_map: Map<string,InputValidator>, settings: PluginSettings, index: number): Placeholder => {
     const type = get_string_field("type", data);
     // Parse fields that are shared between all placeholders
     const name = get_string_field("name", data);
     let parsed = {
         "name": name,
+        "order_index": index,
         // The regexes for the different replace methods. Stored here so that I only need to compile them once
         "regex_dynamic": RegExp(settings.dynamic_prefix + name + settings.dynamic_suffix, "g"),
         "regex_html": RegExp(settings.html_prefix + name + settings.html_suffix, "g"),

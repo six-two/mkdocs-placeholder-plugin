@@ -1,3 +1,4 @@
+import { update_all_auto_tables } from "./auto_tables";
 import { logger, reload_page } from "./debug";
 import { CheckboxPlaceholder, DropdownPlaceholder, InputType, Placeholder, PluginConfig, TextboxPlaceholder } from "./parse_settings";
 import { replace_dynamic_placeholder_values } from "./replacer";
@@ -159,7 +160,9 @@ const on_placeholder_change = (config: PluginConfig, placeholder: Placeholder) =
         reload_page(); // for now we just use the full reload
     } else {
         config.dependency_graph.on_placeholder_value_change(placeholder);
-        // @TODO: update auto-tables, since downstream may be changed
+
+        // update auto-tables, since downstream may be changed
+        update_all_auto_tables(config);
 
         // Update all input elements for the modified placeholder
         if (placeholder.type == InputType.Checkbox) {
