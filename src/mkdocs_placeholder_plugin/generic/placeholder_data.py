@@ -9,6 +9,8 @@ import yaml
 from . import warning, PlaceholderConfigError
 from .validators import Validator, ValidatorRule, assert_matches_one_validator
 from .validators_predefined import VALIDATOR_PRESETS
+from .parser_utils import assert_no_unknown_fields, add_problematic_data_to_exceptions
+
 
 # Should only contain letters, numbers, and underscores (hopefully prevents them from being broken up by syntax highlighting)
 # Should not begin with a number (this prevents placeholders like `1`)
@@ -93,12 +95,12 @@ def load_placeholder_data(path: str) -> dict[str, Placeholder]:
             if isinstance(value, dict):
                 # New style entry with attributes
                 # debug(f"dict: {value}")
-                placeholders[key] = parse_placeholder_dict(key, value)
+                placeholders[key] = parse_placeholder_dict(value, f"{path}:{key}", key)
             elif type(value) in TYPES_PRIMITIVE:
                 # Old config style, will only set name and default_value
                 # For consistency's sake, we also parse it wit the parse_palceholder_dict() function
                 # debug(f"primitive: {value}")
-                placeholders[key] = parse_placeholder_dict(key, {"default": value})
+                placeholders[key] = parse_placeholder_dict({"default": value}, f"{path}:{key}", key)
             else:
                 raise PlaceholderConfigError(f"Expected a single value or object for key '{key}', but got type {type(value).__name__}")
 
@@ -111,48 +113,42 @@ def load_placeholder_data(path: str) -> dict[str, Placeholder]:
         raise PlaceholderConfigError(f"Placeholder data file '{path}' does not exist")
 
 
-def parse_placeholder_dict(name: str, data: dict[str,Any]) -> Placeholder:
+@add_problematic_data_to_exceptions
+def parse_placeholder_dict(data: dict[str,Any], location: str, name: str) -> Placeholder:
     """
     Parse a dictionary that contains the information for a single placeholder.
     """
-    try:
-        # Check for unexpected fields
-        unexpected_fields = set(data).difference(PLACEHOLDER_FIELD_NAMES)
-        if unexpected_fields:
-            raise PlaceholderConfigError(f"Unexpected field(s): {', '.join(unexpected_fields)}")
+    assert_no_unknown_fields(data, PLACEHOLDER_FIELD_NAMES)
 
-        # Readonly is optional, defaults to False
-        read_only = data.get("read_only", False)
-        if type(read_only) != bool:
-            raise PlaceholderConfigError(f"Wrong type for key 'read_only': Expected 'bool', got '{type(read_only).__name__}'")
+    # Readonly is optional, defaults to False
+    read_only = data.get("read_only", False)
+    if type(read_only) != bool:
+        raise PlaceholderConfigError(f"Wrong type for key 'read_only': Expected 'bool', got '{type(read_only).__name__}'")
 
-        # Replace-everywhere is optional, defaults to False
-        replace_everywhere = data.get("replace_everywhere", False)
-        if type(replace_everywhere) != bool:
-            raise PlaceholderConfigError(f"Wrong type for key 'replace_everywhere': Expected 'bool', got '{type(replace_everywhere).__name__}'")
+    # Replace-everywhere is optional, defaults to False
+    replace_everywhere = data.get("replace_everywhere", False)
+    if type(replace_everywhere) != bool:
+        raise PlaceholderConfigError(f"Wrong type for key 'replace_everywhere': Expected 'bool', got '{type(replace_everywhere).__name__}'")
 
-        # Description is optional
-        description = str(data.get("description", ""))
+    # Description is optional
+    description = str(data.get("description", ""))
 
-        values = parse_values(data)
-        default_value, default_function = parse_defaults(data, values)
-        input_type = determine_input_type(values, default_value)
-        validator_list = parse_validator_list(name, data, input_type, default_value)
+    values = parse_values(data)
+    default_value, default_function = parse_defaults(data, values)
+    input_type = determine_input_type(values, default_value)
+    validator_list = parse_validator_list(name, data, input_type, default_value)
 
-        return Placeholder(
-            name=name,
-            default_value=default_value,
-            default_function=default_function,
-            description=description,
-            replace_everywhere=replace_everywhere,
-            read_only=read_only,
-            values=values,
-            input_type=input_type,
-            validator_list=validator_list,
-        )
-    except Exception as ex:
-        message = f"Missing key {ex}" if type(ex) == KeyError else str(ex)
-        raise PlaceholderConfigError(f"Failed to parse placeholder '{name}': {message}\n\nCaused by placeholder {name}")
+    return Placeholder(
+        name=name,
+        default_value=default_value,
+        default_function=default_function,
+        description=description,
+        replace_everywhere=replace_everywhere,
+        read_only=read_only,
+        values=values,
+        input_type=input_type,
+        validator_list=validator_list,
+    )
 
 
 def parse_defaults(data: dict[str,Any], values: dict[str,str]) -> tuple[str, str]:
@@ -218,7 +214,7 @@ def parse_validator_list(placeholder_name: str, data: dict[str,Any], input_type:
                     else:
                         raise PlaceholderConfigError(f"No validator preset named '{validator}', valid values are: {', '.join(VALIDATOR_PRESETS)}")
                 elif type(validator) == dict:
-                    validator_list.append(parse_validator_object(validator))
+                    validator_list.append(parse_validator_object(validator, "@TODO: this will be removed anyways"))
                 else:
                     raise PlaceholderConfigError(f"Wrong type for validator entry: Expected 'string' or 'dict', got '{type(validator).__name__}'")
 
@@ -238,84 +234,76 @@ def parse_validator_list(placeholder_name: str, data: dict[str,Any], input_type:
     return validator_list
 
 
-def parse_validator_object(data: dict[str,Any]) -> Validator:
-    try:
-        id = data["id"]
-        if type(id) != str:
-            raise PlaceholderConfigError(f"Wrong type for key 'name': Expected 'string', got '{type(id).__name__}'")
+@add_problematic_data_to_exceptions
+def parse_validator_object(data: dict[str,Any], location: str) -> Validator:
+    id = data["id"]
+    if type(id) != str:
+        raise PlaceholderConfigError(f"Wrong type for key 'name': Expected 'string', got '{type(id).__name__}'")
 
-        name = data["name"]
-        if type(name) != str:
-            raise PlaceholderConfigError(f"Wrong type for key 'name': Expected 'string', got '{type(name).__name__}'")
+    name = data["name"]
+    if type(name) != str:
+        raise PlaceholderConfigError(f"Wrong type for key 'name': Expected 'string', got '{type(name).__name__}'")
 
-        rules_data = data["rules"]
-        if type(rules_data) != list:
-            raise PlaceholderConfigError(f"Wrong type for key 'rules_data': Expected 'list', got '{type(rules_data).__name__}'")
+    rules_data = data["rules"]
+    if type(rules_data) != list:
+        raise PlaceholderConfigError(f"Wrong type for key 'rules_data': Expected 'list', got '{type(rules_data).__name__}'")
 
-        if not rules_data:
-            raise PlaceholderConfigError("Validators neet to have at least a rule, but received an empty list")
+    if not rules_data:
+        raise PlaceholderConfigError("Validators neet to have at least a rule, but received an empty list")
 
-        rules = [parse_validator_rule(x) for x in rules_data]
-        return Validator(
-            id=id,
-            name=name,
-            rules=rules,
-        )
-    except Exception as ex:
-        message = f"Missing key {ex}" if type(ex) == KeyError else str(ex)
-        raise PlaceholderConfigError(f"{message}\n\nCaused by validator: {json.dumps(data, indent=4)}")
+    rules = [parse_validator_rule(x, f"{location}[{i}]") for i, x in enumerate(rules_data)]
+    return Validator(
+        id=id,
+        name=name,
+        rules=rules,
+    )
 
 
-def parse_validator_rule(data: dict[str,Any]) -> ValidatorRule:
-    try:
-        unexpected_fields = set(data).difference(VALIDATOR_RULE_FIELD_NAMES)
-        if unexpected_fields:
-            raise PlaceholderConfigError(f"Unexpected field(s) in validator rule: {', '.join(unexpected_fields)}")
+@add_problematic_data_to_exceptions
+def parse_validator_rule(data: dict[str,Any], location: str) -> ValidatorRule:
+    assert_no_unknown_fields(data, VALIDATOR_RULE_FIELD_NAMES)
 
-        severity = data.get("severity", "error")
-        if severity not in SEVERITY_LIST:
-            raise PlaceholderConfigError(f"Unknown severity '{severity}'. Should be one of {', '.join(unexpected_fields)}")
+    severity = data.get("severity", "error")
+    if severity not in SEVERITY_LIST:
+        raise PlaceholderConfigError(f"Unknown severity '{severity}'. Should be one of {', '.join(SEVERITY_LIST)}")
 
-        regex = ""
-        match_function = ""
-        if "regex" in data:
-            if "match_function" in data:
-                raise PlaceholderConfigError("Keys 'regex' and 'match_function' are mutually exclusive, but both are defined")
-            else:
-                regex = data["regex"]
-                if type(regex) != str:
-                    raise PlaceholderConfigError(f"Wrong type for key 'regex': Expected 'string', got '{type(regex).__name__}'")
-                elif not regex:
-                    raise PlaceholderConfigError("Key 'regex' can not be an empty string")
+    regex = ""
+    match_function = ""
+    if "regex" in data:
+        if "match_function" in data:
+            raise PlaceholderConfigError("Keys 'regex' and 'match_function' are mutually exclusive, but both are defined")
         else:
-            if "match_function" in data:
-                match_function = data["match_function"]
-                if type(match_function) != str:
-                    raise PlaceholderConfigError(f"Wrong type for key 'match_function': Expected 'string', got '{type(match_function).__name__}'")
-                elif not match_function:
-                    raise PlaceholderConfigError("Key 'match_function' can not be an empty string")
-            else:
-                raise PlaceholderConfigError("Missing key: you need to specify either 'regex' or 'match_function'")
+            regex = data["regex"]
+            if type(regex) != str:
+                raise PlaceholderConfigError(f"Wrong type for key 'regex': Expected 'string', got '{type(regex).__name__}'")
+            elif not regex:
+                raise PlaceholderConfigError("Key 'regex' can not be an empty string")
+    else:
+        if "match_function" in data:
+            match_function = data["match_function"]
+            if type(match_function) != str:
+                raise PlaceholderConfigError(f"Wrong type for key 'match_function': Expected 'string', got '{type(match_function).__name__}'")
+            elif not match_function:
+                raise PlaceholderConfigError("Key 'match_function' can not be an empty string")
+        else:
+            raise PlaceholderConfigError("Missing key: you need to specify either 'regex' or 'match_function'")
 
 
-        should_match = data["should_match"]
-        if type(should_match) != bool:
-            raise PlaceholderConfigError(f"Wrong type for key 'should_match': Expected 'bool', got '{type(should_match).__name__}'")
+    should_match = data["should_match"]
+    if type(should_match) != bool:
+        raise PlaceholderConfigError(f"Wrong type for key 'should_match': Expected 'bool', got '{type(should_match).__name__}'")
 
-        error_message = data.get("error_message")
-        if type(error_message) != str:
-            raise PlaceholderConfigError(f"Wrong type for key 'error_message': Expected 'string', got '{type(error_message).__name__}'")
-        if not error_message:
-            error_message = "Should match" if should_match else "Should not match"
-            error_message += f" the regular expression '{regex}'"
+    error_message = data.get("error_message")
+    if type(error_message) != str:
+        raise PlaceholderConfigError(f"Wrong type for key 'error_message': Expected 'string', got '{type(error_message).__name__}'")
+    if not error_message:
+        error_message = "Should match" if should_match else "Should not match"
+        error_message += f" the regular expression '{regex}'"
 
-        return ValidatorRule(
-            severity=severity,
-            regex_string=regex,
-            match_function=match_function,
-            should_match=should_match,
-            error_message=error_message,
-        )
-    except Exception as ex:
-        message = f"Missing key {ex}" if type(ex) == KeyError else str(ex)
-        raise PlaceholderConfigError(f"{message}\n\nCaused by validator rule: {json.dumps(data, indent=4)}")
+    return ValidatorRule(
+        severity=severity,
+        regex_string=regex,
+        match_function=match_function,
+        should_match=should_match,
+        error_message=error_message,
+    )
