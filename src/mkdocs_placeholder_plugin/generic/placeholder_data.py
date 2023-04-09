@@ -4,10 +4,9 @@ import os
 import re
 from typing import NamedTuple, Any
 # pip packages
-from mkdocs.exceptions import PluginError
 import yaml
 # local
-from . import warning
+from . import warning, PlaceholderConfigError
 from .validators import Validator, ValidatorRule, assert_matches_one_validator
 from .validators_predefined import VALIDATOR_PRESETS
 
@@ -88,7 +87,7 @@ def load_placeholder_data(path: str) -> dict[str, Placeholder]:
         placeholders: dict[str,Placeholder] = {}
 
         if type(data) != dict:
-            raise PluginError(f"[placeholder] Config file error: Expected root element of type 'dict', but got '{type(data).__name__}'")
+            raise PlaceholderConfigError(f"[placeholder] Config file error: Expected root element of type 'dict', but got '{type(data).__name__}'")
         for key, value in data.items():
             # Make sure that values are strings (or convert them to strings if possible)
             if isinstance(value, dict):
@@ -101,7 +100,7 @@ def load_placeholder_data(path: str) -> dict[str, Placeholder]:
                 # debug(f"primitive: {value}")
                 placeholders[key] = parse_placeholder_dict(key, {"default": value})
             else:
-                raise PluginError(f"Expected a single value or object for key '{key}', but got type {type(value).__name__}")
+                raise PlaceholderConfigError(f"Expected a single value or object for key '{key}', but got type {type(value).__name__}")
 
             # Check that the variable name matches expected format
             if not VARIABLE_NAME_REGEX.match(key):
@@ -109,7 +108,7 @@ def load_placeholder_data(path: str) -> dict[str, Placeholder]:
 
         return placeholders
     else:
-        raise PluginError(f"Placeholder data file '{path}' does not exist")
+        raise PlaceholderConfigError(f"Placeholder data file '{path}' does not exist")
 
 
 def parse_placeholder_dict(name: str, data: dict[str,Any]) -> Placeholder:
@@ -120,17 +119,17 @@ def parse_placeholder_dict(name: str, data: dict[str,Any]) -> Placeholder:
         # Check for unexpected fields
         unexpected_fields = set(data).difference(PLACEHOLDER_FIELD_NAMES)
         if unexpected_fields:
-            raise PluginError(f"Unexpected field(s): {', '.join(unexpected_fields)}")
+            raise PlaceholderConfigError(f"Unexpected field(s): {', '.join(unexpected_fields)}")
 
         # Readonly is optional, defaults to False
         read_only = data.get("read_only", False)
         if type(read_only) != bool:
-            raise PluginError(f"Wrong type for key 'read_only': Expected 'bool', got '{type(read_only).__name__}'")
+            raise PlaceholderConfigError(f"Wrong type for key 'read_only': Expected 'bool', got '{type(read_only).__name__}'")
 
         # Replace-everywhere is optional, defaults to False
         replace_everywhere = data.get("replace_everywhere", False)
         if type(replace_everywhere) != bool:
-            raise PluginError(f"Wrong type for key 'replace_everywhere': Expected 'bool', got '{type(replace_everywhere).__name__}'")
+            raise PlaceholderConfigError(f"Wrong type for key 'replace_everywhere': Expected 'bool', got '{type(replace_everywhere).__name__}'")
 
         # Description is optional
         description = str(data.get("description", ""))
@@ -153,7 +152,7 @@ def parse_placeholder_dict(name: str, data: dict[str,Any]) -> Placeholder:
         )
     except Exception as ex:
         message = f"Missing key {ex}" if type(ex) == KeyError else str(ex)
-        raise PluginError(f"Failed to parse placeholder '{name}': {message}\n\nCaused by placeholder {name}")
+        raise PlaceholderConfigError(f"Failed to parse placeholder '{name}': {message}\n\nCaused by placeholder {name}")
 
 
 def parse_defaults(data: dict[str,Any], values: dict[str,str]) -> tuple[str, str]:
@@ -162,11 +161,11 @@ def parse_defaults(data: dict[str,Any], values: dict[str,str]) -> tuple[str, str
     try:
         default_value = str(data["default"])
         if default_function:
-            raise PluginError("Both 'default' and 'default-function' are defined")
+            raise PlaceholderConfigError("Both 'default' and 'default-function' are defined")
     except KeyError:
         default_value = ""
         if not default_function and not values:
-            raise PluginError("Missing key 'default' or 'default-function'")
+            raise PlaceholderConfigError("Missing key 'default' or 'default-function'")
     return default_value, default_function
 
 
@@ -178,7 +177,7 @@ def parse_values(data: dict[str,Any]) -> dict[str,str]:
         if type(value) in TYPES_PRIMITIVE:
             values[str(key)] = str(value)
         else:
-            raise PluginError(f"Field 'values': Expected a dictionary with primitive values, but got {value} ({type(value).__name__}) in key {key}")
+            raise PlaceholderConfigError(f"Field 'values': Expected a dictionary with primitive values, but got {value} ({type(value).__name__}) in key {key}")
     return values
 
 
@@ -187,11 +186,11 @@ def determine_input_type(values: dict[str,str], default_value: str) -> InputType
     if values:
         if set(values.keys()) == {"checked", "unchecked"}:
             if default_value not in ["", "checked", "unchecked"]:
-                raise PluginError("Field 'default': Allowed values for check boxes are '' (empty string), 'checked', 'unchecked'")
+                raise PlaceholderConfigError("Field 'default': Allowed values for check boxes are '' (empty string), 'checked', 'unchecked'")
             return InputType.Checkbox
         else:
             if default_value != "" and default_value not in values.keys():
-                raise PluginError("Field 'default': Allowed values for a dropdown box are '' (empty string), or one of the keys defined in the 'values' field")
+                raise PlaceholderConfigError("Field 'default': Allowed values for a dropdown box are '' (empty string), or one of the keys defined in the 'values' field")
             return InputType.Dropdown
     else:
         return InputType.Field
@@ -208,7 +207,7 @@ def parse_validator_list(placeholder_name: str, data: dict[str,Any], input_type:
             elif type(validators) == list:
                 validator_data_list = validators
             else:
-                raise PluginError(f"Field 'validators': Should be either a string or a list, but is type {type(validators).__name__}")
+                raise PlaceholderConfigError(f"Field 'validators': Should be either a string or a list, but is type {type(validators).__name__}")
 
             for validator in validator_data_list:
                 if type(validator) == str:
@@ -217,11 +216,11 @@ def parse_validator_list(placeholder_name: str, data: dict[str,Any], input_type:
                     if validation_preset:
                         validator_list.append(validation_preset)
                     else:
-                        raise PluginError(f"No validator preset named '{validator}', valid values are: {', '.join(VALIDATOR_PRESETS)}")
+                        raise PlaceholderConfigError(f"No validator preset named '{validator}', valid values are: {', '.join(VALIDATOR_PRESETS)}")
                 elif type(validator) == dict:
                     validator_list.append(parse_validator_object(validator))
                 else:
-                    raise PluginError(f"Wrong type for validator entry: Expected 'string' or 'dict', got '{type(validator).__name__}'")
+                    raise PlaceholderConfigError(f"Wrong type for validator entry: Expected 'string' or 'dict', got '{type(validator).__name__}'")
 
 
             if validator_list:
@@ -243,18 +242,18 @@ def parse_validator_object(data: dict[str,Any]) -> Validator:
     try:
         id = data["id"]
         if type(id) != str:
-            raise PluginError(f"Wrong type for key 'name': Expected 'string', got '{type(id).__name__}'")
+            raise PlaceholderConfigError(f"Wrong type for key 'name': Expected 'string', got '{type(id).__name__}'")
 
         name = data["name"]
         if type(name) != str:
-            raise PluginError(f"Wrong type for key 'name': Expected 'string', got '{type(name).__name__}'")
+            raise PlaceholderConfigError(f"Wrong type for key 'name': Expected 'string', got '{type(name).__name__}'")
 
         rules_data = data["rules"]
         if type(rules_data) != list:
-            raise PluginError(f"Wrong type for key 'rules_data': Expected 'list', got '{type(rules_data).__name__}'")
+            raise PlaceholderConfigError(f"Wrong type for key 'rules_data': Expected 'list', got '{type(rules_data).__name__}'")
 
         if not rules_data:
-            raise PluginError("Validators neet to have at least a rule, but received an empty list")
+            raise PlaceholderConfigError("Validators neet to have at least a rule, but received an empty list")
 
         rules = [parse_validator_rule(x) for x in rules_data]
         return Validator(
@@ -264,48 +263,48 @@ def parse_validator_object(data: dict[str,Any]) -> Validator:
         )
     except Exception as ex:
         message = f"Missing key {ex}" if type(ex) == KeyError else str(ex)
-        raise PluginError(f"{message}\n\nCaused by validator: {json.dumps(data, indent=4)}")
+        raise PlaceholderConfigError(f"{message}\n\nCaused by validator: {json.dumps(data, indent=4)}")
 
 
 def parse_validator_rule(data: dict[str,Any]) -> ValidatorRule:
     try:
         unexpected_fields = set(data).difference(VALIDATOR_RULE_FIELD_NAMES)
         if unexpected_fields:
-            raise PluginError(f"Unexpected field(s) in validator rule: {', '.join(unexpected_fields)}")
+            raise PlaceholderConfigError(f"Unexpected field(s) in validator rule: {', '.join(unexpected_fields)}")
 
         severity = data.get("severity", "error")
         if severity not in SEVERITY_LIST:
-            raise PluginError(f"Unknown severity '{severity}'. Should be one of {', '.join(unexpected_fields)}")
+            raise PlaceholderConfigError(f"Unknown severity '{severity}'. Should be one of {', '.join(unexpected_fields)}")
 
         regex = ""
         match_function = ""
         if "regex" in data:
             if "match_function" in data:
-                raise PluginError("Keys 'regex' and 'match_function' are mutually exclusive, but both are defined")
+                raise PlaceholderConfigError("Keys 'regex' and 'match_function' are mutually exclusive, but both are defined")
             else:
                 regex = data["regex"]
                 if type(regex) != str:
-                    raise PluginError(f"Wrong type for key 'regex': Expected 'string', got '{type(regex).__name__}'")
+                    raise PlaceholderConfigError(f"Wrong type for key 'regex': Expected 'string', got '{type(regex).__name__}'")
                 elif not regex:
-                    raise PluginError("Key 'regex' can not be an empty string")
+                    raise PlaceholderConfigError("Key 'regex' can not be an empty string")
         else:
             if "match_function" in data:
                 match_function = data["match_function"]
                 if type(match_function) != str:
-                    raise PluginError(f"Wrong type for key 'match_function': Expected 'string', got '{type(match_function).__name__}'")
+                    raise PlaceholderConfigError(f"Wrong type for key 'match_function': Expected 'string', got '{type(match_function).__name__}'")
                 elif not match_function:
-                    raise PluginError("Key 'match_function' can not be an empty string")
+                    raise PlaceholderConfigError("Key 'match_function' can not be an empty string")
             else:
-                raise PluginError("Missing key: you need to specify either 'regex' or 'match_function'")
+                raise PlaceholderConfigError("Missing key: you need to specify either 'regex' or 'match_function'")
 
 
         should_match = data["should_match"]
         if type(should_match) != bool:
-            raise PluginError(f"Wrong type for key 'should_match': Expected 'bool', got '{type(should_match).__name__}'")
+            raise PlaceholderConfigError(f"Wrong type for key 'should_match': Expected 'bool', got '{type(should_match).__name__}'")
 
         error_message = data.get("error_message")
         if type(error_message) != str:
-            raise PluginError(f"Wrong type for key 'error_message': Expected 'string', got '{type(error_message).__name__}'")
+            raise PlaceholderConfigError(f"Wrong type for key 'error_message': Expected 'string', got '{type(error_message).__name__}'")
         if not error_message:
             error_message = "Should match" if should_match else "Should not match"
             error_message += f" the regular expression '{regex}'"
@@ -319,4 +318,4 @@ def parse_validator_rule(data: dict[str,Any]) -> ValidatorRule:
         )
     except Exception as ex:
         message = f"Missing key {ex}" if type(ex) == KeyError else str(ex)
-        raise PluginError(f"{message}\n\nCaused by validator rule: {json.dumps(data, indent=4)}")
+        raise PlaceholderConfigError(f"{message}\n\nCaused by validator rule: {json.dumps(data, indent=4)}")

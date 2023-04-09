@@ -9,14 +9,14 @@ from mkdocs.config.base import Config
 from mkdocs.exceptions import PluginError
 
 # local files
-from .plugin_config import PlaceholderPluginConfig
-from .placeholder_data import load_placeholder_data
-from .assets import copy_assets_to_mkdocs_site_directory
-from .static_replacer import StaticReplacer
-from .input_tag_handler import create_normal_input_class_handler
-from .auto_input_table import AutoTableInserter
-from .input_table import InputTableGenerator
-from . import set_warnings_enabled, debug
+from ..plugin_config import PlaceholderPluginConfig
+from ..generic.placeholder_data import load_placeholder_data
+from ..assets import copy_assets_to_mkdocs_site_directory
+from ..generic.static_replacer import StaticReplacer
+from ..generic.input_tag_handler import create_normal_input_class_handler
+from ..generic.auto_input_table import AutoTableInserter
+from ..generic.input_table import InputTableGenerator
+from ..generic import set_warnings_enabled, debug, PlaceholderConfigError, PlaceholderPageError
 
 
 def convert_exceptions(function: Callable) -> Callable:
@@ -28,6 +28,8 @@ def convert_exceptions(function: Callable) -> Callable:
             debug(f"Fatal exception occurred, stack trace:\n{traceback.format_exc()}")
             if isinstance(ex, PluginError):
                 raise PluginError(f"[placeholder] {ex}")
+            elif isinstance(ex, PlaceholderConfigError) or isinstance(ex, PlaceholderPageError):
+                raise PluginError(str(ex))
             else:
                 # Add the information, that it is a normal uncaught excaption
                 raise PluginError(f"[placeholder] Uncaught exception: {ex}")

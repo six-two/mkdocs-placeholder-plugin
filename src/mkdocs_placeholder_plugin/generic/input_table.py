@@ -1,9 +1,8 @@
 import html
 import re
 from typing import NamedTuple
-# pip dependencies
-from mkdocs.exceptions import PluginError
 # local files
+from . import PlaceholderPageError
 from .placeholder_data import Placeholder
 from .html_tag_parser import parse_html_tag
 
@@ -69,7 +68,7 @@ class InputTableGenerator:
             elif show_readonly_string in ["1", "on", "enabled", "true"]:
                 show_readonly = True
             else:
-                raise PluginError(f"[placeholder] Expected boolean value ('true' or 'false') for 'show-readonly', but got '{show_readonly_string}'")
+                raise PlaceholderPageError(f"[placeholder] Expected boolean value ('true' or 'false') for 'show-readonly', but got '{show_readonly_string}'")
         except KeyError:
             show_readonly = self.default_show_readonly
 
@@ -111,7 +110,7 @@ class InputTableGenerator:
             try:
                 placeholder_entries = [self.placeholders[name] for name in placeholder_names]
             except KeyError as e:
-                raise PluginError(f"[placeholder] Unknown placeholder: '{e}'")
+                raise PlaceholderPageError(f"[placeholder] Unknown placeholder: '{e}'")
 
         if not settings.show_readonly:
             # remove all placeholders that are marked as readonly
@@ -129,18 +128,18 @@ class InputTableGenerator:
             columns = [x.strip() for x in settings.table_type.split(",")]
             return self.create_placeholder_table_with_columns(columns, placeholder_entries)
         else:
-            raise PluginError(f"[placeholder] Unknown table type: '{settings.table_type}'")
+            raise PlaceholderPageError(f"[placeholder] Unknown table type: '{settings.table_type}'")
 
     def create_placeholder_table_with_columns(self, column_list: list[str], placeholder_entries: list[Placeholder]) -> str:
         if len(column_list) < 2:
-            raise PluginError(f"[placeholder] Need to get at least 2 colums, but got: {column_list}")
+            raise PlaceholderPageError(f"[placeholder] Need to get at least 2 colums, but got: {column_list}")
         rows: list[list[str]] = [[] for _ in range(len(placeholder_entries) + 2)]
         for column in column_list:
             # Table header
             try:
                 rows[0].append(TABLE_HEADERS[column])
             except KeyError:
-                raise PluginError(f"[placeholder] Invalid column name '{column}'. Valid values: {', '.join(TABLE_HEADERS)}")
+                raise PlaceholderPageError(f"[placeholder] Invalid column name '{column}'. Valid values: {', '.join(TABLE_HEADERS)}")
             rows[1].append("---")
 
             # Table body
@@ -172,5 +171,5 @@ class InputTableGenerator:
         elif column == "value":
             return f"x{html.escape(placeholder.name)}x"
         else:
-            raise PluginError(f"[placeholder] Invalid column name '{column}'. Valid values: {', '.join(TABLE_HEADERS)}")
+            raise PlaceholderPageError(f"[placeholder] Invalid column name '{column}'. Valid values: {', '.join(TABLE_HEADERS)}")
 

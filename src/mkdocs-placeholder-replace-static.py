@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 import argparse
 # local files
-from mkdocs_placeholder_plugin.placeholder_data import load_placeholder_data
-from mkdocs_placeholder_plugin.static_replacer import StaticReplacer
+from mkdocs_placeholder_plugin.generic.placeholder_data import load_placeholder_data
+from mkdocs_placeholder_plugin.generic.static_replacer import StaticReplacer
 
 
 def main() -> None:

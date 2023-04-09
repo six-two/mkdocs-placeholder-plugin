@@ -198,7 +198,7 @@ Valid column names for `data-columns` are:
 
 ## Highlighting placeholders
 
-You may want to show users, which values they can cahnge via the input boxes.
+You may want to show users, which values they can change via the input boxes.
 To do this, you can style the wrapper inserted by the dynamic replacement method.
 Since the wrapper has the class `placeholder-value`, you can add styling for it like this:
 

@@ -1,8 +1,7 @@
 from typing import NamedTuple
-from mkdocs.exceptions import PluginError
 import re
 # local
-from . import warning
+from . import warning, PlaceholderConfigError
 
 class ValidatorRule(NamedTuple):
     severity: str # warn or error
@@ -63,7 +62,7 @@ def validator_to_dict(v: Validator) -> dict:
             "rules": [validator_rule_to_dict(r) for r in v.rules],
         }
     except Exception as ex:
-        raise PluginError(f"Error while converting validator '{v.name}' to dictionary: {ex}")
+        raise PlaceholderConfigError(f"Error while converting validator '{v.name}' to dictionary: {ex}")
 
 def validator_rule_to_dict(r: ValidatorRule) -> dict:
     data = {
@@ -73,14 +72,14 @@ def validator_rule_to_dict(r: ValidatorRule) -> dict:
     }
     if r.match_function:
         if r.regex_string:
-            raise PluginError(f"Error in rule: 'match_function' ({r.match_function}) and 'regex_string' ({r.regex_string}) are mutually exclusive, but both are defined")
+            raise PlaceholderConfigError(f"Error in rule: 'match_function' ({r.match_function}) and 'regex_string' ({r.regex_string}) are mutually exclusive, but both are defined")
         else:
             data["match_function"] = r.match_function
     else:
         if r.regex_string:
             data["regex"] = r.regex_string
         else:
-            raise PluginError("Error in rule: You need to either specify 'match_function' or 'regex_string', but both are empty")
+            raise PlaceholderConfigError("Error in rule: You need to either specify 'match_function' or 'regex_string', but both are empty")
 
     return data
 
@@ -119,7 +118,7 @@ def assert_matches_one_validator(validators: list[Validator], value: str) -> Non
                 warning(f"[Validation error] '{value}' is no {result.validator_name}: {msg}")
             for msg in result.warnings:
                 warning(f"[Validation warning] '{value}' is no {result.validator_name}: {msg}")
-        raise PluginError(f"Default value '{value}' failed validation")
+        raise PlaceholderConfigError(f"Default value '{value}' failed validation")
 
 
 def check_if_matches_validator(validator: Validator, default_value: str) -> ValidationResults:
@@ -130,7 +129,7 @@ def check_if_matches_validator(validator: Validator, default_value: str) -> Vali
             try:
                 matches = bool(re.search(rule.regex_string, default_value))
             except Exception as ex:
-                raise PluginError(f"Error in regular expression '{rule.regex_string}': {ex}")
+                raise PlaceholderConfigError(f"Error in regular expression '{rule.regex_string}': {ex}")
 
             if matches != rule.should_match:
                 # This rule fails
@@ -139,7 +138,7 @@ def check_if_matches_validator(validator: Validator, default_value: str) -> Vali
                 elif rule.severity == "warn":
                     warnings.append(rule.error_message)
                 else:
-                    raise PluginError(f"Unexpected severity: '{rule.severity}'")
+                    raise PlaceholderConfigError(f"Unexpected severity: '{rule.severity}'")
         else:
             # We can not really check the custom JavaScript function at build time.
             # Do we just assume that everything is ok.

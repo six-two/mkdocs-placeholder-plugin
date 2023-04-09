@@ -1,5 +1,5 @@
 # local
-from .plugin_config import PlaceholderPluginConfig
+from ..plugin_config import PlaceholderPluginConfig
 from .placeholder_data import Placeholder
 from .input_table import PlaceholderTableSettings, InputTableGenerator
 

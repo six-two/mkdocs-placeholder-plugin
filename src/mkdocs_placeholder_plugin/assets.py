@@ -5,9 +5,9 @@ from typing import Any
 # local
 from mkdocs.config.defaults import MkDocsConfig
 from .plugin_config import PlaceholderPluginConfig
-from .placeholder_data import Placeholder, InputType
+from .generic.placeholder_data import Placeholder, InputType
 from .style import generate_style_sheet
-from .validators import validator_to_dict
+from .generic.validators import validator_to_dict
 
 
 def _write_to_file(config: MkDocsConfig, relative_path: str, contents: str, open_mode: str) -> None:

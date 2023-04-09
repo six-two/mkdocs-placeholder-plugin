@@ -1,4 +1,4 @@
-from . import warning
+from .generic import warning
 
 # Prevent long descriptions from messing up the table too badly
 # Make the input elements take up the whole row
