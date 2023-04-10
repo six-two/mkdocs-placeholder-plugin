@@ -8,7 +8,7 @@ def generate_json_for_javascript_code(config: PlaceholderConfig) -> str:
     Generate the JSON string, that will replace the placeholder in the JavaScript file
     """
     placeholder_data_list = [placeholder_to_serializable_dict(x) for x in config.placeholders.values()]
-    validator_data_list = [validator_to_dict(x) for x in config.validators.values()] # @TODO: optimize: only add validators that are actually used
+    validator_data_list = [validator_to_dict(x) for x in config.validators.values() if x.is_used()]
     settings_data = settings_to_serializable_dict(config.settings)
 
     result_object = {

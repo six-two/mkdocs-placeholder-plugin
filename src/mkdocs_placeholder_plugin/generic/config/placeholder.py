@@ -172,9 +172,10 @@ def parse_validator_list(placeholder_name: str, data: dict[str,Any], input_type:
             for validator in validator_list:
                 if type(validator) == str:
                     # This is a validator preset
-                    validation_preset = known_validators.get(validator)
-                    if validation_preset:
-                        resolved_validators.append(validation_preset)
+                    validator_object = known_validators.get(validator)
+                    if validator_object:
+                        validator_object.mark_used()
+                        resolved_validators.append(validator_object)
                     else:
                         raise PlaceholderConfigError(f"No validator preset named '{validator}', valid values are: {', '.join(VALIDATOR_PRESETS)}")
                 else:

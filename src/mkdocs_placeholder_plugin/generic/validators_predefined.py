@@ -18,9 +18,9 @@ MEDIOCRE_IPV6_REGEX = r"(([0-9a-fA-F]{1,4}:){7,7}[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1
 def generate_url_http_validator() -> Validator:
     # source: https://urlregex.com. Modified to handle the fragment part (what comes after #)
     return Validator(
-        id="url_http",
-        name="URL (HTTP / HTTPS)",
-        rules=[
+        "url_http",
+        "URL (HTTP / HTTPS)",
+        [
             must_match("^https?://", "Needs to start with 'http://' or 'https://'"),
             RULE_URL_NO_WHITESPACE,
             should_match(f"^{URL_REGEX}$", "Expected an value like https://example.com/some/page.php?x=1&y=some%20value"),
@@ -29,9 +29,9 @@ def generate_url_http_validator() -> Validator:
 
 def generate_file_name_linux_validator() -> Validator:
     return Validator(
-        id="file_name_linux",
-        name="File name",
-        rules=[
+        "file_name_linux",
+        "File name",
+        [
             RULE_NOT_EMPTY,
             must_not_match("/", "Can not contain path separators (slash)"),
             RULE_WARN_WHITESPACE,
@@ -40,9 +40,9 @@ def generate_file_name_linux_validator() -> Validator:
 
 def generate_file_name_windows_validator() -> Validator:
     return Validator(
-        id="file_name_windows",
-        name="File name",
-        rules=[
+        "file_name_windows",
+        "File name",
+        [
             RULE_NOT_EMPTY,
             must_not_match(r"[/\\]", "Can not contain path separators (slash or backslash)"),
             must_not_match('[<>:"|?*]', 'Can not contain prohibited characters: \'<>:"|?*\''),
@@ -53,9 +53,9 @@ def generate_file_name_windows_validator() -> Validator:
 
 def generate_path_linux_validator() -> Validator:
     return Validator(
-        id="path_linux",
-        name="File path (Linux)",
-        rules=[
+        "path_linux",
+        "File path (Linux)",
+        [
             RULE_NOT_EMPTY,
             RULE_WARN_WHITESPACE,
         ]
@@ -63,9 +63,9 @@ def generate_path_linux_validator() -> Validator:
 
 def generate_path_windows_validator() -> Validator:
     return Validator(
-        id="path_windows",
-        name="File path (Windows)",
-        rules=[
+        "path_windows",
+        "File path (Windows)",
+        [
             RULE_NOT_EMPTY,
             # Colon may be in 'C:\...' (and maybe for a port number in an UNC path?)
             should_not_match('[<>"|?*]', 'Can not contain prohibited characters: \'<>"|?*\''),
@@ -77,9 +77,9 @@ def generate_path_windows_validator() -> Validator:
 def generate_url_validator() -> Validator:
     # source: https://urlregex.com. Modified to handle the fragment part (what comes after #)
     return Validator(
-        id="url_any",
-        name="URL (any protocol)",
-        rules=[
+        "url_any",
+        "URL (any protocol)",
+        [
             RULE_URL_NO_WHITESPACE,
             should_match(f"^{URL_REGEX}$", "Expected an value like smb://example.com:10445/share/some-file.txt"),
         ]
@@ -87,9 +87,9 @@ def generate_url_validator() -> Validator:
 
 def generate_ipv6_validator() -> Validator:
     return Validator(
-        id="ipv6_address",
-        name="IPv6 address",
-        rules=[
+        "ipv6_address",
+        "IPv6 address",
+        [
             must_match("^[0-9a-fA-F:.\\[\\]]+$", "Only numbers, the letters A-F, colons, dots, and square brackets are allowed"),
             should_match(f"^{MEDIOCRE_IPV6_REGEX}$", "Should probably look like '2001:0db8:85a3:0000:0000:8a2e:0370:7334' or '::1'"),
             should_not_match(f"^{IPV4_ADDRESS}$", "Should not be an IPv4 address. If you want a IPv4-mapped IPv6 address, prefix it with '::FFFF:' like this: '::FFFF:123.4.56.78'"),
@@ -100,9 +100,9 @@ def generate_ipv6_validator() -> Validator:
 
 def generate_ipv4_validator() -> Validator:
     return Validator(
-        id="ipv4_address",
-        name="IPv4 address",
-        rules=[
+        "ipv4_address",
+        "IPv4 address",
+        [
             must_match("^[0-9.]+$", "Only numbers and dots are allowed"),
             # There are other ways of specifying IP addresses, that not all software understands. For example: 2130706433, 017700000001, and 127.1 are alternative representations of 127.0.0.1
             # So we just filter for expected characters, but not for the pattern
@@ -112,9 +112,9 @@ def generate_ipv4_validator() -> Validator:
 
 def generate_ipv4_range_cidr_validator() -> Validator:
     return Validator(
-        id="ipv4_range_cidr",
-        name="IPv4 adress range (CIDR notation)",
-        rules=[
+        "ipv4_range_cidr",
+        "IPv4 adress range (CIDR notation)",
+        [
             must_match("^[0-9./]+$", "Only numbers, dots and a slash are allowed"),
             must_not_match("/.*/", "May only contain one slash"),
             must_match(f"{CIDR_SUFFIX}$", "The number after that slash needs to be between 0 and 32 (inclusive)"),
@@ -129,9 +129,9 @@ def generate_ipv4_range_dash_validator() -> Validator:
     IPV4_SEGMENT_DASH = f"{IPV4_SEGMENT}(-{IPV4_SEGMENT})?"
     IPV4_ADDRESS_DASHES = f"{IPV4_SEGMENT_DASH}(?:\\.{IPV4_SEGMENT_DASH}){{3}}"
     return Validator(
-        id="ipv4_range_dashes",
-        name="IPv4 adress range (dash)",
-        rules=[
+        "ipv4_range_dashes",
+        "IPv4 adress range (dash)",
+        [
             must_match("^[0-9-.]+$", "Only numbers, dots and minuses are allowed"),
             must_not_match("(-\.|\.-)", "Number should be on both sites of the dash"),
             must_not_match("--", "Consecutive dashes are not allowed"),
@@ -145,9 +145,9 @@ def generate_ipv4_range_dash_validator() -> Validator:
 def generate_port_validator() -> Validator:
     port_regex="^((6553[0-5])|(655[0-2][0-9])|(65[0-4][0-9]{2})|(6[0-4][0-9]{3})|([1-5][0-9]{4})|([0-5]{0,5})|([0-9]{1,4}))$"
     return Validator(
-        id="port_number",
-        name="TCP/UDP port",
-        rules=[
+        "port_number",
+        "TCP/UDP port",
+        [
             must_match("^[0-9]+$", "Only numbers are allowed"),
             should_match(port_regex, "Expected an number between 0 and 65535 (inclusive)"),
         ]
@@ -160,9 +160,9 @@ RULE_DOMAIN_LENGTH = should_not_match("[a-zA-Z0-9-]{64}", "Subdomains should not
 
 def generate_domain_name_validator() -> Validator:
     return Validator(
-        id="domain",
-        name="Domain name",
-        rules=[
+        "domain",
+        "Domain name",
+        [
             RULE_DOMAIN_CHARS, RULE_DOMAIN_START, RULE_DOMAIN_END, RULE_DOMAIN_LENGTH,
             should_match("\\.", "Should contain multiple elements (for example domain.com or my.domain.com)"),
         ]
@@ -170,9 +170,9 @@ def generate_domain_name_validator() -> Validator:
 
 def generate_hostname_validator() -> Validator:
     return Validator(
-        id="hostname",
-        name="Hostname",
-        rules=[
+        "hostname",
+        "Hostname",
+        [
             RULE_DOMAIN_CHARS, RULE_DOMAIN_START, RULE_DOMAIN_END, RULE_DOMAIN_LENGTH
         ]
     )

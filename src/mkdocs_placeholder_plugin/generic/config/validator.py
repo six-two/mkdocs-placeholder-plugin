@@ -13,10 +13,18 @@ class ValidatorRule(NamedTuple):
     error_message: str
 
 
-class Validator(NamedTuple):
-    id: str
-    name: str
-    rules: list[ValidatorRule]
+class Validator:
+    def __init__(self, id: str, name: str, rules: list[ValidatorRule]) -> None:
+        self.id = id
+        self.name = name
+        self.rules = rules
+        self._is_used = False
+
+    def mark_used(self) -> None:
+        self._is_used = True
+
+    def is_used(self) -> bool:
+        return self._is_used
 
 
 VALIDATOR_FIELD_NAMES = {
@@ -61,11 +69,7 @@ def parse_validator_object(data: dict[str,Any], location: str, id: str) -> Valid
         raise PlaceholderConfigError("Validators neet to have at least a rule, but received an empty list")
 
     rules = [parse_validator_rule(x, f"{location}[{i}]") for i, x in enumerate(rules_data)]
-    return Validator(
-        id=id,
-        name=name,
-        rules=rules,
-    )
+    return Validator(id, name, rules)
 
 
 @add_problematic_data_to_exceptions

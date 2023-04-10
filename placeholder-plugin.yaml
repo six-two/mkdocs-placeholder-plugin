@@ -2,6 +2,12 @@ settings:
   debug_javascript: true
   replace_delay_millis: -1
 validators:
+  unused:
+    name: "Unused: should not be in final JSON"
+    rules:
+    - regex: "^[A-Za-z]+"
+      should_match: true
+      error_message: "Needs to start with at least one letter"
   excel:
     name: Excel cell name
     rules:

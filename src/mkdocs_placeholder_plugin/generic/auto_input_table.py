@@ -42,6 +42,7 @@ class AutoTableInserter:
 
     def get_javascript_table_for_page(self, markdown: str) -> str:
         # @TODO generate static content if wanted
+        # @TODO: check for recursive 
 
         # We use the javascript version, so we just need to add the same string for each page.
         # But we check if the page contains any placeholders that should be shown, so that we can skip pages we do not need to modify
