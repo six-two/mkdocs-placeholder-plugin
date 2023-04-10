@@ -30,7 +30,7 @@ class PlaceholderSettings(NamedTuple):
     # Replace delay millis
     replace_delay_millis: int
     # Whether to show warings in the python code
-    show_warning: bool
+    show_warnings: bool
 
 
 class PlaceholderConfig(NamedTuple):
@@ -47,7 +47,7 @@ def parse_settings(data: dict, location: str) -> PlaceholderSettings:
         create_no_js_fallback=get_bool(data, "create_no_js_fallback", default=True),
         debug_javascript=get_bool(data, "debug_javascript", default=False),
         replace_delay_millis=get_int(data, "replace_delay_millis", default=0, round_float=True),
-        show_warning=get_bool(data, "show_warning", default=True),
+        show_warnings=get_bool(data, "show_warnings", default=True),
     )
 
 
@@ -84,5 +84,5 @@ def parse_configuration(data: dict, location: str) -> PlaceholderConfig:
     return PlaceholderConfig(
         placeholders=placeholders,
         settings=settings,
-        validators=validators,
+        validators=merged_validators,
     )

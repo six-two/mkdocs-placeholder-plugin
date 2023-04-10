@@ -1,5 +1,5 @@
 # local
-from ..plugin_config import PlaceholderPluginConfig
+from ..mkdocs.plugin_config import PlaceholderPluginConfig
 from .config.placeholder import Placeholder
 from .input_table import PlaceholderTableSettings, InputTableGenerator
 
@@ -11,16 +11,14 @@ class AutoTableInserter:
             entries=["auto"],
             show_readonly=False
         )
-        self.hide_read_only = not plugin_config.table_default_show_readonly
+        self.hide_read_only = True
         self.read_only_placeholder_names = set([x.name for x in placeholders.values() if x.read_only])
-        self.input_table_generator = InputTableGenerator(placeholders, plugin_config.table_default_show_readonly,
-                                        plugin_config.table_default_type, plugin_config.add_apply_table_column)
-        if plugin_config.auto_placeholder_tables_javascript:
-            # @TODO: read from plugin_config.table_default_type, once the column names are stable
-            column_str = "description-or-name,input"
-            self.input_table_string = f'<div class="auto-input-table" data-columns="{column_str}"></div>'
-        else:
-            self.input_table_string = ""
+        self.input_table_generator = InputTableGenerator(placeholders, False,
+                                        plugin_config.table_default_type, False)
+
+        # @TODO: read from plugin_config.table_default_type, once the column names are stable
+        column_str = "description-or-name,input"
+        self.input_table_string = f'<div class="auto-input-table" data-columns="{column_str}"></div>'
 
         self.admonitions = plugin_config.auto_placeholder_tables_collapsible
 
@@ -29,6 +27,7 @@ class AutoTableInserter:
             table_markdown = self.get_javascript_table_for_page(markdown)
         else:
             # Generate a custom placeholder input table for this page
+            # @TODO: remove?
             table_markdown = self.input_table_generator.create_placeholder_input_table(self.settings, markdown)
 
         if table_markdown:
@@ -42,6 +41,8 @@ class AutoTableInserter:
             return markdown
 
     def get_javascript_table_for_page(self, markdown: str) -> str:
+        # @TODO generate static content if wanted
+
         # We use the javascript version, so we just need to add the same string for each page.
         # But we check if the page contains any placeholders that should be shown, so that we can skip pages we do not need to modify
         used_placeholders = self.input_table_generator.auto_detect_placeholders_used_in_page(markdown)

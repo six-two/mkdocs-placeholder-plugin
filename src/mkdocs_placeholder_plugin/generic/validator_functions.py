@@ -42,36 +42,6 @@ def must_not_match(regex_string: str, error_message: str) -> ValidatorRule:
     )
 
 
-
-def validator_to_dict(v: Validator) -> dict:
-    try:
-        return {
-            "id": v.id,
-            "display_name": v.name,
-            "rules": [validator_rule_to_dict(r) for r in v.rules],
-        }
-    except Exception as ex:
-        raise PlaceholderConfigError(f"Error while converting validator '{v.name}' to dictionary: {ex}")
-
-def validator_rule_to_dict(r: ValidatorRule) -> dict:
-    data = {
-        "severity": r.severity,
-        "should_match": r.should_match,
-        "error_message": r.error_message,
-    }
-    if r.match_function:
-        if r.regex_string:
-            raise PlaceholderConfigError(f"Error in rule: 'match_function' ({r.match_function}) and 'regex_string' ({r.regex_string}) are mutually exclusive, but both are defined")
-        else:
-            data["match_function"] = r.match_function
-    else:
-        if r.regex_string:
-            data["regex"] = r.regex_string
-        else:
-            raise PlaceholderConfigError("Error in rule: You need to either specify 'match_function' or 'regex_string', but both are empty")
-
-    return data
-
 class ValidationResults(NamedTuple):
     validator_name: str
     value: str

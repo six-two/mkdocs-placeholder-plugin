@@ -9,14 +9,17 @@ from mkdocs.config.base import Config
 from mkdocs.exceptions import PluginError
 
 # local files
-from ..plugin_config import PlaceholderPluginConfig
+# local
+from ..generic.config import PlaceholderConfig
+from ..style import generate_style_sheet
+from .plugin_config import PlaceholderPluginConfig
 from ..generic.config.configuration import parse_configuration_file
-from ..assets import copy_assets_to_mkdocs_site_directory
+from ..assets import copy_assets_to_directory_debuggable
 from ..generic.static_replacer import StaticReplacer
 from ..generic.input_tag_handler import create_normal_input_class_handler
 from ..generic.auto_input_table import AutoTableInserter
 from ..generic.input_table import InputTableGenerator
-from ..generic import set_warnings_enabled, debug, PlaceholderConfigError, PlaceholderPageError
+from ..generic import set_warnings_enabled, warning, PlaceholderConfigError, PlaceholderPageError
 
 
 def convert_exceptions(function: Callable) -> Callable:
@@ -25,7 +28,7 @@ def convert_exceptions(function: Callable) -> Callable:
         try:
             return function(*args, **kwargs)
         except Exception as ex:
-            debug(f"Fatal exception occurred, stack trace:\n{traceback.format_exc()}")
+            warning(f"Fatal exception occurred, stack trace:\n{traceback.format_exc()}")
             if isinstance(ex, PluginError):
                 raise PluginError(f"[placeholder] {ex}")
             elif isinstance(ex, PlaceholderConfigError) or isinstance(ex, PlaceholderPageError):
@@ -82,32 +85,30 @@ class PlaceholderPlugin(BasePlugin[PlaceholderPluginConfig]):
             self.after_build_action(config)
 
     def initialize_plugin(self, config: MkDocsConfig) -> None:
-        set_warnings_enabled(self.config.show_warnings)
-
         # Make sure that the custom JS is included on every page
-        if self.config.placeholder_js not in config.extra_javascript:
-            config.extra_javascript.append(self.config.placeholder_js)
+        placeholder_js = os.path.join(self.config.js_output_dir, "placeholder.min.js")
+        if placeholder_js not in config.extra_javascript:
+            config.extra_javascript.append(placeholder_js)
+
+        placeholder_js = os.path.join(self.config.js_output_dir, "placeholder-data.js")
+        if placeholder_js not in config.extra_javascript:
+            config.extra_javascript.append(placeholder_js)
 
         # Make sure that the custom CSS is included on every page
         if self.config.placeholder_css:
             if self.config.placeholder_css not in config.extra_css:
                 config.extra_css.append(self.config.placeholder_css)
 
-        # @TODO: fix later
-        relative_site_dir = os.path.dirname(self.config.placeholder_js)
-        config.extra_javascript.append(f"{relative_site_dir}/placeholder.min.js")
-
-
         # Immediatley parse the placeholder file, so that all following methods can use the information
-        placeholder_file = self.config.placeholder_file
-        self.configuration = parse_configuration_file(placeholder_file)
+        self.configuration = parse_configuration_file(self.config.placeholder_file)
         self.placeholders = self.configuration.placeholders
+        set_warnings_enabled(self.configuration.settings.show_warnings)
 
         # Instanciate a table generator
         self.table_generator = InputTableGenerator(self.placeholders,
-            self.config.table_default_show_readonly,
+            False,
             self.config.table_default_type,
-            self.config.add_apply_table_column)
+            False)
 
         # Set the value for inputs to inform the user to enable JavaScript
         # Line numbers in output are disabled, since we need to call this after the markdown was parsed.
@@ -120,16 +121,42 @@ class PlaceholderPlugin(BasePlugin[PlaceholderPluginConfig]):
                 ensure_extensions_loaded(config, ["admonition", "pymdownx.details"])
 
     def after_build_action(self, config: MkDocsConfig) -> None:
-        copy_assets_to_mkdocs_site_directory(config, self.config, self.placeholders)
+        copy_assets_to_mkdocs_site_directory(config, self.config, self.configuration)
 
-        # Replace placeholders in files marked for static replacements
-        replacement_list = self.config.static_pages
-        if replacement_list:
-            static_replacer = StaticReplacer(self.placeholders, replacement_list)
-            static_replacer.process_output_folder(config.site_dir)
+        # # Replace placeholders in files marked for static replacements
+        # replacement_list = self.config.static_pages
+        # if replacement_list:
+        #     static_replacer = StaticReplacer(self.placeholders, replacement_list)
+        #     static_replacer.process_output_folder(config.site_dir)
 
 
 def ensure_extensions_loaded(config: MkDocsConfig, extensions: list[str]) -> None:
     for extension in extensions:
         if extension not in config.markdown_extensions:
             config.markdown_extensions.append(extension)
+
+
+def _write_to_file(config: MkDocsConfig, relative_path: str, contents: str, open_mode: str) -> None:
+    file_path = os.path.join(config.site_dir, relative_path)
+    parent_dir = os.path.dirname(file_path)
+    os.makedirs(parent_dir, exist_ok=True)
+    with open(file_path, open_mode) as f:
+        f.write(contents)
+
+
+def copy_assets_to_mkdocs_site_directory(config: MkDocsConfig, plugin_config: PlaceholderPluginConfig, generic_config: PlaceholderConfig):
+    """
+    Copy the JavaScript file to the site (if necessary) and replace the placeholder string with the actual data
+    """
+    if plugin_config.placeholder_css:
+        theme_name = config.theme.name or "mkdocs"
+        css_text = generate_style_sheet(theme_name, generic_config.settings.debug_javascript)
+        _write_to_file(config, plugin_config.placeholder_css, css_text, "a")
+
+    # Add extra JS
+    output_directory = os.path.join(config.site_dir, plugin_config.js_output_dir)
+    extra_js = plugin_config.placeholder_extra_js if plugin_config.placeholder_extra_js else None
+
+    # @TODO: merge everything into a single file if debug_js==false
+    copy_assets_to_directory_debuggable(generic_config, output_directory, extra_js)
+
