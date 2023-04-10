@@ -4,10 +4,10 @@ import shutil
 from typing import Any
 # local
 from mkdocs.config.defaults import MkDocsConfig
-from .plugin_config import PlaceholderPluginConfig
-from .generic.placeholder_data import Placeholder, InputType
-from .style import generate_style_sheet
-from .generic.validators import validator_to_dict
+from ..plugin_config import PlaceholderPluginConfig
+from ..generic.config.placeholder import Placeholder, InputType
+from ..style import generate_style_sheet
+from ..generic.validator_functions import validator_to_dict
 
 
 def _write_to_file(config: MkDocsConfig, relative_path: str, contents: str, open_mode: str) -> None:
@@ -29,7 +29,7 @@ def copy_assets_to_mkdocs_site_directory(config: MkDocsConfig, plugin_config: Pl
             text = f.read()
     else:
         # use the default file supplied by the plugin
-        input_file = get_resource_path("assets/placeholder-data.js")
+        input_file = get_resource_path("placeholder-data.js")
         with open(input_file, "r") as f:
             text = f.read()
 
@@ -50,8 +50,8 @@ def copy_assets_to_mkdocs_site_directory(config: MkDocsConfig, plugin_config: Pl
     _write_to_file(config, plugin_config.placeholder_js, text, "w")
 
     parent_dir = os.path.dirname(custom_js_path)
-    shutil.copy(get_resource_path("assets/placeholder.min.js"), parent_dir)
-    shutil.copy(get_resource_path("assets/placeholder.min.js.map"), parent_dir)
+    shutil.copy(get_resource_path("placeholder.min.js"), parent_dir)
+    shutil.copy(get_resource_path("placeholder.min.js.map"), parent_dir)
 
 
 def get_resource_path(name: str) -> str:

@@ -3,7 +3,7 @@ import html
 import os
 # local files
 from . import warning
-from .placeholder_data import Placeholder, InputType
+from .config.placeholder import Placeholder, InputType
 from .html_tag_parser import ParsedHtmlTag
 from .input_tag_handler import InputTagHandler
 

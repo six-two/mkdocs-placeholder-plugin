@@ -32,6 +32,10 @@ The corresponding documentation is hosted at <https://dev.mkdocs-placeholder-plu
 
 ### HEAD
 
+- Configuration format changed:
+    - Validators are no longer defined in-line and instead defined in a `validators` section -> easier to reuse custom validators
+    - Placeholders now need to be specified in a `placeholders` section
+
 ### Version 0.3.0
 
 This release may be a bit buggy due to the rewrite and the documentation is not entirely accurate yet.

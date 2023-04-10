@@ -1,99 +1,6 @@
-# Placeholders for the demo page
-DEMO_HTTP_CLIENT_COMMAND:
-  default: curl
-  values:
-    curl: "curl http://xDEMO_SERVER_IPx:xDEMO_SERVER_PORTx/xDEMO_FILENAMEx -o xDEMO_FILENAMEx"
-    wget: "wget http://xDEMO_SERVER_IPx:xDEMO_SERVER_PORTx/xDEMO_FILENAMEx"
-DEMO_SERVER_IP:
-  default: 10.1.2.3
-  validators: ipv4_address
-DEMO_SERVER_PORT:
-  default: 80
-  validators: port_number
-DEMO_FILENAME: file_to_transfer.txt
-DEMO_NETCAT:
-  default: nc
-  values:
-    "nc": "nc"
-    "ncat (from nmap)": "ncat"
-DEMO_SUDO:
-  default: unchecked
-  description: Does binding to the port require sudo?
-  values:
-    checked: "sudo "
-    unchecked: ""
-### End of the demo page placeholders
-
-
-## Single type validators
-VALIDATOR_DOMAIN:
-  default: example.com
-  validators: domain
-VALIDATOR_FILE_LINUX:
-  default: my-archive.tar.gz
-  validators: file_name_linux
-VALIDATOR_FILE_WINDOWS:
-  default: my-program.exe
-  validators: file_name_windows
-VALIDATOR_HOSTNAME:
-  default: examplesrv01
-  validators: hostname
-VALIDATOR_IPV4_ADDRESS:
-  default: 127.0.0.1
-  validators: ipv4_address
-VALIDATOR_IPV4_CIDR:
-  default: 127.0.0.0/8
-  validators: ipv4_range_cidr
-VALIDATOR_IPV4_DASHES:
-  default: 127.0.0.1-32
-  validators: ipv4_range_dashes
-VALIDATOR_IPV6_ADDRESS:
-  default: 2001:0db8:85a3:0000:0000:8a2e:0370:7334
-  validators: ipv6_address
-VALIDATOR_PATH_LINUX:
-  default: ~/.bash_profile
-  validators: path_linux
-VALIDATOR_PATH_WINDOWS:
-  default: C:\Windows\system32\cmd.exe
-  validators: path_windows
-VALIDATOR_PORT:
-  default: 31337
-  validators: port_number
-VALIDATOR_URL_ANY:
-  default: smb://example.com:10445/share/some-file.txts
-  validators: url_any
-VALIDATOR_URL_HTTP:
-  default: "http://www.example.com/page?a=123&b=c#chapter-2"
-  validators: url_http
-
-# Test for nested placeholders
-
-A: <A B=xBx C=xCx>
-B: <B C=xCx>
-C: <C D=xDx>
-D: <D>
-
-## Combined validators
-MULTI_VALIDATORS:
-  default: "127.0.0.1"
-  description: "Multiple validators: one of IPv4 address, domain name, and hostname"
-  validators:
-  - ipv4_address
-  # - ipv4_address # duplicate, should cause a warning
-  - domain
-  - hostname
-  - name: IPv6 loopback
-    id: ipv6_loopback
-    rules:
-    - regex: "^::1$"
-      should_match: true
-      error_message: "Only the value '::1' is accepted"
-CUSTOM_VALIDATORS:
-  default: A12
-  description: "Custom validators"
-  validators:
-  - name: Excel cell name
-    id: Excel
+validators:
+  excel:
+    name: Excel cell name
     rules:
     - regex: "^[A-Za-z]+"
       should_match: true
@@ -108,12 +15,14 @@ CUSTOM_VALIDATORS:
       regex: "^[A-Za-z]+[0-9]+$"
       should_match: true
       error_message: "Should look like AB123"
-
-SOMETHING_NICE:
-  default: Hi, how are you?
-  description: Please say something nice :)
-  validators:
-  - name: Something nice
+  ipv6_loopback:
+    name: IPv6 loopback
+    rules:
+    - regex: "^::1$"
+      should_match: true
+      error_message: "Only the value '::1' is accepted"
+  nice:
+    name: Something nice
     id: nice
     rules:
     - regex: "fuck|shit|ass|jerk"
@@ -132,131 +41,227 @@ SOMETHING_NICE:
       error_message: "Bad word: 'sh*t'. The custom functions seems to work"
 
 
-PASSWORD:
-  default-function: "return generate_placeholder_password(10);"
-  description: A randomly generated password updated anytime you clear your localStorage
-
-RANDOM:
-  default-function: "return `${Math.floor(Math.random()*100)}`;"
-  description: A random number between 0 and 99
-
-ERROR:
-  default-function: "alert(1"
-  description: Broken on purpose, should cause an error
-
-TEST:
-  description: An test value, by default '123'
-  default: 123
-LINK:
-  default: https://www.example.com/test/page
-  replace_everywhere: true
-  validators: url_http
-
-# What happens, when the values / choices are also placeholders?
-ALIAS_TEXTBOX: xTESTx
-ALIAS_DROPDOWN:
-  values:
-    TEST=xTESTx: LINK=xLINKx
-    "": ""
-
-READONLY_TEXTBOX:
-  description: Should be readonly
-  read_only: true
-  default: Try changing me
+placeholders:
+  # Placeholders for the demo page
+  DEMO_HTTP_CLIENT_COMMAND:
+    default: curl
+    values:
+      curl: "curl http://xDEMO_SERVER_IPx:xDEMO_SERVER_PORTx/xDEMO_FILENAMEx -o xDEMO_FILENAMEx"
+      wget: "wget http://xDEMO_SERVER_IPx:xDEMO_SERVER_PORTx/xDEMO_FILENAMEx"
+  DEMO_SERVER_IP:
+    default: 10.1.2.3
+    validators: ipv4_address
+  DEMO_SERVER_PORT:
+    default: 80
+    validators: port_number
+  DEMO_FILENAME: file_to_transfer.txt
+  DEMO_NETCAT:
+    default: nc
+    values:
+      "nc": "nc"
+      "ncat (from nmap)": "ncat"
+  DEMO_SUDO:
+    default: unchecked
+    description: Does binding to the port require sudo?
+    values:
+      checked: "sudo "
+      unchecked: ""
+  ### End of the demo page placeholders
 
 
-CHECKBOX:
-  description: A checkbox would be nice, wouldn't it?
-  default: checked
-  values:
-    checked: "Checkbox checked"
-    unchecked: "Checkbox NOT Checked"
-  read_only: true
-  # validators: ipv4_address # should cause a warning and then be ignored
-QUOTE_CHECKBOX:
-  description: Use double quotes?
-  default: checked
-  values:
-    checked: "\""
-    unchecked: "'"
+  ## Single type validators
+  VALIDATOR_DOMAIN:
+    default: example.com
+    validators: domain
+  VALIDATOR_FILE_LINUX:
+    default: my-archive.tar.gz
+    validators: file_name_linux
+  VALIDATOR_FILE_WINDOWS:
+    default: my-program.exe
+    validators: file_name_windows
+  VALIDATOR_HOSTNAME:
+    default: examplesrv01
+    validators: hostname
+  VALIDATOR_IPV4_ADDRESS:
+    default: 127.0.0.1
+    validators: ipv4_address
+  VALIDATOR_IPV4_CIDR:
+    default: 127.0.0.0/8
+    validators: ipv4_range_cidr
+  VALIDATOR_IPV4_DASHES:
+    default: 127.0.0.1-32
+    validators: ipv4_range_dashes
+  VALIDATOR_IPV6_ADDRESS:
+    default: 2001:0db8:85a3:0000:0000:8a2e:0370:7334
+    validators: ipv6_address
+  VALIDATOR_PATH_LINUX:
+    default: ~/.bash_profile
+    validators: path_linux
+  VALIDATOR_PATH_WINDOWS:
+    default: C:\Windows\system32\cmd.exe
+    validators: path_windows
+  VALIDATOR_PORT:
+    default: 31337
+    validators: port_number
+  VALIDATOR_URL_ANY:
+    default: smb://example.com:10445/share/some-file.txts
+    validators: url_any
+  VALIDATOR_URL_HTTP:
+    default: "http://www.example.com/page?a=123&b=c#chapter-2"
+    validators: url_http
 
-DROPDOWN:
-  description: An test dropdown for selecting your favourite DNS lookup tool
-  default: "DNS lookup with host"
-  values:
-    "DNS lookup with dig": "dig"
-    "DNS lookup with nmap": "nmap -n --resolve-all"
-    "DNS lookup with host": "host"
-    "DNS lookup with nslookup": "nslookup"
+  # Test for nested placeholders
 
-READ_ONLY_DROPDOWN:
-  description: You should not be able to modify this
-  read_only: true
-  default: "Default"
-  values:
-    "A": "a"
-    "Default": "default"
-    "B": "b"
-    "C": "c"
+  A: <A B=xBx C=xCx>
+  B: <B C=xCx>
+  C: <C D=xDx>
+  D: <D>
+
+  ## Combined validators
+  MULTI_VALIDATORS:
+    default: "127.0.0.1"
+    description: "Multiple validators: one of IPv4 address, domain name, and hostname"
+    validators:
+    - ipv4_address
+    # - ipv4_address # duplicate, should cause a warning
+    - domain
+    - hostname
+    - ipv6_loopback
+  CUSTOM_VALIDATORS:
+    default: A12
+    description: "Custom validators"
+    validators: excel
+
+  SOMETHING_NICE:
+    default: Hi, how are you?
+    description: Please say something nice :)
+    validators: nice
+
+  PASSWORD:
+    default-function: "return generate_placeholder_password(10);"
+    description: A randomly generated password updated anytime you clear your localStorage
+
+  RANDOM:
+    default-function: "return `${Math.floor(Math.random()*100)}`;"
+    description: A random number between 0 and 99
+
+  ERROR:
+    default-function: "alert(1"
+    description: Broken on purpose, should cause an error
+
+  TEST:
+    description: An test value, by default '123'
+    default: 123
+  LINK:
+    default: https://www.example.com/test/page
+    replace_everywhere: true
+    validators: url_http
+
+  # What happens, when the values / choices are also placeholders?
+  ALIAS_TEXTBOX: xTESTx
+  ALIAS_DROPDOWN:
+    values:
+      TEST=xTESTx: LINK=xLINKx
+      "": ""
+
+  READONLY_TEXTBOX:
+    description: Should be readonly
+    read_only: true
+    default: Try changing me
 
 
-# # This should cause an warning:
-# Bad_Name Format: please do not use a variable name like this
+  CHECKBOX:
+    description: A checkbox would be nice, wouldn't it?
+    default: checked
+    values:
+      checked: "Checkbox checked"
+      unchecked: "Checkbox NOT Checked"
+    read_only: true
+    # validators: ipv4_address # should cause a warning and then be ignored
+  QUOTE_CHECKBOX:
+    description: Use double quotes?
+    default: checked
+    values:
+      checked: "\""
+      unchecked: "'"
 
-# This should cause an error if uncommented
-#BAD_VALUE: [1, 2, 3]
+  DROPDOWN:
+    description: An test dropdown for selecting your favourite DNS lookup tool
+    default: "DNS lookup with host"
+    values:
+      "DNS lookup with dig": "dig"
+      "DNS lookup with nmap": "nmap -n --resolve-all"
+      "DNS lookup with host": "host"
+      "DNS lookup with nslookup": "nslookup"
 
-# HTML contents in variables should be escaped, since otherwise reflected Cross-Site Scripting would be possible
-XSS_DROPDOWN_ALL:
-  default: xXSS_TWOx
-  description: <script>alert(1)</script>xXSS_COMBx
-  values:
-    xXSS_ONEx: xXSS_ONEx
-    xXSS_TWOx: xXSS_TWOx
-    xXSS_THREEx: xXSS_THREEx
-    xXSS_COMBx: xXSS_COMBx
-    xXSS_DROPDOWNx: xXSS_DROPDOWNx
-XSS_COMB:
-  default: xXSS_ONEx | xXSS_TWOx | xXSS_THREEx
-  read_only: true
-  description: A combination of the other XSS payloads and pipes
-XSS_ONE:
-  default: <img src=fail onerror=alert(1)>
-  description: Standard image XSS payload (read-only flag set)
-  read_only: true
-XSS_TWO:
-  default: '"+alert(2)+"'
-  description: Will trigger if directly embedded into a JavaScript string
-XSS_THREE: "</input><script>confirm(3)</script>" # Similar to first
-PIPE_IN_DESCRIPTION:
-  default: ""
-  description: <s>Pipes | in || description
-XSS_DROPDOWN:
-  values:
-    "<s>1": "<s>one<svg/onload=alert(1)>"
-    "</option>2": "</option>two"
-# # Should cause a warning
-# "<s>BAD_NAME<script>confirm(3)</script>": "bad name"
+  READ_ONLY_DROPDOWN:
+    description: You should not be able to modify this
+    read_only: true
+    default: "Default"
+    values:
+      "A": "a"
+      "Default": "default"
+      "B": "b"
+      "C": "c"
 
-# TEST COMBINED VARIABLES
-# This one needs to be specified first, since it includes the other variables
-COMB_EMAIL:
-  default: xCOMB_FIRST_NAMEx.xCOMB_SURNAMEx@xCOMB_DOMAINx
-  read_only: true
-# The variables that are part of the combined value
-COMB_FIRST_NAME: John
-COMB_SURNAME: Doe
-COMB_DOMAIN:
-  default: example.com
-  validators: domain
 
-# Work around the problem, that my <placeholdertable> in code listings is being replaced
-PLACEHOLDERTABLE:
-  default: placeholdertable
-  read_only: true
+  # # This should cause an warning:
+  # Bad_Name Format: please do not use a variable name like this
 
-# ERROR_VALIDATOR_NO_RULES:
-#   default: Empty rules are not allowed
-#   validators:
-#   - name: Will cause error
-#     rules: []
+  # This should cause an error if uncommented
+  #BAD_VALUE: [1, 2, 3]
+
+  # HTML contents in variables should be escaped, since otherwise reflected Cross-Site Scripting would be possible
+  XSS_DROPDOWN_ALL:
+    default: xXSS_TWOx
+    description: <script>alert(1)</script>xXSS_COMBx
+    values:
+      xXSS_ONEx: xXSS_ONEx
+      xXSS_TWOx: xXSS_TWOx
+      xXSS_THREEx: xXSS_THREEx
+      xXSS_COMBx: xXSS_COMBx
+      xXSS_DROPDOWNx: xXSS_DROPDOWNx
+  XSS_COMB:
+    default: xXSS_ONEx | xXSS_TWOx | xXSS_THREEx
+    read_only: true
+    description: A combination of the other XSS payloads and pipes
+  XSS_ONE:
+    default: <img src=fail onerror=alert(1)>
+    description: Standard image XSS payload (read-only flag set)
+    read_only: true
+  XSS_TWO:
+    default: '"+alert(2)+"'
+    description: Will trigger if directly embedded into a JavaScript string
+  XSS_THREE: "</input><script>confirm(3)</script>" # Similar to first
+  PIPE_IN_DESCRIPTION:
+    default: ""
+    description: <s>Pipes | in || description
+  XSS_DROPDOWN:
+    values:
+      "<s>1": "<s>one<svg/onload=alert(1)>"
+      "</option>2": "</option>two"
+  # # Should cause a warning
+  # "<s>BAD_NAME<script>confirm(3)</script>": "bad name"
+
+  # TEST COMBINED VARIABLES
+  # This one needs to be specified first, since it includes the other variables
+  COMB_EMAIL:
+    default: xCOMB_FIRST_NAMEx.xCOMB_SURNAMEx@xCOMB_DOMAINx
+    read_only: true
+  # The variables that are part of the combined value
+  COMB_FIRST_NAME: John
+  COMB_SURNAME: Doe
+  COMB_DOMAIN:
+    default: example.com
+    validators: domain
+
+  # Work around the problem, that my <placeholdertable> in code listings is being replaced
+  PLACEHOLDERTABLE:
+    default: placeholdertable
+    read_only: true
+
+  # ERROR_VALIDATOR_NO_RULES:
+  #   default: Empty rules are not allowed
+  #   validators:
+  #   - name: Will cause error
+  #     rules: []

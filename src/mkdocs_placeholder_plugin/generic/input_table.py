@@ -3,7 +3,7 @@ import re
 from typing import NamedTuple
 # local files
 from . import PlaceholderPageError
-from .placeholder_data import Placeholder
+from .config.placeholder import Placeholder
 from .html_tag_parser import parse_html_tag
 
 

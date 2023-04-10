@@ -10,7 +10,7 @@ from mkdocs.exceptions import PluginError
 
 # local files
 from ..plugin_config import PlaceholderPluginConfig
-from ..generic.placeholder_data import load_placeholder_data
+from ..generic.config.configuration import parse_configuration_file
 from ..assets import copy_assets_to_mkdocs_site_directory
 from ..generic.static_replacer import StaticReplacer
 from ..generic.input_tag_handler import create_normal_input_class_handler
@@ -100,7 +100,8 @@ class PlaceholderPlugin(BasePlugin[PlaceholderPluginConfig]):
 
         # Immediatley parse the placeholder file, so that all following methods can use the information
         placeholder_file = self.config.placeholder_file
-        self.placeholders = load_placeholder_data(placeholder_file)
+        self.configuration = parse_configuration_file(placeholder_file)
+        self.placeholders = self.configuration.placeholders
 
         # Instanciate a table generator
         self.table_generator = InputTableGenerator(self.placeholders,

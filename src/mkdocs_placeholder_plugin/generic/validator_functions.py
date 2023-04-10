@@ -2,14 +2,8 @@ from typing import NamedTuple
 import re
 # local
 from . import warning, PlaceholderConfigError
+from .config import Validator, ValidatorRule
 
-class ValidatorRule(NamedTuple):
-    severity: str # warn or error
-    # you need to either specify regex_string or match_function
-    regex_string: str
-    match_function: str
-    should_match: bool
-    error_message: str
 
 def should_match(regex_string: str, error_message: str) -> ValidatorRule:
     return ValidatorRule(
@@ -47,11 +41,6 @@ def must_not_match(regex_string: str, error_message: str) -> ValidatorRule:
         error_message=error_message,
     )
 
-
-class Validator(NamedTuple):
-    id: str
-    name: str
-    rules: list[ValidatorRule]
 
 
 def validator_to_dict(v: Validator) -> dict:

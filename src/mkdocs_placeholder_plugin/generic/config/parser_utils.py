@@ -2,7 +2,7 @@ from functools import wraps
 import json
 from typing import Callable, Optional
 # local
-from . import PlaceholderConfigError
+from .. import PlaceholderConfigError
 
 class PlaceholderConfigErrorWithData(PlaceholderConfigError):
     """
@@ -52,6 +52,22 @@ def get_bool(data: dict, name: str, default: Optional[bool] = None) -> bool:
         raise PlaceholderConfigError(f"Wrong type for key '{name}': Expected 'bool', got '{type(value).__name__}'")
 
 
+def get_dict(data: dict, name: str, default: Optional[dict] = None) -> dict:
+    """
+    Reads the given key from data. If no value is used, default is used.
+    If default is None/not set then a KeyError will be thrown
+    """
+    if default == None:
+        value = data[name]
+    else:
+        value = data.get(name, default)
+
+    if type(value) == dict:
+        return value
+    else:
+        raise PlaceholderConfigError(f"Wrong type for key '{name}': Expected 'dict', got '{type(value).__name__}'")
+
+
 def get_string(data: dict, name: str, default: Optional[str] = None, allow_empty_string: bool = True, allow_numeric: bool = False) -> str:
     """
     Reads the given key from data. If no value is used, default is used.
@@ -71,6 +87,27 @@ def get_string(data: dict, name: str, default: Optional[str] = None, allow_empty
         if allow_numeric:
             return str(value)
         else:
-            raise PlaceholderConfigError(f"Wrong type for key '{name}': Expected 'str', but got a number. Try surrounding it with quotes or modify the code and set 'allow_numeric=true'")
+            raise PlaceholderConfigError(f"Wrong type for key '{name}': Expected 'str', but got a number. Try surrounding it with quotes or modify the code and set 'allow_numeric=True'")
+    else:
+        raise PlaceholderConfigError(f"Wrong type for key '{name}': Expected 'str', got '{type(value).__name__}'")
+
+
+def get_int(data: dict, name: str, default: Optional[int] = None, round_float: bool = False) -> int:
+    """
+    Reads the given key from data. If no value is used, default is used.
+    If default is None/not set then a KeyError will be thrown
+    """
+    if default == None:
+        value = data[name]
+    else:
+        value = data.get(name, default)
+
+    if type(value) == int:
+        return value
+    elif type(value) == float:
+        if round_float:
+            return int(round(value, 0))
+        else:
+            raise PlaceholderConfigError(f"Wrong type for key '{name}': Expected an integer, but got a floating point number. Try removing the dot and everything after it or modify the code and set 'round_float=True'")
     else:
         raise PlaceholderConfigError(f"Wrong type for key '{name}': Expected 'str', got '{type(value).__name__}'")

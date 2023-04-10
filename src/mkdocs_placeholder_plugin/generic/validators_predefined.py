@@ -1,5 +1,6 @@
 # local
-from .validators import Validator, must_match, must_not_match, should_match, should_not_match
+from .config import Validator
+from .validator_functions import must_match, must_not_match, should_match, should_not_match
 
 IPV4_SEGMENT = "(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)"
 IPV4_ADDRESS = f"{IPV4_SEGMENT}(?:\\.{IPV4_SEGMENT}){{3}}"
