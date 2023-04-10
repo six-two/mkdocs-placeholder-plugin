@@ -11,6 +11,8 @@ SETTINGS_FIELD_NAMES = {
 class PlaceholderSettings(NamedTuple):
     # Whether to create static HTML fallbacks when JavaScript is not enabled
     create_no_js_fallback: bool
+    # debug the javascript code
+    debug_javascript: bool
 
 
 class PlaceholderConfig(NamedTuple):

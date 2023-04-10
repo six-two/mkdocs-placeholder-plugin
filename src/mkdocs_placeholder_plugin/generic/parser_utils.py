@@ -1,6 +1,6 @@
 from functools import wraps
 import json
-from typing import Callable
+from typing import Callable, Optional
 # local
 from . import PlaceholderConfigError
 
@@ -34,3 +34,43 @@ def add_problematic_data_to_exceptions(function: Callable) -> Callable:
             message = f"Missing key {ex}" if type(ex) == KeyError else str(ex)
             raise PlaceholderConfigErrorWithData(message, location, data)
     return wrap
+
+
+def get_bool(data: dict, name: str, default: Optional[bool] = None) -> bool:
+    """
+    Reads the given key from data. If no value is used, default is used.
+    If default is None/not set then a KeyError will be thrown
+    """
+    if default == None:
+        value = data[name]
+    else:
+        value = data.get(name, default)
+
+    if type(value) == bool:
+        return value
+    else:
+        raise PlaceholderConfigError(f"Wrong type for key '{name}': Expected 'bool', got '{type(value).__name__}'")
+
+
+def get_string(data: dict, name: str, default: Optional[str] = None, allow_empty_string: bool = True, allow_numeric: bool = False) -> str:
+    """
+    Reads the given key from data. If no value is used, default is used.
+    If default is None/not set then a KeyError will be thrown
+    """
+    if default == None:
+        value = data[name]
+    else:
+        value = data.get(name, default)
+
+    if type(value) == str:
+        if allow_empty_string or value:
+            return value
+        else:
+            raise PlaceholderConfigError(f"Invalid value for key '{name}': Can not be an empty string")
+    elif type(value) == int or type(value) == float:
+        if allow_numeric:
+            return str(value)
+        else:
+            raise PlaceholderConfigError(f"Wrong type for key '{name}': Expected 'str', but got a number. Try surrounding it with quotes or modify the code and set 'allow_numeric=true'")
+    else:
+        raise PlaceholderConfigError(f"Wrong type for key '{name}': Expected 'str', got '{type(value).__name__}'")
