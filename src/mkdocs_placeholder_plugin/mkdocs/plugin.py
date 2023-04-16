@@ -11,7 +11,7 @@ from mkdocs.exceptions import PluginError
 # local files
 # local
 from ..generic.config import PlaceholderConfig
-from ..style import generate_style_sheet
+from .style import generate_mkdocs_style_sheet
 from .plugin_config import PlaceholderPluginConfig
 from ..generic.config.configuration import parse_configuration_file
 from ..assets import copy_assets_to_directory_debuggable
@@ -150,7 +150,7 @@ def copy_assets_to_mkdocs_site_directory(config: MkDocsConfig, plugin_config: Pl
     """
     if plugin_config.placeholder_css:
         theme_name = config.theme.name or "mkdocs"
-        css_text = generate_style_sheet(theme_name, generic_config.settings.debug_javascript)
+        css_text = generate_mkdocs_style_sheet(theme_name, generic_config.settings.debug_javascript)
         _write_to_file(config, plugin_config.placeholder_css, css_text, "a")
 
     # Add extra JS
