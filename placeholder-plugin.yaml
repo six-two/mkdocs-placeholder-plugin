@@ -121,9 +121,15 @@ placeholders:
 
   # Test for nested placeholders
 
-  A: <A B=xBx C=xCx>
-  B: <B C=xCx>
-  C: <C D=xDx>
+  A:
+    default: <A B=xBx C=xCx>
+    allow_nested: true
+  B:
+    default: <B C=xCx>
+    read_only: true
+  C:
+    default: <C D=xDx>
+    allow_nested: true
   D: <D>
 
   ## Combined validators
@@ -161,6 +167,7 @@ placeholders:
   TEST:
     description: An test value, by default '123'
     default: 123
+    allow_nested: true # @TODO
   LINK:
     default: https://www.example.com/test/page
     replace_everywhere: true

@@ -135,12 +135,35 @@ export const replace_placeholders_in_subtree = (root_element: Element, config: P
     replace_dynamic_placeholder_values([...config.placeholders.values()]);
 }
 
-export const replace_placeholder_in_string = (text: string, placeholder: Placeholder): string => {
+export const safe_replace_multiple_placeholders_in_string = (text: string, placeholder_list: Placeholder[]): string => {
+    // Optimize for trivial cases
+    if (placeholder_list.length == 0) {
+        return text;
+    } else if (placeholder_list.length == 1) {
+        // We can directly replace it without any problems
+        const placeholder = placeholder_list[0];
+        return replace_placeholder_in_string_with(text, placeholder, placeholder.expanded_value);
+    } else {
+        // If we just replace the values directly in a for loop, we get bugs, when the value of one placeholder contains another placeholder that is also replaced, but later
+        // To circumvent this, we replace placeholders with randomized other placeholders and then replace these with the actual values
+        const unique = `${Date.now()}_${Math.random()}`;
+        for (const placeholder of placeholder_list) {
+            text = replace_placeholder_in_string_with(text, placeholder, `x${placeholder.name}#${unique}x`);
+        }
+        for (const placeholder of placeholder_list) {
+            const regex = new RegExp(`x${placeholder.name}#${unique}x`, "g");
+            text = text.replace(regex, placeholder.expanded_value);
+        }
+        return text;
+    }
+}
+
+const replace_placeholder_in_string_with = (text: string, placeholder: Placeholder, value: string): string => {
     // This funtion will perform replacements, but will ignore the replacement type (all will be simple/direct replace)
-    return text.replace(placeholder.regex_dynamic, placeholder.expanded_value)
-        .replace(placeholder.regex_html, placeholder.expanded_value)
-        .replace(placeholder.regex_normal, placeholder.expanded_value)
-        .replace(placeholder.regex_static, placeholder.expanded_value);
+    return text.replace(placeholder.regex_dynamic, value)
+        .replace(placeholder.regex_html, value)
+        .replace(placeholder.regex_normal, value)
+        .replace(placeholder.regex_static, value);
 }
 
 export const replace_dynamic_placeholder_values = (placeholder_list: Placeholder[]) => {

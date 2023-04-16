@@ -95,10 +95,10 @@ export interface BasePlaceholer {
     output_elements: HTMLElement[];
 
     // Allow replacing placeholders within the value of this
-    allow_recursive: boolean;
+    allow_nested: boolean;
     // the value as it is stored (with placeholders in the value not replaced)
     current_value: string;
-    // the value after any placeholders it contains are recursively replaced (if allow_recursive is true)
+    // the value after any placeholders it contains are recursively replaced (if allow_nested is true)
     expanded_value: string;
     // How often it is used on the page. This does not necessarily need to be accurate, but 0 should always mean that it is not used on the page.
     count_on_page: number;
@@ -232,7 +232,7 @@ const parse_any_placeholder = (data: any, validator_map: Map<string,InputValidat
         "description": get_string_field("description", data),
         "read_only": get_boolean_field("read_only", data),
         "allow_inner_html": get_boolean_field("allow_inner_html", data),
-        "allow_recursive": false, // should be replaced by the 'load_*_state' funcion, that is called later on in this function
+        "allow_nested": get_boolean_field("allow_nested", data),
         "current_value": "UNINITIALIZED", // should be replaced by the 'load_*_state' funcion, that is called later on in this function
         "expanded_value": "UNINITIALIZED", // should be replaced by the 'load_*_state' funcion, that is called later on in this function
         "count_on_page": 0, // Will be incremented by the replace functions
@@ -295,7 +295,6 @@ const finish_parse_textbox = (parsed: BasePlaceholer, data: any, validator_map: 
 
     return {
         ...parsed,
-        "allow_recursive": get_boolean_field("allow_recursive", data),
         "default_function": default_function,
         "default_value": default_value,
         "input_elements": [],
@@ -307,7 +306,6 @@ const finish_parse_textbox = (parsed: BasePlaceholer, data: any, validator_map: 
 const finish_parse_checkbox = (parsed: BasePlaceholer, data: any): CheckboxPlaceholder => {
     return {
         ...parsed,
-        "allow_recursive": true, // values are all user supplied, so recursive mode is assumed
         "checked_by_default": get_boolean_field("checked_by_default", data),
         "current_is_checked": false, // should be replaced by the 'load_*_state' function, that should be called on the result
         "input_elements": [],
@@ -334,7 +332,6 @@ const finish_parse_dropdown = (parsed: BasePlaceholer, data: any): DropdownPlace
     }
     return {
         ...parsed,
-        "allow_recursive": true, // values are all user supplied, so recursive mode is assumed
         "current_index": 0, // should be replaced by the 'load_*_state' function, that should be called on the result
         "default_index": default_index,
         "input_elements": [],

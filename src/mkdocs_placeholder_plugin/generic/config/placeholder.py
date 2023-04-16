@@ -17,6 +17,7 @@ VARIABLE_NAME_REGEX = re.compile("^[A-Z]([A-Z0-9_]*[A-Z0-9])?$")
 TYPES_PRIMITIVE = [bool, float, int, str]
 # Only these fields are allowed in placeholders
 PLACEHOLDER_FIELD_NAMES = {
+    "allow_nested",
     "default",
     "default-function",
     "description",
@@ -47,6 +48,8 @@ class Placeholder(NamedTuple):
     # Whether the placeholder should be protected from users editing it.
     # Use true to have hidden convenience variables. Example "COMB_EMAIL: xCOMB_FIRST_NAMEx.xCOMB_SURNAMEx@xCOMB_DOMAINx"
     read_only: bool
+    # Whether to replace placeholders in this placeholder's value. By default off for text fields and on for everything else
+    allow_nested: bool
     # Whether to only replace visible text or to try to replace it anywhere in the DOM
     replace_everywhere: bool
     # For supporting advanced input fields such as dropdown menus and checkboxes
@@ -101,7 +104,12 @@ def parse_placeholder_dict(data: dict[str,Any], location: str, name: str, valida
     input_type = determine_input_type(values, default_value)
     validator_list = parse_validator_list(name, data, input_type, default_value, validators)
 
+    # By default only allow nested placeholders when the user can not specify custom values / when only predefined values have to be used
+    default_allow_nested = input_type == InputType.Checkbox or input_type == InputType.Dropdown or read_only
+    allow_nested = get_bool(data, "allow_nested", default_allow_nested)
+
     return Placeholder(
+        allow_nested=allow_nested,
         name=name,
         default_value=default_value,
         default_function=default_function,

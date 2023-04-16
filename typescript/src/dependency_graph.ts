@@ -1,6 +1,6 @@
 import { logger } from "./debug";
-import { Placeholder, PluginConfig } from "./parse_settings";
-import { replace_placeholder_in_string } from "./replacer";
+import { Placeholder } from "./parse_settings";
+import { safe_replace_multiple_placeholders_in_string } from "./replacer";
 import { clear_state } from "./state_manager";
 
 
@@ -100,8 +100,9 @@ export class DependencyGraph {
     }
 
     update_placeholder_downlinks(placeholder: Placeholder) {
-        if (placeholder.allow_recursive == false) {
+        if (!placeholder.allow_nested) {
             // By definition, non-recursive placeholders can not rely on other placeholders
+            logger.debug(`${placeholder.name} can not contain nested placeholders`)
             return;
         }
 
@@ -209,8 +210,8 @@ class GraphNode {
 
     recalculate_expanded_value(recursive: boolean) {
         let expanded_value = this.placeholder.current_value;
-        for (const downlink_node of this.downlinks) {
-            expanded_value = replace_placeholder_in_string(expanded_value, downlink_node.placeholder);
+        if (this.placeholder.allow_nested) {
+            expanded_value = safe_replace_multiple_placeholders_in_string(expanded_value, this.downlinks.map(n => n.placeholder));
         }
         this.placeholder.expanded_value = expanded_value;
 

@@ -46,7 +46,7 @@ Replaces element directly.
 
 ## Nesting
 
-If you have a placeholder that contains another placeholder (and `allow_recursive` is `true` for it), the value of the placeholder will be resolved, before it is written to the page.
+If you have a placeholder that contains another placeholder (and `allow_nested` is `true` for it), the value of the placeholder will be resolved, before it is written to the page.
 This may cause the page to reload when you did not expect it.
 
 ### Example

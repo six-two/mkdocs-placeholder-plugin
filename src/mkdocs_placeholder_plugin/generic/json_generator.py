@@ -31,6 +31,7 @@ def placeholder_to_serializable_dict(placeholder: Placeholder) -> dict:
         "description": placeholder.description,
         "read_only": placeholder.read_only,
         "allow_inner_html": placeholder.replace_everywhere,
+        "allow_nested": placeholder.allow_nested,
     }
     if placeholder.input_type == InputType.Checkbox:
         placeholder_data.update({
@@ -54,7 +55,6 @@ def placeholder_to_serializable_dict(placeholder: Placeholder) -> dict:
     elif placeholder.input_type == InputType.Field:
         placeholder_data.update({
             "type": "textbox",
-            "allow_recursive": True, # @TODO: read from config
             "validators": [v.id for v in placeholder.validator_list],
         })
 
