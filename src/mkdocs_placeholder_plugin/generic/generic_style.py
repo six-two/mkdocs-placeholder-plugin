@@ -33,6 +33,10 @@ table tr td input.input-for-variable[type="checkbox"] {
     border-radius: 4px;
     padding: 4px;
 }
+
+.input-for-variable.value-modified {
+    font-weight: bold;
+}
 """
 
 

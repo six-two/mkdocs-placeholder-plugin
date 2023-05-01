@@ -120,20 +120,28 @@ const initialize_input_textbox = (config: PluginConfig, placeholder: TextboxPlac
                     store_textbox_state(placeholder, input_element.value);
                     placeholder.current_value = input_element.value;
                     on_placeholder_change(config, placeholder);
+
+                    // The new value is applied, so it now is the same as the stored one
+                    input_element.classList.remove("value-modified");
                 }
             }
         }
 
-        if (placeholder.validators.length > 0) {
-            // Check if initial value is valid
+        // Check if initial value is valid and initialize the tooltip
+        validate_textbox_input_field(placeholder, input_element);
+
+        // Listen for state changes
+        input_element.addEventListener("input", () => {
+            // The text was probably modified, so we need to update the validator
             validate_textbox_input_field(placeholder, input_element);
 
-            // Listen for state changes
-            input_element.addEventListener("input", () => {
-                // The text was probably modified, so we need to update the validator
-                validate_textbox_input_field(placeholder, input_element);
-            });
-        }
+            // Update the changed status of the placeholder
+            if (input_element.value == placeholder.current_value) {
+                input_element.classList.remove("value-modified");
+            } else {
+                input_element.classList.add("value-modified");
+            }
+        });
 
         input_element.addEventListener("keypress", (event: KeyboardEvent) => {
             if (event.key === "Enter") {
