@@ -111,25 +111,20 @@ const initialize_input_textbox = (config: PluginConfig, placeholder: TextboxPlac
             input_element.placeholder = "Dynamic default value";
         }
 
-        const on_keypress = (event: KeyboardEvent) => {
-            if (event.key === "Enter") {
-                logger.debug("Textbox change confirmed with Enter key for ", placeholder.name, "- new value:", input_element.value);
+        const confirm_change = () => {
+            if (placeholder.current_value == input_element.value) {
+                logger.debug(`Value for placeholder ${placeholder.name} was not changed`);
+            } else {
+                // Expensive actions, only perform them if the value was actually changed
                 if (validate_textbox_input_field(placeholder, input_element)) {
                     store_textbox_state(placeholder, input_element.value);
                     placeholder.current_value = input_element.value;
                     on_placeholder_change(config, placeholder);
                 }
-            } else if (event.key === "Escape") {
-                // @TODO: why does this not get triggered? Is it intercepted by something else?
-                logger.debug("Resetting input field for ", placeholder.name, " to current placeholder value");
-                input_element.value = placeholder.current_value;
             }
-        };
+        }
 
-        if (placeholder.validators.length == 0) {
-            // No validators -> no need to handle exception when validation fails
-            input_element.addEventListener("keypress", on_keypress)
-        } else {
+        if (placeholder.validators.length > 0) {
             // Check if initial value is valid
             validate_textbox_input_field(placeholder, input_element);
 
@@ -138,8 +133,28 @@ const initialize_input_textbox = (config: PluginConfig, placeholder: TextboxPlac
                 // The text was probably modified, so we need to update the validator
                 validate_textbox_input_field(placeholder, input_element);
             });
-            input_element.addEventListener("keypress", on_keypress);
         }
+
+        input_element.addEventListener("keypress", (event: KeyboardEvent) => {
+            if (event.key === "Enter") {
+                logger.debug("Textbox change confirmed with Enter key for", placeholder.name, "- new value:", input_element.value);
+                confirm_change();
+            }
+        });
+        input_element.addEventListener("keydown", (event: KeyboardEvent) => {
+            // I have no idea, why Escape does not work with the keypress event (Safari on MacOS). As a work aroud, we listen to the keydown event
+            if (event.key === "Escape") {
+                logger.debug("Resetting input field for ", placeholder.name, " to current placeholder value");
+                input_element.value = placeholder.current_value;
+            }
+        });
+        input_element.addEventListener("focusout", () => {
+            // The value may change on the fly (use changes settings), so we can not just conditionally add the event listener, but need to check each time
+            if (config.settings.apply_change_on_focus_change) {
+                logger.debug("Textbox change confirmed by changing focus", placeholder.name, "- new value:", input_element.value);
+                confirm_change();
+            }
+        })
     }
 
     // Store this input element

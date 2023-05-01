@@ -67,6 +67,7 @@ export interface InputTableRow {
 export interface PluginSettings {
     debug: boolean;
     delay_millis: number;
+    apply_change_on_focus_change: boolean;
 
     // How different placeholder types are marked
     normal_prefix: string;
@@ -212,6 +213,8 @@ const parse_settings = (data: any): PluginSettings => {
         // How placeholders using the dynamic replacement methodare marked
         "dynamic_prefix": "d",
         "dynamic_suffix": "d",
+        // @TODO: net the user choose and let the site owner define a default
+        "apply_change_on_focus_change": true,
     }
 }
 
