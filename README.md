@@ -36,6 +36,10 @@ The corresponding documentation is hosted at <https://dev.mkdocs-placeholder-plu
     - Validators are no longer defined in-line and instead defined in a `validators` section -> easier to reuse custom validators
     - Placeholders now need to be specified in a `placeholders` section
 
+### Version 0.3.1
+
+- Removed `Apply all changes` buttons. See [issue #3](https://github.com/six-two/mkdocs-placeholder-plugin/issues/3)
+
 ### Version 0.3.0
 
 This release may be a bit buggy due to the rewrite and the documentation is not entirely accurate yet.
@@ -132,8 +136,12 @@ This is just for me :)
 3. Update version number in `setup.cfg`.
 4. Build and update package.
 5. Create a commit for the release (`Version 0.X.Y`) and push it.
-6. Update the `latest-release` branch, so that the documentation website gets updated:
+6. Add a tag named `0.X.Y`:
+    ```
+    git tag 0.X.Y
+    ```
+7. Update the `latest-release` branch, so that the documentation website gets updated:
     ```
     git branch --force latest-release HEAD
-    git push origin latest-release
+    git push --tags origin latest-release
     ```

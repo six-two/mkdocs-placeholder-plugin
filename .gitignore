@@ -177,5 +177,8 @@ node_modules/
 src/mkdocs_placeholder_plugin/assets/placeholder.min.js*
 typescript/javascript
 
-# MacOS stuff
+# MacOS garbage
 .DS_Store
+
+# Intentionally excluded local half-baked changes
+*.local
