@@ -16,7 +16,7 @@ from .static_replacer import StaticReplacer
 from .input_tag_handler import create_normal_input_class_handler
 from .auto_input_table import AutoTableInserter
 from .input_table import InputTableGenerator
-from . import set_warnings_enabled, debug
+from . import set_warnings_enabled, debug, warning
 
 
 def convert_exceptions(function: Callable) -> Callable:
@@ -81,6 +81,9 @@ class PlaceholderPlugin(BasePlugin[PlaceholderPluginConfig]):
 
     def initialize_plugin(self, config: MkDocsConfig) -> None:
         set_warnings_enabled(self.config.show_warnings)
+
+        if self.config.add_apply_table_column:
+            warning("The 'Apply new values' are broken/no longer useful and have thus been removed. You can set the add_apply_table_column to False to disable this warning. If you really want the button, downgrade to version 0.2.5 of the placeholder plugin.")
 
         # Make sure that the custom JS is included on every page
         if self.config.placeholder_js not in config.extra_javascript:

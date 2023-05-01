@@ -11,7 +11,7 @@ from .html_tag_parser import parse_html_tag
 INPUT_TABLE_PLACEHOLDER = re.compile("<placeholdertable[^>]*>")
 # "md-button md-button--primary" make it look pretty if you are using Material for Mkdocs (https://squidfunk.github.io/mkdocs-material/reference/buttons/#adding-icon-buttons)
 # Otherwise it will be styled in the default button way, with the option to use "placeholder-input-apply-button" to give it a custom style
-RELAOD_BUTTON = '<button class="placeholder-input-apply-button md-button md-button--primary" onclick="PlaceholderPlugin.reload_page()">Apply new values</button>'
+# RELAOD_BUTTON = '<button class="placeholder-input-apply-button md-button md-button--primary" onclick="PlaceholderPlugin.reload_page()">Apply new values</button>'
 
 class PlaceholderTableSettings(NamedTuple):
     table_type: str
@@ -149,13 +149,6 @@ class InputTableGenerator:
                 # escape potentially dangerous characters that could mess up the table syntax
                 cell = cell.replace("|", "&#124;").replace("\r", " ").replace("\n", " ")
                 rows[index+2].append(cell)
-
-        if self.add_apply_table_column and "input" in column_list:
-            apply_row = []
-            for column in column_list:
-                cell = RELAOD_BUTTON if column == "input" else ""
-                apply_row.append(cell)
-            rows.append(apply_row)
 
         lines = [" | ".join(cells) for cells in rows]
         return "\n".join([*lines, "", ""])

@@ -176,3 +176,9 @@ node_modules/
 # Output of Typescript build
 src/mkdocs_placeholder_plugin/assets/placeholder.min.js*
 typescript/javascript
+
+# MacOS garbage
+.DS_Store
+
+# Intentionally excluded local half-baked changes
+*.local
