@@ -100,7 +100,18 @@ class PlaceholderPlugin(BasePlugin[PlaceholderPluginConfig]):
                 config.extra_css.append(self.config.placeholder_css)
 
         # Immediatley parse the placeholder file, so that all following methods can use the information
-        self.configuration = parse_configuration_file(self.config.placeholder_file)
+        if os.path.exists(self.config.placeholder_file):
+            # Default to resolving paths relative to the current working directory
+            config_path = self.config.placeholder_file
+        else:
+            # If the above fails, look up relative to the configuration file. Useful if you do something like the following:
+            # $ mkdocs gh-deploy --config-file ../my-project/mkdocs.yml --remote-branch master
+            # Which is currently the recommended way to deploy with gitlab pages (as user page). SEE https://www.mkdocs.org/user-guide/deploying-your-docs/
+            config_path = os.path.join(os.path.dirname(config.config_file_path), self.config.placeholder_file)
+            if not os.path.exists(config_path):
+                raise PluginError(f"Could not resolve the file '{self.config.placeholder_file}' either relatively to the current working directory or to the configuration file")
+
+        self.configuration = parse_configuration_file(config_path)
         self.placeholders = self.configuration.placeholders
         set_warnings_enabled(self.configuration.settings.show_warnings)
 
