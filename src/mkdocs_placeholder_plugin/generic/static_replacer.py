@@ -62,6 +62,7 @@ class StaticReplacer:
 
 
 def create_static_input_field_replacer(placeholders: dict[str,Placeholder]) -> InputTagHandler:
+    #@TODO: add this to normal page processing?
     def static_replacer_input_tag_modifier(handler, tag: str, parsed: ParsedHtmlTag) -> str:
         placeholder_name = parsed.attributes.get("data-input-for")
         if placeholder_name:
@@ -77,35 +78,3 @@ def create_static_input_field_replacer(placeholders: dict[str,Placeholder]) -> I
 
     return InputTagHandler(static_replacer_input_tag_modifier, False)
 
-
-def get_default_placeholder_value(placeholder: Placeholder) -> str:
-    if placeholder.input_type == InputType.Checkbox:
-        default_value = placeholder.default_value or "unchecked"
-        return placeholder.values[default_value]
-    elif placeholder.input_type == InputType.Dropdown:
-        if placeholder.default_value:
-            return placeholder.values[placeholder.default_value]
-        else:
-            return list(placeholder.values.values())[0]
-    elif placeholder.input_type == InputType.Field:
-        return placeholder.default_value
-    else:
-        raise Exception(f"Unknown input type: {placeholder.input_type}")
-
-
-def create_input_html(placeholder: Placeholder) -> str:
-    if placeholder.input_type == InputType.Checkbox:
-        checked_by_default = placeholder.default_value == "checked"
-        checked_attribute = " checked" if checked_by_default else ""
-        return f'<input type="checkbox" disabled{checked_attribute}>'
-    elif placeholder.input_type == InputType.Dropdown:
-        # We only show the name of the default option
-        if placeholder.default_value:
-            default_value = placeholder.default_value
-        else:
-            default_value = list(placeholder.values.keys())[0]
-        return f'<select disabled><option>{html.escape(default_value)}</option></select>'
-    elif placeholder.input_type == InputType.Field:
-        return f'<input value="{html.escape(placeholder.default_value)}" disabled>'
-    else:
-        raise Exception(f"Unknown input type: {placeholder.input_type}")
