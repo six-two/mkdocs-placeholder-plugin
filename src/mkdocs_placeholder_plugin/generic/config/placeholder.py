@@ -13,6 +13,8 @@ from .parser_utils import assert_no_unknown_fields, add_problematic_data_to_exce
 # Should not begin with a number (this prevents placeholders like `1`)
 # Should not begin or end with a underscore (they are reserved for internal purposes like state tracking)
 VARIABLE_NAME_REGEX = re.compile("^[A-Z]([A-Z0-9_]*[A-Z0-9])?$")
+SAFE_NAME_REGEX = re.compile("^[A-Za-z0-9_]+$")
+JUST_UNDERSCORES = re.compile("^_+$")
 # The types to accept for fields, where a string is accepted
 TYPES_PRIMITIVE = [bool, float, int, str]
 # Only these fields are allowed in placeholders
@@ -68,6 +70,16 @@ def parse_placeholders(data: dict, location: str, validators: dict[str,Validator
     if type(data) != dict:
         raise PlaceholderConfigError(f"[placeholder] Config file error: Expected root element of type 'dict', but got '{type(data).__name__}'")
     for key, value in data.items():
+        # Check that the variable name matches expected format
+        if not VARIABLE_NAME_REGEX.match(key):
+            warning(f"Potentially problematic variable name: '{key}'. A valid name should only contain capital letters, digits, and underscores and it should start with a letter")
+        
+        if JUST_UNDERSCORES.match(key):
+            raise PlaceholderConfigError("You can not have a placeholder name that is just underscores!")
+
+        if not SAFE_NAME_REGEX.match(key):
+            raise PlaceholderConfigError(f"The placeholder name '{key}' contains prohibited characters. Please only use letters, digits, and underscores")
+
         # Make sure that values are strings (or convert them to strings if possible)
         if isinstance(value, dict):
             # New style entry with attributes
@@ -81,9 +93,6 @@ def parse_placeholders(data: dict, location: str, validators: dict[str,Validator
         else:
             raise PlaceholderConfigError(f"Expected a single value or object for key '{key}', but got type {type(value).__name__}")
 
-        # Check that the variable name matches expected format
-        if not VARIABLE_NAME_REGEX.match(key):
-            warning(f"Potentially problematic variable name: '{key}'. A valid name should only contain capital letters and underscores.")
 
     return placeholders
 

@@ -20,6 +20,7 @@ from ..generic.input_tag_handler import create_normal_input_class_handler
 from ..generic.auto_input_table import AutoTableInserter
 from ..generic.input_table import InputTableGenerator
 from ..generic import set_warnings_enabled, warning, PlaceholderConfigError, PlaceholderPageError
+from ..generic.placeholder_replacer import DynamicPlaceholderPreprocessor
 
 
 def convert_exceptions(function: Callable) -> Callable:
@@ -58,6 +59,8 @@ class PlaceholderPlugin(BasePlugin[PlaceholderPluginConfig]):
         See: https://www.mkdocs.org/dev-guide/plugins/#on_page_markdown
         """
         if self.config.enabled:
+            if True: #@TODO
+                markdown = self.dynamic_placeholder_preprocessor.handle_markdown_page(markdown)
             if self.config.auto_placeholder_tables:
                 markdown = self.auto_table_inserter.add_to_page(markdown)
             return self.table_generator.handle_markdown(markdown)
@@ -70,6 +73,9 @@ class PlaceholderPlugin(BasePlugin[PlaceholderPluginConfig]):
         The page_content event is called after the Markdown text is rendered to HTML (but before being passed to a template) and can be used to alter the HTML body of the page.
         """
         if self.config.enabled:
+            if True: #@TODO
+                html = self.dynamic_placeholder_preprocessor.handle_html_page(html)
+
             file_path = page.file.src_path
             return self.input_tag_modifier.process_string(file_path, html)
         else:
@@ -120,6 +126,8 @@ class PlaceholderPlugin(BasePlugin[PlaceholderPluginConfig]):
             False,
             self.config.table_default_type,
             False)
+
+        self.dynamic_placeholder_preprocessor = DynamicPlaceholderPreprocessor(self.configuration)
 
         # Set the value for inputs to inform the user to enable JavaScript
         # Line numbers in output are disabled, since we need to call this after the markdown was parsed.

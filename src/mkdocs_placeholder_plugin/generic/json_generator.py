@@ -23,6 +23,10 @@ def settings_to_serializable_dict(settings: PlaceholderSettings) -> dict:
     return {
         "debug": settings.debug_javascript,
         "delay_millis": settings.replace_delay_millis,
+        "dynamic_prefix": settings.dynamic_prefix,
+        "dynamic_suffix": settings.dynamic_suffix,
+        "normal_prefix": settings.normal_prefix,
+        "normal_suffix": settings.normal_suffix,
     }
 
 def placeholder_to_serializable_dict(placeholder: Placeholder) -> dict:

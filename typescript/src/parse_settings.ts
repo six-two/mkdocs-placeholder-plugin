@@ -202,8 +202,8 @@ const parse_settings = (data: any): PluginSettings => {
         "delay_millis": get_number_field("delay_millis", data),
         // @TODO: If I let users specify prefixes, I will need to make sure, that they do not contain regex characters or escape them
         // How normal placeholders are marked
-        "normal_prefix": "x",
-        "normal_suffix": "x",
+        "normal_prefix": get_string_field("normal_prefix", data),
+        "normal_suffix": get_string_field("normal_suffix", data),
         // How placeholders using the innerHTML method are marked
         "html_prefix": "i",
         "html_suffix": "i",
@@ -211,9 +211,9 @@ const parse_settings = (data: any): PluginSettings => {
         "static_prefix": "s",
         "static_suffix": "s",
         // How placeholders using the dynamic replacement methodare marked
-        "dynamic_prefix": "d",
-        "dynamic_suffix": "d",
-        // @TODO: net the user choose and let the site owner define a default
+        "dynamic_prefix": get_string_field("dynamic_prefix", data),
+        "dynamic_suffix": get_string_field("dynamic_suffix", data),
+        // @TODO: let the user choose and let the site owner define a default
         "apply_change_on_focus_change": true,
     }
 }

@@ -4,7 +4,7 @@ from typing import NamedTuple
 import yaml
 # local
 from .. import PlaceholderConfigError
-from .parser_utils import assert_no_unknown_fields, get_bool, get_int, get_dict, add_problematic_data_to_exceptions
+from .parser_utils import assert_no_unknown_fields, get_bool, get_int, get_string, get_dict, add_problematic_data_to_exceptions
 from .validator import Validator, parse_validators
 from .placeholder import Placeholder, parse_placeholders
 from ..validators_predefined import VALIDATOR_PRESETS
@@ -16,17 +16,28 @@ CONFIGURATION_FIELD_NAMES = {
 }
 
 SETTINGS_FIELD_NAMES = {
+    "auto_placeholder_tables",
     "create_no_js_fallback",
     "debug_javascript",
+    "dynamic_prefix",
+    "dynamic_suffix",
+    "normal_prefix",
+    "normal_suffix",
     "replace_delay_millis",
     "show_warning",
 }
 
 class PlaceholderSettings(NamedTuple):
+    auto_placeholder_tables: bool
     # Whether to create static HTML fallbacks when JavaScript is not enabled
     create_no_js_fallback: bool
     # debug the javascript code
     debug_javascript: bool
+    # Default prefixes / suffixes used for different replacement methods
+    dynamic_prefix: str
+    dynamic_suffix: str
+    normal_prefix: str
+    normal_suffix: str
     # Replace delay millis
     replace_delay_millis: int
     # Whether to show warings in the python code
@@ -44,8 +55,14 @@ def parse_settings(data: dict, location: str) -> PlaceholderSettings:
     assert_no_unknown_fields(data, SETTINGS_FIELD_NAMES)
 
     return PlaceholderSettings(
+        auto_placeholder_tables=get_bool(data, "auto_placeholder_tables", default=True),
         create_no_js_fallback=get_bool(data, "create_no_js_fallback", default=True),
         debug_javascript=get_bool(data, "debug_javascript", default=False),
+        #@TODO: all other prefixes/suffixes
+        dynamic_prefix=get_string(data, "dynamic_prefix", "d"),
+        dynamic_suffix=get_string(data, "dynamic_suffix", "d"),
+        normal_prefix=get_string(data, "normal_prefix", "x"),
+        normal_suffix=get_string(data, "normal_suffix", "x"),
         replace_delay_millis=get_int(data, "replace_delay_millis", default=0, round_float=True),
         show_warnings=get_bool(data, "show_warnings", default=True),
     )
