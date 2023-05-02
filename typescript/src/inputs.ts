@@ -6,13 +6,13 @@ import { store_checkbox_state, store_dropdown_state, store_textbox_state } from 
 import { validate_textbox_input_field } from "./validator";
 
 export const initialize_all_input_fields = (config: PluginConfig): void => {
-    const input_list: NodeListOf<HTMLInputElement> = document.querySelectorAll("input[data-input-for]");
+    const input_list: NodeListOf<HTMLInputElement> = document.querySelectorAll("input[data-input-for], select[data-input-for]");
     for (let input_element of input_list) {
         const placeholder_name = input_element.getAttribute("data-input-for");
         if (placeholder_name == null) {
             throw new Error("How can this be, the selector forces the 'data-input-for' attribute to exist");
         }
-        
+
         const placeholder = config.placeholders.get(placeholder_name)
         if (placeholder) {
             prepare_input_field(config, placeholder, input_element);
@@ -39,12 +39,17 @@ export const prepare_input_field = (config: PluginConfig, placeholder: Placehold
 }
 
 const initialize_input_checkbox = (config: PluginConfig, placeholder: CheckboxPlaceholder, input_element: HTMLInputElement): void => {
+    if (input_element.tagName != "INPUT") {
+        console.warn(`Input element/tag for placeholder '${placeholder.name}' is expected to be INPUT, but is ${input_element.tagName}. Skipping`, input_element);
+        return;
+    }
     input_element.type = "checkbox";
     input_element.checked = placeholder.current_is_checked;
     if (placeholder.read_only) {
         // disable the checkbox
         input_element.disabled = true;
     } else {
+        input_element.disabled = false;
         // Listen for state changes
         input_element.addEventListener("change", () => {
             logger.debug("Checkbox change", placeholder.name, "- new value:", input_element.checked);
@@ -82,6 +87,7 @@ const initialize_input_dropdown = (config: PluginConfig, placeholder: DropdownPl
         // disable the dropdown
         new_node.disabled = true;
     } else {
+        new_node.disabled = false;
         // Add an event listener
         new_node.addEventListener("change", () => {
             logger.debug("Dropdown change", placeholder.name, "- new index:", new_node.selectedIndex);
@@ -97,6 +103,11 @@ const initialize_input_dropdown = (config: PluginConfig, placeholder: DropdownPl
 }
 
 const initialize_input_textbox = (config: PluginConfig, placeholder: TextboxPlaceholder, input_element: HTMLInputElement): void => {
+    if (input_element.tagName != "INPUT") {
+        console.warn(`Input element/tag for placeholder '${placeholder.name}' is expected to be INPUT, but is ${input_element.tagName}. Skipping`, input_element);
+        return;
+    }
+
     // Restore the stored state
     input_element.value = placeholder.current_value;
 
@@ -105,6 +116,7 @@ const initialize_input_textbox = (config: PluginConfig, placeholder: TextboxPlac
         input_element.disabled = true;
         input_element.style.cursor = "not-allowed";
     } else {
+        input_element.disabled = false;
         if (placeholder.default_value != undefined) {
             input_element.placeholder = `Default: ${placeholder.default_value}`;
         } else {
@@ -168,7 +180,6 @@ const initialize_input_textbox = (config: PluginConfig, placeholder: TextboxPlac
     // Store this input element
     placeholder.input_elements.push(input_element);
 }
-
 
 const on_placeholder_change = (config: PluginConfig, placeholder: Placeholder) => {
     const affected_placeholders = config.dependency_graph.get_all_upstream(placeholder);

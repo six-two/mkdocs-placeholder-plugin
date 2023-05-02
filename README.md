@@ -36,6 +36,7 @@ The corresponding documentation is hosted at <https://dev.mkdocs-placeholder-plu
     - Validators are no longer defined in-line and instead defined in a `validators` section -> easier to reuse custom validators
     - Placeholders now need to be specified in a `placeholders` section
 - (By default) values are saved when the focus leaves a text field.
+- Removed static placeholder input tables
 
 ### Version 0.3.1
 

@@ -22,6 +22,7 @@ def html_for_dynamic_placeholder(placeholder: Placeholder) -> str:
 
 
 def get_default_placeholder_value(placeholder: Placeholder) -> str:
+    #@TODO: handle nested placeholders
     if placeholder.input_type == InputType.Checkbox:
         default_value = placeholder.default_value or "unchecked"
         return placeholder.values[default_value]

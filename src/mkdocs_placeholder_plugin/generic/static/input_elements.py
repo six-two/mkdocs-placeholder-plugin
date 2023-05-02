@@ -1,10 +1,9 @@
 import html
 # local files
 from .. import warning
-from ..config.placeholder import Placeholder
+from ..config import Placeholder, InputType
 from ..html_tag_parser import ParsedHtmlTag
 from ..input_tag_handler import InputTagHandler
-from .input_table import create_disabled_input_html
 
 
 def create_static_input_field_replacer(placeholders: dict[str,Placeholder]) -> InputTagHandler:
@@ -18,9 +17,25 @@ def create_static_input_field_replacer(placeholders: dict[str,Placeholder]) -> I
                 return f'<input value="Undefined variable {html.escape(placeholder_name)}" disabled>'
             else:
                 # Properly handle the different input element types
-                return create_disabled_input_html(placeholders[placeholder_name])
+                return create_input_html_with_fallback(placeholders[placeholder_name])
         else:
             return tag
 
     return InputTagHandler(static_replacer_input_tag_modifier, False)
 
+def create_input_html_with_fallback(placeholder: Placeholder) -> str:
+    if placeholder.input_type == InputType.Checkbox:
+        checked_by_default = placeholder.default_value == "checked"
+        checked_attribute = " checked" if checked_by_default else ""
+        return f'<input data-input-for="{placeholder.name}" type="checkbox" disabled{checked_attribute}>'
+    elif placeholder.input_type == InputType.Dropdown:
+        # We only show the name of the default option
+        if placeholder.default_value:
+            default_value = placeholder.default_value
+        else:
+            default_value = list(placeholder.values.keys())[0]
+        return f'<select data-input-for="{placeholder.name}" disabled><option>{html.escape(default_value)}</option></select>'
+    elif placeholder.input_type == InputType.Field:
+        return f'<input data-input-for="{placeholder.name}" value="{html.escape(placeholder.default_value)}" disabled>'
+    else:
+        raise Exception(f"Unknown input type: {placeholder.input_type}")
