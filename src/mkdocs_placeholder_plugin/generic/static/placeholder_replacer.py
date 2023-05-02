@@ -3,7 +3,7 @@ import random
 import string
 import time
 # local
-from .config import PlaceholderConfig, Placeholder, InputType
+from ..config import PlaceholderConfig, Placeholder, InputType
 
 SAFE_CHARS_IN_MARKDOWN = list(string.ascii_letters + string.digits)
 

@@ -15,13 +15,8 @@ from .style import generate_mkdocs_style_sheet
 from .plugin_config import PlaceholderPluginConfig
 from ..generic.config.configuration import parse_configuration_file
 from ..assets import copy_assets_to_directory_debuggable
-from ..generic.static_replacer import StaticReplacer
-from ..generic.input_tag_handler import create_normal_input_class_handler
-from ..generic.auto_input_table import AutoTableInserter
-from ..generic.input_table import InputTableGenerator
 from ..generic import set_warnings_enabled, warning, PlaceholderConfigError, PlaceholderPageError
-from ..generic.placeholder_replacer import DynamicPlaceholderPreprocessor
-from ..generic.new_input_table import TableGenerator
+from ..generic.page_processor import PageProcessor
 
 
 def convert_exceptions(function: Callable) -> Callable:
@@ -60,15 +55,9 @@ class PlaceholderPlugin(BasePlugin[PlaceholderPluginConfig]):
         See: https://www.mkdocs.org/dev-guide/plugins/#on_page_markdown
         """
         if self.config.enabled:
-            if True: #@TODO
-                markdown = self.dynamic_placeholder_preprocessor.handle_markdown_page(markdown)
-            if True: #@TODO
-                markdown = "<PLACEHOLDER_PLUGIN_AUTO_TABLE_HERE>\n\n" + markdown
-            if self.config.auto_placeholder_tables:
-                markdown = self.auto_table_inserter.add_to_page(markdown)
-            return self.table_generator.handle_markdown(markdown)
-        else:
-            return markdown
+            markdown = self.page_processor.process_page_markdown(markdown)
+
+        return markdown
 
     @convert_exceptions
     def on_page_content(self, html: str, page, config: MkDocsConfig, files) -> str:
@@ -76,14 +65,9 @@ class PlaceholderPlugin(BasePlugin[PlaceholderPluginConfig]):
         The page_content event is called after the Markdown text is rendered to HTML (but before being passed to a template) and can be used to alter the HTML body of the page.
         """
         if self.config.enabled:
-            if True: #@TODO
-                html = self.dynamic_placeholder_preprocessor.handle_html_page(html)
-                html = html.replace("<PLACEHOLDER_PLUGIN_AUTO_TABLE_HERE>", self.new_table_generator.generate_table_code(html, True)) #@TODO: search for all auto tables
+            html = self.page_processor.process_page_html(page.file.src_path, html)
 
-            file_path = page.file.src_path
-            return self.input_tag_modifier.process_string(file_path, html)
-        else:
-            return html
+        return html
 
 
     @convert_exceptions
@@ -122,43 +106,13 @@ class PlaceholderPlugin(BasePlugin[PlaceholderPluginConfig]):
                 raise PluginError(f"Could not resolve the file '{self.config.placeholder_file}' either relatively to the current working directory or to the configuration file")
 
         self.configuration = parse_configuration_file(config_path)
-        self.placeholders = self.configuration.placeholders
         set_warnings_enabled(self.configuration.settings.show_warnings)
 
-        # Instanciate a table generator
-        self.table_generator = InputTableGenerator(self.placeholders,
-            False,
-            self.config.table_default_type,
-            False)
+        self.page_processor = PageProcessor(self.configuration)
 
-        self.new_table_generator = TableGenerator(self.configuration)
-
-        self.dynamic_placeholder_preprocessor = DynamicPlaceholderPreprocessor(self.configuration)
-
-        # Set the value for inputs to inform the user to enable JavaScript
-        # Line numbers in output are disabled, since we need to call this after the markdown was parsed.
-        # Otherwise stuff in listings and co may be unintentianally modified/checked
-        self.input_tag_modifier = create_normal_input_class_handler(self.placeholders, add_line_in_warning=False)
-
-        if self.config.auto_placeholder_tables:
-            self.auto_table_inserter = AutoTableInserter(self.placeholders, self.config)
-            if self.config.auto_placeholder_tables_collapsible:
-                ensure_extensions_loaded(config, ["admonition", "pymdownx.details"])
 
     def after_build_action(self, config: MkDocsConfig) -> None:
         copy_assets_to_mkdocs_site_directory(config, self.config, self.configuration)
-
-        # # Replace placeholders in files marked for static replacements
-        # replacement_list = self.config.static_pages
-        # if replacement_list:
-        #     static_replacer = StaticReplacer(self.placeholders, replacement_list)
-        #     static_replacer.process_output_folder(config.site_dir)
-
-
-def ensure_extensions_loaded(config: MkDocsConfig, extensions: list[str]) -> None:
-    for extension in extensions:
-        if extension not in config.markdown_extensions:
-            config.markdown_extensions.append(extension)
 
 
 def _write_to_file(config: MkDocsConfig, relative_path: str, contents: str, open_mode: str) -> None:

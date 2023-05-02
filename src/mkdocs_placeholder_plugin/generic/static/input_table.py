@@ -1,6 +1,6 @@
 import html
 # local
-from .config import PlaceholderConfig, Placeholder, InputType
+from ..config import PlaceholderConfig, Placeholder, InputType
 
 class TableGenerator:
     def __init__(self, config: PlaceholderConfig) -> None:
