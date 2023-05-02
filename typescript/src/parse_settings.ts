@@ -205,11 +205,11 @@ const parse_settings = (data: any): PluginSettings => {
         "normal_prefix": get_string_field("normal_prefix", data),
         "normal_suffix": get_string_field("normal_suffix", data),
         // How placeholders using the innerHTML method are marked
-        "html_prefix": "i",
-        "html_suffix": "i",
+        "html_prefix": get_string_field("html_prefix", data),
+        "html_suffix": get_string_field("html_suffix", data),
         // How placeholders using the direct/static replacement methodare marked
-        "static_prefix": "s",
-        "static_suffix": "s",
+        "static_prefix": get_string_field("static_prefix", data),
+        "static_suffix": get_string_field("static_suffix", data),
         // How placeholders using the dynamic replacement methodare marked
         "dynamic_prefix": get_string_field("dynamic_prefix", data),
         "dynamic_suffix": get_string_field("dynamic_suffix", data),
@@ -218,7 +218,10 @@ const parse_settings = (data: any): PluginSettings => {
     }
 }
 
-
+const escapeRegExp = (regex_pattern: string) => {
+    // @SOURCE https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Regular_Expressions#escaping
+    return regex_pattern.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"); // $& means the whole matched string
+  }
 const parse_any_placeholder = (data: any, validator_map: Map<string,InputValidator>, settings: PluginSettings, index: number): Placeholder => {
     const type = get_string_field("type", data);
     // Parse fields that are shared between all placeholders
@@ -227,10 +230,10 @@ const parse_any_placeholder = (data: any, validator_map: Map<string,InputValidat
         "name": name,
         "order_index": index,
         // The regexes for the different replace methods. Stored here so that I only need to compile them once
-        "regex_dynamic": RegExp(settings.dynamic_prefix + name + settings.dynamic_suffix, "g"),
-        "regex_html": RegExp(settings.html_prefix + name + settings.html_suffix, "g"),
-        "regex_normal": RegExp(settings.normal_prefix + name + settings.normal_suffix, "g"),
-        "regex_static": RegExp(settings.static_prefix + name + settings.static_suffix, "g"),
+        "regex_dynamic": RegExp(escapeRegExp(settings.dynamic_prefix) + name + escapeRegExp(settings.dynamic_suffix), "g"),
+        "regex_html": RegExp(escapeRegExp(settings.html_prefix) + name + escapeRegExp(settings.html_suffix), "g"),
+        "regex_normal": RegExp(escapeRegExp(settings.normal_prefix) + name + escapeRegExp(settings.normal_suffix), "g"),
+        "regex_static": RegExp(escapeRegExp(settings.static_prefix) + name + escapeRegExp(settings.static_suffix), "g"),
         // 
         "description": get_string_field("description", data),
         "read_only": get_boolean_field("read_only", data),

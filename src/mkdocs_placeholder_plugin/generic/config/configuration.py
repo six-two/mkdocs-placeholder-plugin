@@ -36,13 +36,17 @@ class PlaceholderSettings(NamedTuple):
     # Default prefixes / suffixes used for different replacement methods
     dynamic_prefix: str
     dynamic_suffix: str
+    html_prefix: str
+    html_suffix: str
     normal_prefix: str
     normal_suffix: str
     # Replace delay millis
     replace_delay_millis: int
     # Whether to show warings in the python code
     show_warnings: bool
-
+    # Default prefixes / suffixes used for different replacement methods
+    static_prefix: str
+    static_suffix: str
 
 class PlaceholderConfig(NamedTuple):
     placeholders: dict[str,Placeholder]
@@ -58,13 +62,16 @@ def parse_settings(data: dict, location: str) -> PlaceholderSettings:
         auto_placeholder_tables=get_bool(data, "auto_placeholder_tables", default=True),
         create_no_js_fallback=get_bool(data, "create_no_js_fallback", default=True),
         debug_javascript=get_bool(data, "debug_javascript", default=False),
-        #@TODO: all other prefixes/suffixes
         dynamic_prefix=get_string(data, "dynamic_prefix", "d"),
         dynamic_suffix=get_string(data, "dynamic_suffix", "d"),
+        html_prefix=get_string(data, "html_prefix", "i"),
+        html_suffix=get_string(data, "html_suffix", "i"),
         normal_prefix=get_string(data, "normal_prefix", "x"),
         normal_suffix=get_string(data, "normal_suffix", "x"),
         replace_delay_millis=get_int(data, "replace_delay_millis", default=0, round_float=True),
         show_warnings=get_bool(data, "show_warnings", default=True),
+        static_prefix=get_string(data, "static_prefix", "i"),
+        static_suffix=get_string(data, "static_suffix", "i"),
     )
 
 

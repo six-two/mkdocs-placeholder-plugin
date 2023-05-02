@@ -21,6 +21,7 @@ from ..generic.auto_input_table import AutoTableInserter
 from ..generic.input_table import InputTableGenerator
 from ..generic import set_warnings_enabled, warning, PlaceholderConfigError, PlaceholderPageError
 from ..generic.placeholder_replacer import DynamicPlaceholderPreprocessor
+from ..generic.new_input_table import TableGenerator
 
 
 def convert_exceptions(function: Callable) -> Callable:
@@ -61,6 +62,8 @@ class PlaceholderPlugin(BasePlugin[PlaceholderPluginConfig]):
         if self.config.enabled:
             if True: #@TODO
                 markdown = self.dynamic_placeholder_preprocessor.handle_markdown_page(markdown)
+            if True: #@TODO
+                markdown = "<PLACEHOLDER_PLUGIN_AUTO_TABLE_HERE>\n\n" + markdown
             if self.config.auto_placeholder_tables:
                 markdown = self.auto_table_inserter.add_to_page(markdown)
             return self.table_generator.handle_markdown(markdown)
@@ -75,6 +78,7 @@ class PlaceholderPlugin(BasePlugin[PlaceholderPluginConfig]):
         if self.config.enabled:
             if True: #@TODO
                 html = self.dynamic_placeholder_preprocessor.handle_html_page(html)
+                html = html.replace("<PLACEHOLDER_PLUGIN_AUTO_TABLE_HERE>", self.new_table_generator.generate_table_code(html, True)) #@TODO: search for all auto tables
 
             file_path = page.file.src_path
             return self.input_tag_modifier.process_string(file_path, html)
@@ -126,6 +130,8 @@ class PlaceholderPlugin(BasePlugin[PlaceholderPluginConfig]):
             False,
             self.config.table_default_type,
             False)
+
+        self.new_table_generator = TableGenerator(self.configuration)
 
         self.dynamic_placeholder_preprocessor = DynamicPlaceholderPreprocessor(self.configuration)
 

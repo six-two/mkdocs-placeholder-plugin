@@ -25,8 +25,12 @@ def settings_to_serializable_dict(settings: PlaceholderSettings) -> dict:
         "delay_millis": settings.replace_delay_millis,
         "dynamic_prefix": settings.dynamic_prefix,
         "dynamic_suffix": settings.dynamic_suffix,
+        "html_prefix": settings.html_prefix,
+        "html_suffix": settings.html_suffix,
         "normal_prefix": settings.normal_prefix,
         "normal_suffix": settings.normal_suffix,
+        "static_prefix": settings.static_prefix,
+        "static_suffix": settings.static_suffix,
     }
 
 def placeholder_to_serializable_dict(placeholder: Placeholder) -> dict:
