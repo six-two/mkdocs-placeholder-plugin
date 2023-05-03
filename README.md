@@ -15,10 +15,35 @@ The documentation is also available in the `docs` folder of the source code and 
 
 ## Development version
 
-If you want to use the latest development version (may be broken/buggy from time to time), you can install it with:
-```bash
-python3 -m pip install git+https://github.com/six-two/mkdocs-placeholder-plugin
-```
+If you want to use the latest development version (may be broken/buggy from time to time), you can install it by:
+
+1. Cloning the repository:
+    ```bash
+    git clone https://github.com/six-two/mkdocs-placeholder-plugin
+    cd mkdocs-placeholder-plugin
+    ```
+2. Building/Downloading the JavaScript files.
+    Choose any of the following ways:
+    
+    - Build it with npm (natively), by running the `./build-docs.sh` script.
+    - Build it in a (docker/podman) container by using the `Doeckerfile` in the `typescript` directory:
+        ```bash
+        cd typescript
+        podman build --tag placeholder-npm .
+        cd ..
+        ```
+
+        And then running the `./build.sh` script.
+        Once you see mkdocs running, you can terminate it with `Ctrl-C`.
+    - Downloading the files from the development version of the documentation (hosted and built by Vercel):
+        ```bash
+        curl https://dev.mkdocs-placeholder-plugin.six-two.dev/assets/javascripts/placeholder.min.js -o src/mkdocs_placeholder_plugin/assets/placeholder.min.js
+        curl https://dev.mkdocs-placeholder-plugin.six-two.dev/assets/javascripts/placeholder.min.js.map -o src/mkdocs_placeholder_plugin/assets/placeholder.min.js.map
+        ```
+3. Installing the package with pip:
+    ```bash
+    python3 -m pip install .
+    ```
 
 The corresponding documentation is hosted at <https://dev.mkdocs-placeholder-plugin.six-two.dev>.
 
@@ -33,10 +58,11 @@ The corresponding documentation is hosted at <https://dev.mkdocs-placeholder-plu
 ### HEAD
 
 - Configuration format changed:
-    - Validators are no longer defined in-line and instead defined in a `validators` section -> easier to reuse custom validators
-    - Placeholders now need to be specified in a `placeholders` section
+    - Validators are no longer defined in-line and instead defined in a `validators` section -> easier to reuse custom validators.
+    - Placeholders now need to be specified in a `placeholders` section.
+    - Most settings are now in the configuration file instead of in your `mkdocs.yml`.
 - (By default) values are saved when the focus leaves a text field.
-- Removed static placeholder input tables
+- Removed static placeholder input tables (`<placeholdertable>`)
 
 ### Version 0.3.1
 
