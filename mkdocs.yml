@@ -26,8 +26,6 @@ theme:
   - navigation.footer
 plugins:
 - placeholder:
-    show_warnings: true
-    auto_placeholder_tables: True
     placeholder_extra_js: placeholder-extra.js
 - badges
 - search

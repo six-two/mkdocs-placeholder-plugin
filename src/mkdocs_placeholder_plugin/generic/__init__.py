@@ -21,6 +21,10 @@ LOGGER = logging.getLogger("dev.six-two.placeholder-plugin")
 
 _WARNINGS_ENABLED = True
 
+def set_logger(logger: logging.Logger) -> None:
+    global LOGGER
+    LOGGER = logger
+
 
 def set_warnings_enabled(value: bool) -> None:
     global _WARNINGS_ENABLED

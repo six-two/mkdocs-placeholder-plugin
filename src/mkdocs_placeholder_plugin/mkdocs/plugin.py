@@ -1,4 +1,5 @@
 from functools import wraps
+import logging
 import os
 import traceback
 from typing import Callable
@@ -7,6 +8,8 @@ from mkdocs.config.defaults import MkDocsConfig
 from mkdocs.plugins import BasePlugin
 from mkdocs.config.base import Config
 from mkdocs.exceptions import PluginError
+from ..generic import set_logger
+from mkdocs.utils import warning_filter
 
 # local files
 # local
@@ -79,6 +82,11 @@ class PlaceholderPlugin(BasePlugin[PlaceholderPluginConfig]):
             self.after_build_action(config)
 
     def initialize_plugin(self, config: MkDocsConfig) -> None:
+        # To get the correct looks, the logger needs to have the correct name
+        logger = logging.getLogger("mkdocs.plugins.placeholder")
+        logger.addFilter(warning_filter)
+        set_logger(logger)
+
         # Make sure that the custom JS is included on every page
         placeholder_js = os.path.join(self.config.js_output_dir, "placeholder.min.js")
         if placeholder_js not in config.extra_javascript:

@@ -21,10 +21,14 @@ SETTINGS_FIELD_NAMES = {
     "debug_javascript",
     "dynamic_prefix",
     "dynamic_suffix",
+    "html_prefix",
+    "html_suffix",
     "normal_prefix",
     "normal_suffix",
     "replace_delay_millis",
-    "show_warning",
+    "show_warnings",
+    "static_prefix",
+    "static_suffix",
 }
 
 class PlaceholderSettings(NamedTuple):

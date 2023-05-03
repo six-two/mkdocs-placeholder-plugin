@@ -1,6 +1,7 @@
 settings:
   debug_javascript: true
   replace_delay_millis: -1
+  show_warnings: true
 validators:
   unused:
     name: "Unused: should not be in final JSON"
