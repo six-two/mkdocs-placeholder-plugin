@@ -41,7 +41,6 @@ nav:
 - themes.md
 - "Tests":
   - tests/basic.md
-  - tests/input-tables.md
   - tests/auto-tables.md
   - tests/auto-table-empty.md
   - tests/mermaid_diagrams.md

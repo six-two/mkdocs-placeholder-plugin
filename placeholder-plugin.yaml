@@ -275,11 +275,6 @@ placeholders:
     default: example.com
     validators: domain
 
-  # Work around the problem, that my <placeholdertable> in code listings is being replaced
-  PLACEHOLDERTABLE:
-    default: placeholdertable
-    read_only: true
-
   # ERROR_VALIDATOR_NO_RULES:
   #   default: Empty rules are not allowed
   #   validators:
