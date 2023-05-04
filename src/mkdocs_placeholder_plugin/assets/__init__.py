@@ -5,27 +5,63 @@ from typing import Optional
 from ..generic.config import PlaceholderConfig
 from ..generic.json_generator import generate_json_for_javascript_code
 
+COMBINED_FILE_NAME = "placeholder-combined.js"
+DEBUGGABLE_CODE_FILE_NAME = "placeholder.min.js"
+DEBUGGABLE_DATA_FILE_NAME = "placeholder-data.js"
+
+
+def copy_assets_to_directory_combined(generic_config: PlaceholderConfig, output_directory: str, optional_custom_script_path: Optional[str]):
+    os.makedirs(output_directory, exist_ok=True)
+
+    library_code = read_resource_file(DEBUGGABLE_CODE_FILE_NAME)
+    # Remove the ling to the source map, since the file is not copied / would not fit due too the extra code that is prepended
+    library_code = library_code.replace(f"//# sourceMappingURL={DEBUGGABLE_CODE_FILE_NAME}.map", "")
+
+    custom_code = ""
+    if optional_custom_script_path:
+        with open(optional_custom_script_path, "r") as f:
+            extra_js = f.read()
+        custom_code = f"///// Custom extra JS code /////\n{extra_js}\n\n\n"
+
+    json_data = generate_json_for_javascript_code(generic_config)
+    data_code = f"window.PlaceholderPluginConfigJson = {json_data};"
+
+    # Combine the different files and store the results in the output directory
+    combined_code = f"{custom_code}///// Plugin data /////\n{data_code}\n\n\n///// Normal plugin code /////\n{library_code}\n\n\n"
+    output_file = os.path.join(output_directory, COMBINED_FILE_NAME)
+    with open(output_file, "w") as f:
+        f.write(combined_code)
+
 
 def copy_assets_to_directory_debuggable(generic_config: PlaceholderConfig, output_directory: str, optional_custom_script_path: Optional[str]):
     os.makedirs(output_directory, exist_ok=True)
 
-    shutil.copy(get_resource_path("placeholder.min.js"), output_directory)
-    shutil.copy(get_resource_path("placeholder.min.js.map"), output_directory)
+    # copy files
+    shutil.copy(get_resource_path(DEBUGGABLE_CODE_FILE_NAME), output_directory)
+    shutil.copy(get_resource_path(f"{DEBUGGABLE_CODE_FILE_NAME}.map"), output_directory)
 
-    input_file = get_resource_path("placeholder-data.js")
+    data_code = read_resource_file(DEBUGGABLE_DATA_FILE_NAME)
+
+    # Replace placeholder
     json_data = generate_json_for_javascript_code(generic_config)
-    with open(input_file, "r") as f:
-        text = f.read().replace("__MKDOCS_PLACEHOLDER_PLUGIN_NEW_JSON__", json_data)
+    data_code = data_code.replace("__MKDOCS_PLACEHOLDER_PLUGIN_NEW_JSON__", json_data)
 
-    if (optional_custom_script_path):
+    if optional_custom_script_path:
         with open(optional_custom_script_path, "r") as f:
             extra_js = f.read()
 
-        text = "///// Custom extra JS code /////\n" + extra_js + "\n\n\n///// Plugin's JS code /////\n" + text
+        data_code = "///// Custom extra JS code /////\n" + extra_js + "\n\n\n///// Plugin's JS code /////\n" + data_code
 
-    data_output_file = os.path.join(output_directory, "placeholder-data.js")
+    data_output_file = os.path.join(output_directory, DEBUGGABLE_DATA_FILE_NAME)
     with open(data_output_file, "w") as f:
-        f.write(text)
+        f.write(data_code)
+
+
+def read_resource_file(name: str) -> str:
+    path = get_resource_path(name)
+    with open(path, "r") as f:
+        return f.read()
+
 
 
 def get_resource_path(name: str) -> str:
