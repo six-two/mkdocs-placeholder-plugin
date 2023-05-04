@@ -6,10 +6,20 @@ So it may look very chaotic ;)
 Variable | Value
 ---|---
 TEST | `xTESTx`
-LINK | [xLINKx](xLINKx)
+LINK | [sLINKs](iLINKi)
 CHECKBOX | xCHECKBOXx
 Qouted string | xQUOTE_CHECKBOXxxTESTxxQUOTE_CHECKBOXx
 DROPDOWN | xDROPDOWNx
+
+## Replacement methods
+
+Type | Test
+---|---
+Dynamic | dTESTd
+HTML (allowed, should work) | iLINKi
+HTML (prohibited, should fail) | iTESTi
+Normal | xTESTx
+Static | sTESTs
 
 <label><input data-input-for="QUOTE_CHECKBOX">Use double quotes</label>
 

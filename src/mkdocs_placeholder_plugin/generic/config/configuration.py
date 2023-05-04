@@ -62,7 +62,7 @@ class PlaceholderConfig(NamedTuple):
 def parse_settings(data: dict, location: str) -> PlaceholderSettings:
     assert_no_unknown_fields(data, SETTINGS_FIELD_NAMES)
 
-    return PlaceholderSettings(
+    settings = PlaceholderSettings(
         auto_placeholder_tables=get_bool(data, "auto_placeholder_tables", default=True),
         create_no_js_fallback=get_bool(data, "create_no_js_fallback", default=True),
         debug_javascript=get_bool(data, "debug_javascript", default=False),
@@ -77,6 +77,20 @@ def parse_settings(data: dict, location: str) -> PlaceholderSettings:
         static_prefix=get_string(data, "static_prefix", "s"),
         static_suffix=get_string(data, "static_suffix", "s"),
     )
+
+    # Check if the same pattern (prefix & suffix) is used by multiple replacement methods
+    name = "PLACEHOLDER_NAME"
+    patterns = [
+        settings.dynamic_prefix + name + settings.dynamic_suffix,
+        settings.html_prefix + name + settings.html_suffix,
+        settings.normal_prefix + name + settings.normal_suffix,
+        settings.static_prefix + name + settings.static_suffix,
+    ]
+
+    if len(set(patterns)) != len(patterns):
+        raise PlaceholderConfigError(f"Multiple differnet replacement methods search for the same pattern. The patterns are: {', '.join(patterns)}")
+
+    return settings
 
 
 def parse_configuration_file(path: str) -> PlaceholderConfig:

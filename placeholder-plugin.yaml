@@ -2,6 +2,9 @@ settings:
   debug_javascript: true
   replace_delay_millis: -1
   show_warnings: true
+  # # Uncommenting the following lines should cause an error
+  # static_prefix: x
+  # static_suffix: x
 validators:
   unused:
     name: "Unused: should not be in final JSON"
