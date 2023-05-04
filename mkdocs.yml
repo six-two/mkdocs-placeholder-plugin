@@ -33,7 +33,7 @@ plugins:
 nav:
 - index.md
 - usage.md
-- advanced-configuration.md
+- configuration.md
 - advanced-usage.md
 - replace-modes.md
 - validators.md

@@ -17,11 +17,12 @@ def copy_assets_to_directory_combined(generic_config: PlaceholderConfig, output_
     # Remove the ling to the source map, since the file is not copied / would not fit due too the extra code that is prepended
     library_code = library_code.replace(f"//# sourceMappingURL={DEBUGGABLE_CODE_FILE_NAME}.map", "")
 
-    custom_code = ""
     if optional_custom_script_path:
         with open(optional_custom_script_path, "r") as f:
             extra_js = f.read()
         custom_code = f"///// Custom extra JS code /////\n{extra_js}\n\n\n"
+    else:
+        custom_code = "///// No custom extra JS code exists /////\n"
 
     json_data = generate_json_for_javascript_code(generic_config)
     data_code = f"window.PlaceholderPluginConfigJson = {json_data};"
@@ -50,7 +51,7 @@ def copy_assets_to_directory_debuggable(generic_config: PlaceholderConfig, outpu
         with open(optional_custom_script_path, "r") as f:
             extra_js = f.read()
 
-        data_code = "///// Custom extra JS code /////\n" + extra_js + "\n\n\n///// Plugin's JS code /////\n" + data_code
+        data_code = "///// Custom extra JS code /////\n" + extra_js + "\n\n\n///// Plugin data /////\n" + data_code
 
     data_output_file = os.path.join(output_directory, DEBUGGABLE_DATA_FILE_NAME)
     with open(data_output_file, "w") as f:

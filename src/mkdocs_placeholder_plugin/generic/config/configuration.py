@@ -74,8 +74,8 @@ def parse_settings(data: dict, location: str) -> PlaceholderSettings:
         normal_suffix=get_string(data, "normal_suffix", "x"),
         replace_delay_millis=get_int(data, "replace_delay_millis", default=0, round_float=True),
         show_warnings=get_bool(data, "show_warnings", default=True),
-        static_prefix=get_string(data, "static_prefix", "i"),
-        static_suffix=get_string(data, "static_suffix", "i"),
+        static_prefix=get_string(data, "static_prefix", "s"),
+        static_suffix=get_string(data, "static_suffix", "s"),
     )
 
 

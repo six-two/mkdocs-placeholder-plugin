@@ -8,11 +8,11 @@ class PlaceholderPluginConfig(Config):
     """
     # Can be used to disable the plugin
     enabled = Type(bool, default=True)
-    # The file where you define the placeholders
-    placeholder_file = Type(str, default="placeholder-plugin.yaml")
     # Output loaction for the custom JS file. This overwrites the javascript code provided by the plugin
     js_output_dir = Type(str, default="assets/javascripts/")
-    # Provide additional javascript for example for hooks, providing functions, etc
-    placeholder_extra_js = Type(str, default="")
     # CSS file. If it exists, the contents will be appended to. add empty string to not include the default styles
     placeholder_css = Type(str, default="assets/javascripts/placeholder-plugin.css")
+    # Provide additional javascript for example for hooks, providing functions, etc
+    placeholder_extra_js = Type(str, default="")
+    # The file where you define the placeholders
+    placeholder_file = Type(str, default="placeholder-plugin.yaml")
