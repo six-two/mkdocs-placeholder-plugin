@@ -8,4 +8,4 @@ But the following themes should also work and you can see this documentation bui
 - [readthedocs](/readthedocs/index.html): builtin theme of MkDocs
 
 Other themes will likely work too.
-If they do not, feel free to fix it (the relevant file is `src/mkdocs_placeholder_plugin/style.py`) and submit a [pull request](https://github.com/six-two/mkdocs-placeholder-plugin/pulls).
+If they do not, feel free to fix it (the relevant files are `src/mkdocs_placeholder_plugin/mkdocs/style.py` and maybe `src/mkdocs_placeholder_plugin/generic/generic_style.py`) and submit a [pull request](https://github.com/six-two/mkdocs-placeholder-plugin/pulls).

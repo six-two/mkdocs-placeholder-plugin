@@ -11,6 +11,7 @@ However be advised, that some types do not support dynamic reloading, so the who
 
 |Default pattern|xPLACEHOLDER_NAMEx|
 
+Unless there is a good reason to use something else, you should probably default to using this.
 Currently just is an alias for dynamic, but may change in the future.
 
 ### InnerHTML

@@ -4,12 +4,26 @@
 
 You can set some extra attributes for placeholders:
 
+Option | Type | Default value
+---|---|---
+allow_nested | `bool` | depends on type and if it is read only
+default | `str` | N/A
+default-function | `str` | N/A
+description | `str` | empty string
+read_only | `bool` | `False`
+replace_everywhere | `bool` | `False`
+validators | `list[str]` | empty list
+values | `dict[str,str]` | N/A
+
+
+Examples:
+
 ```yaml
 FIRST_NAME:
-    default: John
-    description: What should I call you?
-    read_only: false
-    replace_everywhere: false
+  default: John
+  description: What should I call you?
+  read_only: false
+  replace_everywhere: false
 ```
 
 ```yaml
@@ -18,6 +32,10 @@ RANDOM:
   description: A random number between 0 and 99
 ```
 
+### allow_nested
+
+When set to `true` this allows placeholder substitution in the value of this placeholder.
+By default this is enabled for all placeholders, where users can not choose arbitrary values (checkboxes, dropdown menus, and readonly text fields).
 
 ### default / default-function
 
@@ -36,7 +54,7 @@ RANDOM:
 
     ```yaml
     FIRST_NAME:
-        default: John
+      default: John
     ```
 
 === "default-function"
@@ -67,8 +85,8 @@ RANDOM:
     3. In your placeholder's definition, set `default-function` to invoke the function with your desired arguments:
         ```yaml
         PASSWORD:
-            default-function: "return generate_placeholder_password(10)"
-            description: A randomly generated password updated anytime you clear your localStorage
+          default-function: "return generate_placeholder_password(10)"
+          description: A randomly generated password updated anytime you clear your localStorage
         ```
 
 ### description
@@ -84,8 +102,8 @@ Read-only fields can (and by default will) be hidden from placeholder input tabl
 ### replace_everywhere
 
 Defaults to `false`.
-If this is set to `false`, only visible text is replaced.
-If you set it to `true`, it may be replaced anywhere in the page's document object model (probably including scripts, element attributes (such as a link's href), etc).
+If this is set to `false`, only visible text is replaced, which means that the inner HTML replacement method is not allowed for this placeholder.
+If you set it to `true`, it may be replaced anywhere in the page's document object model (probably including scripts, element attributes (such as a link's href), etc) when sing the innter HTML replacement method (`iPLACEHOLDER_NAMEi`).
 
 !!! warning "Dangerous - may introduce security vulnerabilities"
     You can very easily create self-XSS vulnerabilities if you set this to `true`.
@@ -93,6 +111,18 @@ If you set it to `true`, it may be replaced anywhere in the page's document obje
     So please use this sparringly, if at all.
 
     Assuming that you just have a static MkDocs site, the impact should be minimal/none, but please think twice before you enable this.
+
+### validators
+
+Which validators to use to determine what input is acceptable.
+Only supported on normal (textbox) placeholders, not on checkbox or dropdown ones.
+It would not make sense for them anyways, since the user can only select values that the site's author offers them.
+For more information see the [validators page](validators.md).
+
+### values
+
+Used to define checkbox or dropdown menu fields.
+See the [usage page](usage.md#checkbox-field).
 
 ## Combining fields
 
@@ -105,78 +135,44 @@ For example you may have an email address that consists of three different parts
 
 You can combine them into a single value with the following steps:
 
-1. Add the combined value in your `placeholder-plugin.yaml` *before* the lines that define the placeholders used in the expression;
+1. Add the combined value in your `placeholder-plugin.yaml` and make sure that `allow_nested` is set to `true`;
     Example:
 
-        # This one needs to be specified first, since it includes the other variables
-        EMAIL: xFIRST_NAMEx.xSURNAMEx@xDOMAINx
-        # The variables that are part of the combined value
-        FIRST_NAME: John
-        SURNAME: Doe
-        DOMAIN: example.com
+    ```yaml
+    placeholders:
+      # The variables that are part of the combined value
+      FIRST_NAME: John
+      SURNAME: Doe
+      DOMAIN: example.com
+      # The combined value
+      EMAIL:
+        default: xFIRST_NAMEx.xSURNAMEx@xDOMAINx
+        allow_nested: true
+    ```
 
 2. Include the new value (`xEMAILx` in this example) anywhere on your page.
 
-This works because variables are replaced in the order they are defined.
-So `xEMAILx` will be replaced with `xFIRST_NAMEx.xSURNAMEx@xDOMAINx` and those variables will then be replaced by their respective values.
-You could even use `xEMAILx` in other variables (say `xMAILING_LISTx`) that are defined above it.
+Internally the placeholder plugin is using a dependency graph for the placeholders.
+Thus, if you were to update `FIRST_NAME`, the `EMAIL` placeholder would also be updated, since it depends on `FIRST_NAME`.
+You could even use `xEMAILx` in other variables (say `xMAILING_LISTx`).
+The only thing you should not do are recursive placeholders (placeholders referencing themselfes) or dependency loops (A contains B contains C contains A).
+These can will lead to errors, since expanding them would result in a infinite loop.
 
-If you want to hide these fields in placeholder input tables, add the `read_only` field and set it to `true`:
+If you want to hide these fields in placeholder input tables, add the `read_only` field and set it to `true`.
+In this case you do not explicitely need to set `allow_nested`, since it is enabled by default for readonly placeholders:
 
-```
+```yaml
 EMAIL:
-    default: xFIRST_NAMEx.xSURNAMEx@xDOMAINx
-    read_only: true
+  default: xFIRST_NAMEx.xSURNAMEx@xDOMAINx
+  read_only: true
 ```
-
-## Static replacements
-
-Tries to do build time replacing of placeholders on the pages defined via `static_pages` in the plugin config options.
-@TODO: fully document, fix bugs
 
 
 ## Placeholder input tables
 
 ### Build time generated
 
-Beginning with version 0.1.3, you can embed input tables for placeholders.
-The following syntax is used:
-
-```html
-<xPLACEHOLDERTABLEx entries="auto" show-readonly="false" type="simple">
-```
-
-None of the attributes are required, so you can also do this:
-```html
-<xPLACEHOLDERTABLEx>
-```
-
-The following attributes are available:
-
-- `entries` can have the following values:
-    - `auto`: Check which variables are used on the page and list only them in the table. This is the default setting if the attribute is not set.
-    - `all`: Use all placeholders in the table.
-    - `PLACEHOLDER_1,PLACEHOLDER_2,[...]`: Only show the specified placeholders in the table.
-- `show-readonly` determines, if placeholders with `read_only: true` will be shown. This is for example useful to hide *combined fields* described above. Defaults to the value specified in the config (or `False`).
-- `type` determines, which columns are included in the table:
-    - `simple` shows `Name` and `Input`
-    - `description` shows `Name`, `Input` and `Description`
-    - You can manually define the columns to use, by separating them with a comma.
-        Example: `input,description`
-
-        Valid column names are:
-
-        - description
-        - input
-        - name
-        - value
-
-    It defaults to the value specified in the config (or `simple`).
-
-
-Since these tables are generated at build time, they are not entirely accurate, if you have conditional placeholders that are only included with some checkbox/dropdown values selected.
-The tables will also be indexed by the search plugin, so they may spam your search results, especially if you include the description column.
-
+Placeholder tables using the `<placeholdertable>` tag were removed in version 0.4.0.
 ### Dynamically generated
 
 Starting with version 0.2.2 you can add the following tag into your page:
@@ -190,11 +186,11 @@ Currently some features of the static tables may not be supported, but they shou
 
 Valid column names for `data-columns` are:
 
-- `description`
-- `description-or-name`
-- `input`
-- `name`
-- `value`
+- `description`: Shows the placeholder's description (if available)
+- `description-or-name`: Shows the placeholders description. If none exists, the placeholders name is shown instead.
+- `input`: Shows an input element, that can be used to change the placeholder's value
+- `name`: Shows the placeholder's name
+- `value`: Shows the placeholder's expanded value
 
 ## Highlighting placeholders
 

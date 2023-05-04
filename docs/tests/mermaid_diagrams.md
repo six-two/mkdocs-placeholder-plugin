@@ -22,14 +22,12 @@ These diagrams require the Material theme to work correctly.
 
 You can enter your values here and reload the page:
 
-<placeholdertable>
-
 ## Flowchart
 
 Code:
 ```
 graph LR
-  A[Alice] --> B{sCOMB_FIRST_NAMEs};
+  A[Alice] --> B{xCOMB_FIRST_NAMEx};
   B -->|sCOMB_DOMAINs| C[Does it work?];
 ```
 

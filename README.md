@@ -51,9 +51,7 @@ The corresponding documentation is hosted at <https://dev.mkdocs-placeholder-plu
 
 ### TODOs
 
-- Rewrite python code and decouple it from MkDocs (to be able to use it with other projects).
 - Implement propper exception handling for TypeScript code to recover from / compartmentalize non-critical errors.
-- Update the documentation.
 
 ### HEAD
 
@@ -62,7 +60,9 @@ The corresponding documentation is hosted at <https://dev.mkdocs-placeholder-plu
     - Placeholders now need to be specified in a `placeholders` section.
     - Most settings are now in the configuration file instead of in your `mkdocs.yml`.
 - (By default) values are saved when the focus leaves a text field.
-- Removed static placeholder input tables (`<placeholdertable>`)
+- Removed static placeholder input tables (`<placeholdertable>`).
+- Uncoupled the code from MkDocs.
+    You should now be able to relatively easy port the project to other Markdown based static site generators if you want to.
 
 ### Version 0.3.1
 
@@ -77,7 +77,7 @@ I will update the docs after I also clean up / rewrite the python code (planed f
     - Packed and minified using Webpack, so the file is a bit smaller
     - Should find stupid errors I make in code paths that I do not test (often)
     - Sophisticated update logic: Instead of always reloading the page it tries to update the DOM in-place (if possible), which should improve user experience a bit and is much faster
-    - Recursive placeholders (placeholders that contain placeholders that contain placeholder...) no longer need to be specified in a speific order in the configuration file.
+    - Nested placeholders (placeholders that contain placeholders that contain placeholder...) no longer need to be specified in a speific order in the configuration file.
     - A placeholder's `default-function` and a validator rule's `match_function` are now evaluated using [`new Function(...)`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function) instead of `eval(...)`, so you need to add a return statement.
 
 ### Version 0.2.5

@@ -2,10 +2,12 @@
 
 ## Installation
 
-You can install this plugin with pip:
+You can install latest release with pip:
 ```bash
 python3 -m pip install mkdocs-placeholder-plugin
 ```
+
+If you want to use the (sometimes very unstable) bleeding edge version, see the [README on GitHub](https://github.com/six-two/mkdocs-placeholder-plugin).
 
 ## Configuration
 
@@ -28,12 +30,13 @@ More information about plugins in the [MkDocs documentation](http://www.mkdocs.o
 Add a `placeholder-plugin.yaml` in the root of your MkDocs project and define the placeholder names and initial values here.
 For example:
 
-```
-NAME: John Doe
-PLUGIN: MkDocs Placeholder Plugin
-RATING: great
-YEAR: 2023
-RANDOM: 5
+```yaml
+placeholders:
+  NAME: John Doe
+  PLUGIN: MkDocs Placeholder Plugin
+  RATING: great
+  YEAR: 2023
+  RANDOM: 5
 ```
 
 Ideally you only use capital letters and underscores in your placeholders.
@@ -76,8 +79,9 @@ Unless otherwise specified, the input field will be a regular textbox that allow
 So for example if you have the following in your `placeholder-plugin.yaml`, the input field will be a textbox:
 
 ```yaml
-LINK:
-  default: https://www.example.com/test/page
+placeholders:
+  LINK:
+    default: https://www.example.com/test/page
 ```
 
 The `default` field's value will be used as the default for the placeholder.
@@ -96,12 +100,13 @@ They can be respresended by a check box.
 
 You can define them in your `placeholder-plugin.yaml` like this:
 ```yaml
-QUOTE_CHECKBOX:
-  description: Use double quotes?
-  default: checked
-  values:
-    checked: "\""
-    unchecked: "'"
+placeholders:
+  QUOTE_CHECKBOX:
+    description: Use double quotes?
+    default: checked
+    values:
+      checked: "\""
+      unchecked: "'"
 ```
 
 You can use the placeholder's value as you can use any other placeholder.
@@ -123,14 +128,15 @@ Dropdown fields allow the user to select one of a list of predefined options.
 They are defined like this:
 
 ```yaml
-DROPDOWN:
-  description: An test dropdown for selecting your favourite DNS lookup tool
-  default: "DNS lookup with host"
-  values:
-    "DNS lookup with dig": "dig"
-    "DNS lookup with nmap": "nmap -n --resolve-all"
-    "DNS lookup with host": "host"
-    "DNS lookup with nslookup": "nslookup"
+placeholders:
+  DROPDOWN:
+    description: An test dropdown for selecting your favourite DNS lookup tool
+    default: "DNS lookup with host"
+    values:
+      "DNS lookup with dig": "dig"
+      "DNS lookup with nmap": "nmap -n --resolve-all"
+      "DNS lookup with host": "host"
+      "DNS lookup with nslookup": "nslookup"
 ```
 
 The possible values are defined in `values`: Each key specifies the displayed option's text, while the value will be assigned to the placeholder.

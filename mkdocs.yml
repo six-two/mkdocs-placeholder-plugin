@@ -33,11 +33,11 @@ plugins:
 nav:
 - index.md
 - usage.md
+- demo.md
 - configuration.md
 - advanced-usage.md
 - replace-modes.md
 - validators.md
-- demo.md
 - themes.md
 - "Tests":
   - tests/basic.md

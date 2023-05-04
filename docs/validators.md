@@ -29,8 +29,9 @@ Try it out:
 
 ## Custom validators
 
-You can alss define your own validators.
-Each validator is a collection of rules.
+You can also define your own validators.
+Each validator has a name and a collection of rules.
+The name is used in the error/warning messages so it should be somthing human readable.
 Each rule is checked and the list of the error messages is shown to the user.
 
 ### Rules
@@ -59,13 +60,18 @@ Each rule consists of the following fields:
 
 ### Example
 
-Placeholder specification:
+Definitions of the `unused` and `excel` validators and the placeholder `CUSTOM_VALIDATORS` that uses the custom `excel` validator:
 
-```yaml
-CUSTOM_VALIDATORS:
-  default: A12
-  validators:
-  - name: Excel cell name
+```yaml title="placeholder-plugin.yaml"
+validators:
+  unused:
+    name: "Unused: should not be in final JSON"
+    rules:
+    - regex: "^[A-Za-z]+"
+      should_match: true
+      error_message: "Needs to start with at least one letter"
+  excel:
+    name: Excel cell name
     rules:
     - regex: "^[A-Za-z]+"
       should_match: true
@@ -80,6 +86,12 @@ CUSTOM_VALIDATORS:
       regex: "^[A-Za-z]+[0-9]+$"
       should_match: true
       error_message: "Should look like AB123"
+placeholders:
+  CUSTOM_VALIDATORS:
+    default: A12
+    description: "Custom validators"
+    validators: excel
+
 ```
 
 Coresponding input element:
@@ -91,7 +103,7 @@ Coresponding input element:
 
 You can specify multiple validators for a value.
 Of course you can use both predefined and custom validators.
-Only the best matching validators will be used, so it is like a logical or (meaning only one of them needs to match).
+Only the best matching validators will be used, so it is like a logical OR (meaning only one of them needs to match).
 If one validator accepts the input, but others do not, then the input will be accepted and no errors will be shown.
 If at least one validator only has warnings, only messages for the validators that match best (they do not have errors) will be shown.
 
@@ -100,6 +112,13 @@ If at least one validator only has warnings, only messages for the validators th
 Placeholder specification:
 
 ```yaml
+validators:
+  ipv6_loopback:
+    name: IPv6 loopback
+    rules:
+    - regex: "^::1$"
+      should_match: true
+      error_message: "Only the value '::1' is accepted"
 MULTI_VALIDATORS:
   default: "127.0.0.1"
   description: "Multiple validators: mest be an IPv4 address, domain name, or hostname"
@@ -107,11 +126,7 @@ MULTI_VALIDATORS:
   - ipv4_address
   - domain
   - hostname
-  - name: IPv6 loopback
-    rules:
-    - regex: "^::1$"
-      should_match: true
-      error_message: "Only the value '::1' is accepted"
+  - ipv6_loopback
 ```
 
 Coresponding input element:
