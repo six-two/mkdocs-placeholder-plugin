@@ -44,7 +44,6 @@ nav:
   - tests/auto-tables.md
   - tests/auto-table-empty.md
   - tests/mermaid_diagrams.md
-  - tests/static_replacements.md
   - tests/validators.md
   - tests/new-ts-code.md
 

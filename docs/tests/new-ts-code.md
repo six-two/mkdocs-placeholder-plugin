@@ -1,4 +1,6 @@
-# Tests: new TypeScript code
+# Tests: TypeScript code
+
+Tests for features introduced in v0.3.0
 
 - [xLINKx](iLINKi)
 - Password: xPASSWORDx

@@ -5,6 +5,7 @@ settings:
   # # Uncommenting the following lines should cause an error
   # static_prefix: x
   # static_suffix: x
+  # create_no_js_fallback: false
 validators:
   unused:
     name: "Unused: should not be in final JSON"

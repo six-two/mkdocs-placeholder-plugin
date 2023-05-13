@@ -25,9 +25,6 @@ Static | sTESTs
 
 <label>Label for dropdown<input data-input-for="DROPDOWN"></label>
 
-Other test pages:
-
-- [Static replacement test](static_replacements.md)
 
 ## Intersecting variables
 

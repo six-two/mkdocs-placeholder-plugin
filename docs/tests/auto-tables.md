@@ -9,9 +9,9 @@
 
 ### Second table
 
-It is also generatedwith JavaScript:
+It is also generated with JavaScript:
 
-<div class="auto-input-table" data-columns="description-or-name,input"></div>
+<div class="auto-input-table" data-columns="description-or-name,input"><b>You should see this text instead of a fallback table</b></div>
 
 ### Placeholders
 
