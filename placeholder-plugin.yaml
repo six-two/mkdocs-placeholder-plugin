@@ -172,7 +172,7 @@ placeholders:
   TEST:
     description: An test value, by default '123'
     default: 123
-    allow_nested: true # @TODO
+    allow_nested: true
   LINK:
     default: https://www.example.com/test/page
     replace_everywhere: true

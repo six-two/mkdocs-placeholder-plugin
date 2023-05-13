@@ -26,12 +26,28 @@ table tr td input.input-for-variable[type="checkbox"] {
     min-width: initial;
 }
 
-.auto-input-table .info-message {
+.auto-input-table {
+    display: flex;
+    flex-direction: column;
     background-color: lightgray;
     color: black;
     border: 1px solid gray;
     border-radius: 4px;
     padding: 4px;
+}
+
+.auto-input-table .auto-table-title {
+    display: flex;
+    text-align: center;
+}
+
+.auto-input-table .auto-table-title .text {
+    flex: 1;
+    margin-right: 20px;
+}
+
+.auto-input-table table {
+    width: 100%;
 }
 
 .input-for-variable.value-modified {

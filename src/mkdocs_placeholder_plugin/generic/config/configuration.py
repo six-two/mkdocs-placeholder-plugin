@@ -32,6 +32,7 @@ SETTINGS_FIELD_NAMES = {
 }
 
 class PlaceholderSettings(NamedTuple):
+    apply_change_on_focus_change: bool
     auto_placeholder_tables: bool
     # Whether to create static HTML fallbacks when JavaScript is not enabled
     create_no_js_fallback: bool
@@ -63,6 +64,7 @@ def parse_settings(data: dict, location: str) -> PlaceholderSettings:
     assert_no_unknown_fields(data, SETTINGS_FIELD_NAMES)
 
     settings = PlaceholderSettings(
+        apply_change_on_focus_change=get_bool(data, "apply_change_on_focus_change", default=True),
         auto_placeholder_tables=get_bool(data, "auto_placeholder_tables", default=True),
         create_no_js_fallback=get_bool(data, "create_no_js_fallback", default=True),
         debug_javascript=get_bool(data, "debug_javascript", default=False),

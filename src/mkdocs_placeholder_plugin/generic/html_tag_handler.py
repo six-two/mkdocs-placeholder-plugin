@@ -24,12 +24,12 @@ class HtmlTagHandler:
     def process_string(self, file_name: str, file_contents: str) -> str:
         self.full_text_string = file_contents
         search_start_pos = 0
-        while True: # @TODO: inprove
-            match = self.start_regex.search(file_contents, search_start_pos)
-            if match:
-                file_contents, search_start_pos = self.handle_potential_occurence(file_name, file_contents, match)
-            else:
-                return file_contents
+
+        # replace / handle all matches
+        while match := self.start_regex.search(file_contents, search_start_pos):
+            file_contents, search_start_pos = self.handle_potential_occurence(file_name, file_contents, match)
+
+        return file_contents
 
     def handle_potential_occurence(self, file_name: str, html: str, match: re.Match) -> tuple[str,int]:
         start = match.span()[0]

@@ -3,7 +3,7 @@ import random
 import string
 import time
 # local
-from ..config import PlaceholderConfig, Placeholder, InputType
+from ..config import PlaceholderConfig, Placeholder
 
 SAFE_CHARS_IN_MARKDOWN = list(string.ascii_letters + string.digits)
 CACHED_EXPANDED_DEFAULT_VALUES: dict[str,str] = {}
@@ -64,22 +64,6 @@ def _placeholder_expanded_default_value(placeholder: Placeholder, config: Placeh
                 string = string.replace(pattern, expanded_value)
 
         return string
-
-
-def get_default_placeholder_value(placeholder: Placeholder) -> str:
-    #@TODO: handle nested placeholders
-    if placeholder.input_type == InputType.Checkbox:
-        default_value = placeholder.default_value or "unchecked"
-        return placeholder.values[default_value]
-    elif placeholder.input_type == InputType.Dropdown:
-        if placeholder.default_value:
-            return placeholder.values[placeholder.default_value]
-        else:
-            return list(placeholder.values.values())[0]
-    elif placeholder.input_type == InputType.Field:
-        return placeholder.default_value
-    else:
-        raise Exception(f"Unknown input type: {placeholder.input_type}")
 
 
 class DynamicPlaceholderPreprocessor:

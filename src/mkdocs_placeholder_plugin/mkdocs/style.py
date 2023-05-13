@@ -15,7 +15,13 @@ MATERIAL_STYLE = """
     border: 4px solid var(--md-primary-fg-color);
     padding: 3px;
 }
+
+.auto-input-table {
+    width: fit-content;
+}
 """
+# If someone can figure out, why the material theme makes table rows not expand, even if I set the table width to 100%, please tell me.
+# I cannot figure it out. As a workaround, to not make it look insanely bad, I have to shrink the table's parent.
 
 
 def generate_mkdocs_style_sheet(theme_name: str, debug: bool):

@@ -55,9 +55,6 @@ Hi, I am xNAMEx and I think that xPLUGINx is xRATINGx!
 
 ## Changing placeholder values
 
-
-### User input field
-
 You can create an input field (that will change a placeholder's value) with the following syntax:
 
 ```html
@@ -73,7 +70,7 @@ For example:
 All inputs tagged this way will get assigned the class `input-for-variable`, so that you can more easily style them with CSS.
 This works for the normal textbox fields and special types (checkbox, dropdown).
 
-#### Textbox field
+### Textbox field
 
 Unless otherwise specified, the input field will be a regular textbox that allows the user to specify arbitrary values.
 So for example if you have the following in your `placeholder-plugin.yaml`, the input field will be a textbox:
@@ -87,13 +84,13 @@ placeholders:
 The `default` field's value will be used as the default for the placeholder.
 You can apply the new value by changing the text in the text box and pressing `Enter` (if `reload_on_change` is enabled, which it is by default).
 
-##### Live demo
+#### Live demo
 
 **Input element for placeholder** | <input data-input-for="LINK">
 ---|---
 **Current placeholder value** | xLINKx
 
-#### Checkbox field
+### Checkbox field
 
 You can also define placeholders that have only two different values.
 They can be respresended by a check box.
@@ -115,14 +112,14 @@ Otherwise `values.unchecked` is used.
 To determine, whether it is checked by default, you set `default` to `checked` or `unchecked`.
 If `default` is not specified or empty, `unchecked` is used.
 
-##### Live demo
+#### Live demo
 
 **Input element for placeholder** | <input data-input-for="QUOTE_CHECKBOX">
 ---|---
 **Current placeholder value** | xQUOTE_CHECKBOXx
 
 
-#### Dropdown field
+### Dropdown field
 
 Dropdown fields allow the user to select one of a list of predefined options.
 They are defined like this:
@@ -143,13 +140,9 @@ The possible values are defined in `values`: Each key specifies the displayed op
 You can specify the option to select by default, by passing the corresponding display name to `default`.
 If this is not done, the first option will be selected by default.
 
-##### Live demo
+#### Live demo
 
 **Input element for placeholder** | <input data-input-for="DROPDOWN">
 ---|---
 **Current placeholder value** | xDROPDOWNx
 
-
-### Via JavaScript
-
-@TODO: outdated, please use `default-function` for the placeholer

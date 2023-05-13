@@ -21,6 +21,7 @@ def generate_json_for_javascript_code(config: PlaceholderConfig) -> str:
 
 def settings_to_serializable_dict(settings: PlaceholderSettings) -> dict:
     return {
+        "apply_change_on_focus_change": settings.apply_change_on_focus_change,
         "debug": settings.debug_javascript,
         "delay_millis": settings.replace_delay_millis,
         "dynamic_prefix": settings.dynamic_prefix,

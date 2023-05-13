@@ -78,6 +78,7 @@ These settings are specified in your placeholder configuration file (by default 
 
 Option | Type | Default value
 ---|---|---
+apply_change_on_focus_change | `bool` | `True`
 auto_placeholder_tables | `bool` | `True`
 create_no_js_fallback | `bool` | `True`
 debug_javascript | `bool` | `False`
@@ -96,6 +97,7 @@ You can set these values like this:
 
 ```yaml title="placeholder-plugin.yaml"
 settings:
+    apply_change_on_focus_change: true
     auto_placeholder_tables: true
     create_no_js_fallback: true
     debug_javascript: false
@@ -111,6 +113,9 @@ settings:
     static_suffix: s
 ```
 
+### apply_change_on_focus_change
+
+Save and apply values entered into textbox fields when the user changes focus away from the field (presses `Tab`, clicks somewhere else, etc).
 
 ### auto_placeholder_tables
 

@@ -36,10 +36,32 @@ const generate_automatic_placeholder_table = (element: Element, columns: string[
         }
         return;
     }
+
+    const details = createChildElement(element, "details");
+    if (true) {
+        // @TODO: make it a setting for user and site config
+        details.setAttribute("open", "1");
+    }
+
+    const title = createChildElement(details, "summary");
+    title.classList.add("auto-table-title");
+    const title_text = createChildElement(title, "div");
+    title_text.classList.add("text")
+    appendTextNode(title_text, "Placeholders used on this page");
+    const settings_button = createChildElement(title, "div");
+    settings_button.onclick = (e: MouseEvent) => {
+        e.preventDefault();
+        e.stopPropagation();
+        alert("Not implemented yet!");
+    };
+    appendTextNode(settings_button, "⚙️")
+
+
+
     
     logger.info("Creating automatic input table at", element, "with columns", columns);
     // element.innerHTML = ""; // remove all children
-    const table = createChildElement(element, "table");
+    const table = createChildElement(details, "table");
     const table_head = createChildElement(table, "thead");
     const table_head_row = createChildElement(table_head, "tr");
     const table_body = createChildElement(table, "tbody");

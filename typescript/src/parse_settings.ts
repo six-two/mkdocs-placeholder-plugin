@@ -198,9 +198,9 @@ export const parse_config = (data: any): PluginConfig => {
 
 const parse_settings = (data: any): PluginSettings => {
     return {
+        "apply_change_on_focus_change": get_boolean_field("apply_change_on_focus_change", data),
         "debug": get_boolean_field("debug", data),
         "delay_millis": get_number_field("delay_millis", data),
-        // @TODO: If I let users specify prefixes, I will need to make sure, that they do not contain regex characters or escape them
         // How normal placeholders are marked
         "normal_prefix": get_string_field("normal_prefix", data),
         "normal_suffix": get_string_field("normal_suffix", data),
@@ -213,8 +213,6 @@ const parse_settings = (data: any): PluginSettings => {
         // How placeholders using the dynamic replacement methodare marked
         "dynamic_prefix": get_string_field("dynamic_prefix", data),
         "dynamic_suffix": get_string_field("dynamic_suffix", data),
-        // @TODO: let the user choose and let the site owner define a default
-        "apply_change_on_focus_change": true,
     }
 }
 

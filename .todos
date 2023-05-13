@@ -4,3 +4,4 @@
 - Advanced placeholders (placeholders for not often used/very technical fields) whose visibility can be toggled in auto tables
 - new validators: mac address, email
 - bugfix: autotable does not contain pre-replaced dynamic placeholders
+- style input tabs and add settings tab where you can toggle apply_change_on_focus_change, etc
