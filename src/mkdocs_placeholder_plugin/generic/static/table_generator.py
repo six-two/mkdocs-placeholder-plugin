@@ -1,6 +1,7 @@
 import html
 # local
 from ..config import PlaceholderConfig, Placeholder, InputType
+from .placeholder_replacer import get_all_placeholder_patterns
 
 class TableGenerator:
     def __init__(self, config: PlaceholderConfig) -> None:
@@ -37,20 +38,13 @@ class TableGenerator:
                         self.recursive_add_nested_placeholders(child_placeholder, all_used_placeholders)
 
     def is_placeholder_on_page(self, placeholder: Placeholder, page_markdown: str) -> bool:
-        if self.config.settings.dynamic_prefix + placeholder.name + self.config.settings.dynamic_suffix in page_markdown:
-            return True
-        elif self.config.settings.html_prefix + placeholder.name + self.config.settings.html_suffix in page_markdown:
-            return True
-        elif self.config.settings.normal_prefix + placeholder.name + self.config.settings.normal_suffix in page_markdown:
-            return True
-        elif self.config.settings.static_prefix + placeholder.name + self.config.settings.static_suffix in page_markdown:
-            return True
-        elif f'data-placeholder="{placeholder.name}"' in page_markdown:
-            # Already preprocessed element that will use the placeholder via the dynamic replacement method
-            # Looks like this: <span class="placeholder-value" data-placeholder="DEMO_FILENAME">file_to_transfer.txtp</span>
-            return True
-        else:
-            return False
+        for pattern in get_all_placeholder_patterns(placeholder, self.config):
+            if pattern in page_markdown:
+                return True
+        
+        # Already preprocessed element that will use the placeholder via the dynamic replacement method
+        # Looks like this: <span class="placeholder-value" data-placeholder="DEMO_FILENAME">file_to_transfer.txtp</span>
+        return f'data-placeholder="{placeholder.name}"' in page_markdown
 
     def generate_table_html(self, placeholder_list: list[Placeholder], column_list: list[str]) -> str:
         #@TODO: actually handle the passed columns? Would be more complicated but also more consistent

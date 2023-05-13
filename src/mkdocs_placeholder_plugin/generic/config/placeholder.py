@@ -111,6 +111,13 @@ def parse_placeholder_dict(data: dict[str,Any], location: str, name: str, valida
     values = parse_values(data)
     default_value, default_function = parse_defaults(data, values)
     input_type = determine_input_type(values, default_value)
+
+    # Make sure to set the default_value to a falback if it is optional
+    if not default_value:
+        if input_type == InputType.Checkbox:
+            default_value = "unchecked"
+        elif input_type == InputType.Dropdown:
+            default_value = list(values.keys())[0]
     validator_list = parse_validator_list(name, data, input_type, default_value, validators)
 
     # By default only allow nested placeholders when the user can not specify custom values / when only predefined values have to be used

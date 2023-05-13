@@ -6,6 +6,7 @@ import time
 from ..config import PlaceholderConfig, Placeholder, InputType
 
 SAFE_CHARS_IN_MARKDOWN = list(string.ascii_letters + string.digits)
+CACHED_EXPANDED_DEFAULT_VALUES: dict[str,str] = {}
 
 def paraniod_html_escape(input: str) -> str:
     """
@@ -15,10 +16,54 @@ def paraniod_html_escape(input: str) -> str:
     return "".join([char if char in SAFE_CHARS_IN_MARKDOWN else f"&#{ord(char)};"
          for char in input])
 
-def html_for_dynamic_placeholder(placeholder: Placeholder) -> str:
-    placeholder_default_value = "Please enable JavaScript" if placeholder.default_function else get_default_placeholder_value(placeholder)
+def html_for_dynamic_placeholder(placeholder: Placeholder, config: PlaceholderConfig) -> str:
+    placeholder_default_value = placeholder_expanded_default_value(placeholder, config)
     # no need to escape the placeholder name, since I do strict validation on it when I parse the placeholders
     return f'<span class="placeholder-value" data-placeholder="{placeholder.name}">{html.escape(placeholder_default_value)}</span>'
+
+def get_all_placeholder_patterns(placeholder: Placeholder, config: PlaceholderConfig) -> list[str]:
+    s = config.settings
+    return [
+        s.dynamic_prefix + placeholder.name + s.dynamic_suffix,
+        s.html_prefix + placeholder.name + s.html_suffix,
+        s.normal_prefix + placeholder.name + s.normal_suffix,
+        s.static_prefix + placeholder.name + s.static_suffix,
+    ]
+
+def placeholder_expanded_default_value(placeholder: Placeholder, config: PlaceholderConfig) -> str:
+    # This speeds up the somewhat expensive operation by caching the results
+    value = CACHED_EXPANDED_DEFAULT_VALUES.get(placeholder.name)
+    if value is None:
+        value = _placeholder_expanded_default_value(placeholder, config)
+        CACHED_EXPANDED_DEFAULT_VALUES[placeholder.name] = value
+    return value
+
+def _placeholder_expanded_default_value(placeholder: Placeholder, config: PlaceholderConfig) -> str:
+    if placeholder.default_function:
+        return "<JAVASCRIPT_FUNCTION>"
+
+    default_value = placeholder.default_value
+    if placeholder.values:
+        default_value = placeholder.values[default_value]
+
+    if not placeholder.allow_nested:
+        return default_value
+    else:
+        # This works similar to safe_replace_multiple_placeholders_in_string in replacer.ts.
+        # The roundabout way is needed to ensure that placeholders that are in a previously replaced placeholder's value are not replaced
+        string = default_value
+        unique = f"{int(time.time())}_{random.randint(0, 10000)}"
+        for placeholder in config.placeholders.values():
+            for pattern in get_all_placeholder_patterns(placeholder, config):
+                string = string.replace(pattern, f"x{placeholder.name}_{unique}x")
+
+        for placeholder in config.placeholders.values():
+            pattern = f"x{placeholder.name}_{unique}x"
+            if pattern in string:
+                expanded_value = placeholder_expanded_default_value(placeholder, config)
+                string = string.replace(pattern, expanded_value)
+
+        return string
 
 
 def get_default_placeholder_value(placeholder: Placeholder) -> str:
@@ -68,7 +113,7 @@ class DynamicPlaceholderPreprocessor:
         # needs to happen in the HTML document, since otherwise listings will screw things up
         for placeholder in self.config.placeholders.values():
             search_expression = f"x{placeholder.name}_{self.unique}x"
-            replace_with_value = html_for_dynamic_placeholder(placeholder)
+            replace_with_value = html_for_dynamic_placeholder(placeholder, self.config)
             page_html = page_html.replace(search_expression, replace_with_value)
 
         return page_html
