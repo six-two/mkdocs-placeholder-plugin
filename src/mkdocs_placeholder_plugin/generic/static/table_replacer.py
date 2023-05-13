@@ -1,9 +1,7 @@
 import re
-from typing import Callable, Optional, Any
 # local
 from ..config import PlaceholderConfig
-from .. import warning
-from ..html_tag_parser import ParsedHtmlTag, parse_html_tag, create_html_opening_tag
+from ..html_tag_parser import ParsedHtmlTag
 from ..html_tag_handler import HtmlTagHandler
 from .table_generator import TableGenerator
 

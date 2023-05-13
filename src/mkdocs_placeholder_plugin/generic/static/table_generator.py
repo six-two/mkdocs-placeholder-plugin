@@ -17,10 +17,24 @@ class TableGenerator:
 
         return f'<div class="auto-input-table" data-columns="{",".join(column_list)}">{no_js_table}</div>'
 
-
     def get_placeholders_for_table(self, page_markdown: str) -> list[Placeholder]:
-        return [placeholder for placeholder in self.config.placeholders.values()
+        directly_referenced = [placeholder for placeholder in self.config.placeholders.values()
                 if not placeholder.read_only and self.is_placeholder_on_page(placeholder, page_markdown)]
+        
+        all_used_placeholders = list(directly_referenced)
+        for placeholder in directly_referenced:
+            self.recursive_add_nested_placeholders(placeholder, all_used_placeholders)
+        return all_used_placeholders
+
+    def recursive_add_nested_placeholders(self, root_placeholder: Placeholder, all_used_placeholders: list[Placeholder]) -> None:
+        if root_placeholder not in all_used_placeholders:
+            all_used_placeholders.append(root_placeholder)
+
+        if root_placeholder.allow_nested:
+            for child_placeholder in self.config.placeholders.values():
+                if child_placeholder not in all_used_placeholders \
+                    and self.is_placeholder_on_page(child_placeholder, root_placeholder.default_value):
+                        self.recursive_add_nested_placeholders(child_placeholder, all_used_placeholders)
 
     def is_placeholder_on_page(self, placeholder: Placeholder, page_markdown: str) -> bool:
         if self.config.settings.dynamic_prefix + placeholder.name + self.config.settings.dynamic_suffix in page_markdown:
