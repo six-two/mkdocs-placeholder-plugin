@@ -1,4 +1,4 @@
-import { load_checkbox_state, load_dropdown_state, load_textbox_state } from "./state_manager";
+import { load_checkbox_state, load_dropdown_state, load_textbox_state, load_boolean_setting } from "./state_manager";
 import { InputValidator, parse_validator } from "./validator";
 import { DependencyGraph } from "./dependency_graph";
 // This should be a more type safe reimplementation of 10_parse_data.js.
@@ -68,6 +68,7 @@ export interface PluginSettings {
     debug: boolean;
     delay_millis: number;
     apply_change_on_focus_change: boolean;
+    expand_auto_tables: boolean;
 
     // How different placeholder types are marked
     normal_prefix: string;
@@ -197,10 +198,14 @@ export const parse_config = (data: any): PluginConfig => {
 }
 
 const parse_settings = (data: any): PluginSettings => {
+    const apply_change_on_focus_change_default = get_boolean_field("apply_change_on_focus_change", data);
+    const debug_default = get_boolean_field("debug", data);
+    const expand_auto_tables_default = get_boolean_field("expand_auto_tables", data);
     return {
-        "apply_change_on_focus_change": get_boolean_field("apply_change_on_focus_change", data),
-        "debug": get_boolean_field("debug", data),
+        "apply_change_on_focus_change": load_boolean_setting("apply_change_on_focus_change", apply_change_on_focus_change_default),
+        "debug": load_boolean_setting("debug", debug_default),
         "delay_millis": get_number_field("delay_millis", data),
+        "expand_auto_tables": load_boolean_setting("expand_auto_tables", expand_auto_tables_default),
         // How normal placeholders are marked
         "normal_prefix": get_string_field("normal_prefix", data),
         "normal_suffix": get_string_field("normal_suffix", data),

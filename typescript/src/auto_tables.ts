@@ -2,6 +2,7 @@ import { logger } from "./debug";
 import { prepare_input_field } from "./inputs";
 import { InputTable, InputTableRow, Placeholder, PluginConfig } from "./parse_settings";
 import { create_dynamic_placeholder_element } from "./replacer";
+import { clear_settings, store_boolean_setting } from "./state_manager";
 
 const TABLE_CELL_HEADINGS: Map<string, string> = new Map();
 TABLE_CELL_HEADINGS.set("name", "Name");
@@ -34,7 +35,7 @@ const createChildElement = (parent: Element, tag_name: string): HTMLElement => {
     return child;
 }
 
-const convert_to_dynamic_placeholder_table = (element: Element, content_element: Element) => {
+const convert_to_dynamic_placeholder_table = (config: PluginConfig, element: Element, content_element: Element) => {
     // Remove the current contents. This enables the plugin to generate fallback contents in case the JavaScript code does not work
     element.innerHTML = "";
     
@@ -44,7 +45,6 @@ const convert_to_dynamic_placeholder_table = (element: Element, content_element:
     
     const expandable_contents = createChildElement(element, "div");
     const settings_contents = createChildElement(expandable_contents, "div");
-    createChildElement(settings_contents, "div").textContent = "Currently no settings are implemented"
     expandable_contents.append(content_element);
 
     const update_expanded_state = (is_expanded: boolean) => {
@@ -57,7 +57,7 @@ const convert_to_dynamic_placeholder_table = (element: Element, content_element:
     settings_contents.classList.add("settings_contents");
 
     // @TODO: make it a setting for user and site config
-    let expanded = true;
+    let expanded = config.settings.expand_auto_tables;
     update_expanded_state(expanded);
     title_text.addEventListener("click", () => {
         expanded = !expanded;
@@ -82,6 +82,31 @@ const convert_to_dynamic_placeholder_table = (element: Element, content_element:
     settings_button.classList.add("settings_button");
     settings_button.innerHTML = GEAR_SVG;
     settings_button.title = "Hide / show settings"
+
+    // -------------------- Settings content ----------------------
+    createChildElement(settings_contents, "b").textContent = "Settings";
+    // @TODO: later: when there are multiple settings dialogs, keep their values in sync
+    append_boolean_setting_checkbox(settings_contents, config.settings.expand_auto_tables, "expand_auto_tables", "Expand placeholder tables by default*");
+    append_boolean_setting_checkbox(settings_contents, config.settings.apply_change_on_focus_change, "apply_change_on_focus_change", "Apply value when focus changes away*");
+    append_boolean_setting_checkbox(settings_contents, config.settings.debug, "debug", "Log JavaScript debug messages to console*");
+    createChildElement(settings_contents, "i").textContent = "* You need to reload the page for these settings to take effect."
+
+    const reset_button = createChildElement(settings_contents, "button");
+    reset_button.textContent = "Reset to default";
+    reset_button.addEventListener("click", clear_settings);
+
+    // createChildElement(settings_contents, "b").textContent = "Placeholders";
+}
+
+const append_boolean_setting_checkbox = (parent_element: HTMLElement, value: boolean, name: string, label_text: string) => {
+    const label = createChildElement(parent_element, "label");
+    label.textContent = `${label_text} `;
+    const checkbox = createChildElement(label, "input") as HTMLInputElement;
+    checkbox.type = "checkbox";
+    checkbox.checked = value;
+    checkbox.addEventListener("change", () => {
+        store_boolean_setting(name, checkbox.checked);
+    });
 }
 
 
@@ -91,7 +116,7 @@ const generate_automatic_placeholder_table = (element: Element, columns: string[
     if (placeholders_to_show.length == 0) {
         const empty_table_message = document.createElement("div");
         empty_table_message.textContent = "No placeholders to be shown";
-        convert_to_dynamic_placeholder_table(element, empty_table_message);
+        convert_to_dynamic_placeholder_table(config, element, empty_table_message);
     } else {
         logger.info("Creating automatic input table at", element, "with columns", columns);
 
@@ -130,7 +155,7 @@ const generate_automatic_placeholder_table = (element: Element, columns: string[
             "table_element": table,
             "rows": rows,
         });
-        convert_to_dynamic_placeholder_table(element, table);
+        convert_to_dynamic_placeholder_table(config, element, table);
     }
 }
 

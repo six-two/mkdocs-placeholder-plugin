@@ -21,6 +21,7 @@ SETTINGS_FIELD_NAMES = {
     "debug_javascript",
     "dynamic_prefix",
     "dynamic_suffix",
+    "expand_auto_tables",
     "html_prefix",
     "html_suffix",
     "normal_prefix",
@@ -41,6 +42,7 @@ class PlaceholderSettings(NamedTuple):
     # Default prefixes / suffixes used for different replacement methods
     dynamic_prefix: str
     dynamic_suffix: str
+    expand_auto_tables: bool
     html_prefix: str
     html_suffix: str
     normal_prefix: str
@@ -70,6 +72,7 @@ def parse_settings(data: dict, location: str) -> PlaceholderSettings:
         debug_javascript=get_bool(data, "debug_javascript", default=False),
         dynamic_prefix=get_string(data, "dynamic_prefix", "d"),
         dynamic_suffix=get_string(data, "dynamic_suffix", "d"),
+        expand_auto_tables=get_bool(data, "expand_auto_tables", default=True),
         html_prefix=get_string(data, "html_prefix", "i"),
         html_suffix=get_string(data, "html_suffix", "i"),
         normal_prefix=get_string(data, "normal_prefix", "x"),

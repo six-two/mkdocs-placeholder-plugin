@@ -5,6 +5,7 @@ import { is_valid_value_for_placeholder } from "./validator";
 // These functions are here to make it easier to change the storage backend (for example locasstorage -> cookies)
 // and to make it possible to potentially have better debugging
 const STORAGE_PREFIX = "PLACEHOLDER_"; // @TODO make it configurable by settings?
+const SETTINGS_PREFIX = "PLACEHOLDER-SETTING_";
 
 const store_value = (name: string, value: string): void => {
     localStorage.setItem(STORAGE_PREFIX + name, value);
@@ -12,6 +13,27 @@ const store_value = (name: string, value: string): void => {
 
 const load_value = (name: string): string | null => {
     return localStorage.getItem(STORAGE_PREFIX + name)
+}
+
+export const store_boolean_setting = (name: string, value: boolean) => {
+    logger.info(`Storing boolean setting '${name}' with value ${value}`);
+    localStorage.setItem(`${SETTINGS_PREFIX}${name}`, value? "1" : "0");
+}
+
+export const load_boolean_setting = (name: string, default_value: boolean): boolean => {
+    const stored = localStorage.getItem(`${SETTINGS_PREFIX}${name}`);
+    logger.info(`Reading boolean setting '${name}' with value ${stored}`);
+    if (stored === null) {
+        return default_value;
+    } else if (stored === "1") {
+        return true;
+    } else if (stored === "0") {
+        return false;
+    } else {
+        // Unexpected state, warn user and fall back to default
+        console.warn(`Unexpected state for boolean setting. Should be null, '0' or '1', but was '${stored}'`);
+        return default_value;
+    }
 }
 
 // I changed the storage model: the real value is stored in the placeholder object instead of in localstorage -> easier and safer to access
@@ -47,14 +69,22 @@ export const load_checkbox_state = (placeholder: CheckboxPlaceholder): void => {
 }
 
 export const clear_state = () => {
+    clear_by_prefix(STORAGE_PREFIX);
+}
+
+export const clear_settings = () => {
+    clear_by_prefix(SETTINGS_PREFIX);
+}
+
+const clear_by_prefix = (prefix: string) => {
     // The easiest way would be to clear the whole storage, but that might break other plugins / scripts.
     // So we only delete all items that start with our prefix
-    console.warn(`Clearing all localStorage items starting with '${STORAGE_PREFIX}'`);
+    console.warn(`Clearing all localStorage items starting with '${prefix}'`);
 
     let i = 0;
     while (i < localStorage.length) {
         const key = localStorage.key(i);
-        if (key?.startsWith(STORAGE_PREFIX)) {
+        if (key?.startsWith(prefix)) {
             // Delete the item
             localStorage.removeItem(key);
         } else {

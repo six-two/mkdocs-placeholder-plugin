@@ -48,8 +48,12 @@ table tr td input.input-for-variable[type="checkbox"] {
 
 .auto-input-table .settings_contents {
     border-bottom: 3px solid gray;
-    padding-bottom: 5px;
+    padding: 5px;
     margin-bottom: 5px;
+}
+
+.auto-input-table .settings_contents b {
+    text-align: center;
 }
 
 .auto-input-table .settings_button {
@@ -63,6 +67,15 @@ table tr td input.input-for-variable[type="checkbox"] {
     cursor: pointer;
     margin: 0 auto;
     display: block;
+}
+
+.auto-input-table button {
+    padding: 4px;
+    border-radius: 5px;
+    background-color: gray;
+    color: white;
+    max-width: 250px;
+    margin: auto;
 }
 
 .auto-input-table .auto-table-title .text {
