@@ -10,6 +10,19 @@ TABLE_CELL_HEADINGS.set("value", "Value");
 TABLE_CELL_HEADINGS.set("input", "Input element");
 TABLE_CELL_HEADINGS.set("description-or-name", "Description / name");
 
+// Created myself, so no licensing issues should occur. Still, a decent unicode / font awesome icon may be better if it works across themes/operating systems/browsers
+const GEAR_SVG = `<svg viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg">
+ <path id="svg_6" d="m7.79338,20.02127l0,0c0,-6.84327 5.74307,-12.39083 12.82751,-12.39083l0,0c3.40207,0 6.6648,1.30546 9.07042,3.62919c2.40563,2.32373 3.75709,5.47539 3.75709,8.76164l0,0c0,6.84327 -5.74307,12.39083 -12.82751,12.39083l0,0c-7.08444,0 -12.82751,-5.54757 -12.82751,-12.39083zm6.41376,0l0,0c0,3.42163 2.87154,6.19542 6.41376,6.19542c3.54222,0 6.41376,-2.77378 6.41376,-6.19542c0,-3.42163 -2.87154,-6.19542 -6.41376,-6.19542l0,0c-3.54222,0 -6.41376,2.77378 -6.41376,6.19542z" stroke="#fff" fill="#ffffff"/>
+ <path id="svg_7" d="m17.46095,7.63098l1.2691,-5.24017l4.23035,0l1.2691,5.24017l-6.76856,0z" stroke="#fff" fill="#ffffff"/>
+ <path transform="rotate(180, 20.9544, 35.1419)" id="svg_11" d="m17.57012,37.76199l1.2691,-5.24017l4.23035,0l1.2691,5.24017l-6.76856,0z" stroke="#fff" fill="#ffffff"/>
+ <path transform="rotate(43, 31.5439, 9.59605)" id="svg_12" d="m28.15964,12.21614l1.2691,-5.24017l4.23035,0l1.2691,5.24017l-6.76856,0z" stroke="#fff" fill="#ffffff"/>
+ <path transform="rotate(90, 35.9107, 19.8581)" id="svg_13" d="m32.52645,22.47815l1.2691,-5.24017l4.23035,0l1.2691,5.24017l-6.76856,0z" stroke="#fff" fill="#ffffff"/>
+ <path transform="rotate(135, 31.7623, 30.2292)" id="svg_14" d="m28.37798,32.84933l1.2691,-5.24017l4.23035,0l1.2691,5.24017l-6.76856,0z" stroke="#fff" fill="#ffffff"/>
+ <path transform="rotate(-45, 9.49152, 9.48688)" id="svg_15" d="m6.10724,12.10697l1.2691,-5.24017l4.23035,0l1.2691,5.24017l-6.76856,0z" stroke="#fff" fill="#ffffff"/>
+ <path transform="rotate(-90, 5.01553, 19.9672)" id="svg_16" d="m1.63126,22.58732l1.2691,-5.24017l4.23035,0l1.2691,5.24017l-6.76856,0z" stroke="#fff" fill="#ffffff"/>
+ <path transform="rotate(-135, 9.60069, 30.7751)" id="svg_17" d="m6.21641,33.39518l1.2691,-5.24017l4.23035,0l1.2691,5.24017l-6.76856,0z" stroke="#fff" fill="#ffffff"/>
+</svg>`;
+
 // Helper functions to simplify the following code
 const appendTextNode = (element: Element, text: string): void => {
     element.appendChild(document.createTextNode(text));
@@ -21,81 +34,104 @@ const createChildElement = (parent: Element, tag_name: string): HTMLElement => {
     return child;
 }
 
-const generate_automatic_placeholder_table = (element: Element, columns: string[], config: PluginConfig, placeholders_to_show: Placeholder[]) => {
-    placeholders_to_show = sort_and_remove_duplicate_placeholders(placeholders_to_show);
-    
+const convert_to_dynamic_placeholder_table = (element: Element, content_element: Element) => {
     // Remove the current contents. This enables the plugin to generate fallback contents in case the JavaScript code does not work
     element.innerHTML = "";
-
-    if (placeholders_to_show.length == 0) {
-        // Do not create an empty table. Instead show a warning on the page
-        const div = createChildElement(element, "div");
-        div.classList.add("info-message");
-        if (placeholders_to_show.length == 0) {
-            appendTextNode(div, "No placeholders to be shown")
-        }
-        return;
-    }
-
-    const details = createChildElement(element, "details");
-    if (true) {
-        // @TODO: make it a setting for user and site config
-        details.setAttribute("open", "1");
-    }
-
-    const title = createChildElement(details, "summary");
-    title.classList.add("auto-table-title");
+    
+    const title = createChildElement(element, "div");
     const title_text = createChildElement(title, "div");
-    title_text.classList.add("text")
-    appendTextNode(title_text, "Placeholders used on this page");
     const settings_button = createChildElement(title, "div");
+    
+    const expandable_contents = createChildElement(element, "div");
+    const settings_contents = createChildElement(expandable_contents, "div");
+    createChildElement(settings_contents, "div").textContent = "Currently no settings are implemented"
+    expandable_contents.append(content_element);
+
+    const update_expanded_state = (is_expanded: boolean) => {
+        expandable_contents.style.display = is_expanded ? "flex" : "none";
+        title_text.textContent = "Placeholders: Click here to " + (is_expanded ? "collapse" : "expand");
+    }
+    
+    title.classList.add("auto-table-title");
+    expandable_contents.classList.add("expandable_contents");
+    settings_contents.classList.add("settings_contents");
+
+    // @TODO: make it a setting for user and site config
+    let expanded = true;
+    update_expanded_state(expanded);
+    title_text.addEventListener("click", () => {
+        expanded = !expanded;
+        update_expanded_state(expanded);
+    });
+    title_text.classList.add("text")
+
+    let show_settings = false;
     settings_button.onclick = (e: MouseEvent) => {
         e.preventDefault();
         e.stopPropagation();
-        alert("Not implemented yet!");
+
+        show_settings = !show_settings;
+        settings_contents.style.display = show_settings ? "flex" : "none";
+
+        if (show_settings && !expanded) {
+            expanded = true;
+            update_expanded_state(expanded);
+        }
     };
-    appendTextNode(settings_button, "⚙️")
+    settings_contents.style.display = show_settings ? "flex" : "none";
+    settings_button.classList.add("settings_button");
+    settings_button.innerHTML = GEAR_SVG;
+    settings_button.title = "Hide / show settings"
+}
 
 
+const generate_automatic_placeholder_table = (element: Element, columns: string[], config: PluginConfig, placeholders_to_show: Placeholder[]) => {
+    placeholders_to_show = sort_and_remove_duplicate_placeholders(placeholders_to_show);
 
+    if (placeholders_to_show.length == 0) {
+        const empty_table_message = document.createElement("div");
+        empty_table_message.textContent = "No placeholders to be shown";
+        convert_to_dynamic_placeholder_table(element, empty_table_message);
+    } else {
+        logger.info("Creating automatic input table at", element, "with columns", columns);
+
+        const table = document.createElement("table");
+        const table_head = createChildElement(table, "thead");
+        const table_head_row = createChildElement(table_head, "tr");
+        const table_body = createChildElement(table, "tbody");
     
-    logger.info("Creating automatic input table at", element, "with columns", columns);
-    // element.innerHTML = ""; // remove all children
-    const table = createChildElement(details, "table");
-    const table_head = createChildElement(table, "thead");
-    const table_head_row = createChildElement(table_head, "tr");
-    const table_body = createChildElement(table, "tbody");
-
-    for (const column of columns) {
-        const table_cell = createChildElement(table_head_row, "th");
-        const heading = TABLE_CELL_HEADINGS.get(column);
-        if (heading) {
-            appendTextNode(table_cell, heading);
-        } else {
-            appendTextNode(table_cell, column);
-            console.error(`Unknown column name: ${column}`);
+        for (const column of columns) {
+            const table_cell = createChildElement(table_head_row, "th");
+            const heading = TABLE_CELL_HEADINGS.get(column);
+            if (heading) {
+                appendTextNode(table_cell, heading);
+            } else {
+                appendTextNode(table_cell, column);
+                console.error(`Unknown column name: ${column}`);
+            }
         }
-    }
-
-    const rows: InputTableRow[] = [];
-    for (const placeholder of placeholders_to_show) {
-        if (placeholder.read_only) {
-            logger.debug(`auto_table: Skipping ${placeholder.name} because it is read-only`)
-            continue
+    
+        const rows: InputTableRow[] = [];
+        for (const placeholder of placeholders_to_show) {
+            if (placeholder.read_only) {
+                logger.debug(`auto_table: Skipping ${placeholder.name} because it is read-only`)
+                continue
+            }
+            const row = createChildElement(table_body, "tr");
+            populate_auto_table_row(row, placeholder, columns, config);
+            rows.push({
+                "element": row,
+                "placeholder": placeholder,
+            });
         }
-        const row = createChildElement(table_body, "tr");
-        populate_auto_table_row(row, placeholder, columns, config);
-        rows.push({
-            "element": row,
-            "placeholder": placeholder,
+    
+        config.input_tables.push({
+            "columns": columns,
+            "table_element": table,
+            "rows": rows,
         });
+        convert_to_dynamic_placeholder_table(element, table);
     }
-
-    config.input_tables.push({
-        "columns": columns,
-        "table_element": table,
-        "rows": rows,
-    });
 }
 
 const sort_and_remove_duplicate_placeholders = (placeholder_list: Placeholder[]): Placeholder[] => {
