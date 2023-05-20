@@ -148,6 +148,8 @@ const generate_automatic_placeholder_table = (element: Element, columns: string[
         root_element.textContent = "No placeholders to be shown";
     } else {
         logger.info("Creating automatic input table at", element, "with columns", columns);
+
+        root_element.classList.add("table-div")
         createChildElement(root_element, "b").innerHTML = "Enter different values in the table below and press <code>Enter</code> to update this page."
 
         const table = createChildElement(root_element, "table");

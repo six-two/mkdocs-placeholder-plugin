@@ -1,3 +1,8 @@
+---
+hide:
+- placeholder-auto-table
+---
+
 # Demo page
 
 This page demonstrates how placeholders can be used.

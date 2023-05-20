@@ -49,16 +49,13 @@ The corresponding documentation is hosted at <https://dev.mkdocs-placeholder-plu
 
 ## Notable changes
 
-### TODOs
-
-- Implement propper exception handling for TypeScript code to recover from / compartmentalize non-critical errors.
-
 ### HEAD
 
 - Configuration format changed:
     - Validators are no longer defined in-line and instead defined in a `validators` section -> easier to reuse custom validators.
     - Placeholders now need to be specified in a `placeholders` section.
     - Most settings are now in the configuration file instead of in your `mkdocs.yml`.
+- Some actions can now be toggled by visitors of the site. The settings open when you click the gear icon on a (dynamic) placeholder input table.
 - (By default) values are saved when the focus leaves a text field.
 - Removed static placeholder input tables (`<placeholdertable>`).
 - Uncoupled the code from MkDocs.

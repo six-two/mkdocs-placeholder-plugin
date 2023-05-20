@@ -87,6 +87,15 @@ table tr td input.input-for-variable[type="checkbox"] {
     margin: auto;
 }
 
+.auto-input-table .table-div {
+    display: flex;
+	flex-direction: column;
+}
+
+.auto-input-table .table-div b {
+    margin-bottom: 10px;
+}
+
 .auto-input-table .auto-table-title .text {
     flex: 1;
     margin-right: 20px;

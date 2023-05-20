@@ -1,4 +1,4 @@
-FROM node:19
+FROM node:latest
 WORKDIR /app
 COPY package.json package-lock.json in-docker.sh /app/
 RUN npm install
