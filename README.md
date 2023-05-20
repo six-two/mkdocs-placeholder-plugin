@@ -170,3 +170,38 @@ This is just for me :)
     git branch --force latest-release HEAD
     git push --tags origin latest-release
     ```
+
+### Updating python dependencies
+
+If you don't have them, install `pip-tools`:
+```bash
+python3 -m pip install pip-tools
+```
+
+Then update `requirements.txt`:
+```bash
+pip-compile -U
+```
+
+### Updating npm dependencies
+
+These are only used for the build process, so keeping them up to date is not that critical.
+
+Start a container with nodeJS:
+```bash
+podman run -it --rm -v "$(pwd)/typescript:/mnt" node:latest bash
+```
+
+In the container run the following commands to update the `typescript/package*.json` files on the host:
+```bash
+cd /mnt
+npm i -g npm-check-updates
+ncu -u
+npm i --package-lock-only
+```
+
+Then rebuild the docker image on the host:
+```bash
+cd typescript/
+podman build --tag placeholder-npm .
+```
