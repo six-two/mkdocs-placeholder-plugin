@@ -69,6 +69,11 @@ table tr td input.input-for-variable[type="checkbox"] {
     display: block;
 }
 
+.auto-input-table .button-bar {
+    margin-top: 10px;
+    display: flex;
+}
+
 .auto-input-table button {
     padding: 4px;
     border-radius: 5px;

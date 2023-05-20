@@ -4,5 +4,4 @@
 - Advanced placeholders (placeholders for not often used/very technical fields) whose visibility can be toggled in auto tables
     - Or even more powerful: Categories that can be toggled individually
 - new validators: mac address, email
-- make reset settings and reset placeholders buttons
 - Better styling for mkdocs material

@@ -2,7 +2,7 @@ import { logger } from "./debug";
 import { prepare_input_field } from "./inputs";
 import { InputTable, InputTableRow, Placeholder, PluginConfig } from "./parse_settings";
 import { create_dynamic_placeholder_element } from "./replacer";
-import { clear_settings, store_boolean_setting } from "./state_manager";
+import { clear_settings, clear_state, store_boolean_setting } from "./state_manager";
 
 const TABLE_CELL_HEADINGS: Map<string, string> = new Map();
 TABLE_CELL_HEADINGS.set("name", "Name");
@@ -38,7 +38,7 @@ const createChildElement = (parent: Element, tag_name: string): HTMLElement => {
 const convert_to_dynamic_placeholder_table = (config: PluginConfig, element: Element, content_element: Element) => {
     // Remove the current contents. This enables the plugin to generate fallback contents in case the JavaScript code does not work
     element.innerHTML = "";
-    
+
     const title = createChildElement(element, "div");
     const title_text = createChildElement(title, "div");
     const settings_button = createChildElement(title, "div");
@@ -56,7 +56,6 @@ const convert_to_dynamic_placeholder_table = (config: PluginConfig, element: Ele
     expandable_contents.classList.add("expandable_contents");
     settings_contents.classList.add("settings_contents");
 
-    // @TODO: make it a setting for user and site config
     let expanded = config.settings.expand_auto_tables;
     update_expanded_state(expanded);
     title_text.addEventListener("click", () => {
@@ -65,6 +64,17 @@ const convert_to_dynamic_placeholder_table = (config: PluginConfig, element: Ele
     });
     title_text.classList.add("text")
 
+    prepare_settings_button(settings_button, settings_contents, () => {
+        if (!expanded) {
+            expanded = true;
+            update_expanded_state(expanded);
+        }
+    });
+
+    fill_settings_content_container(config, settings_contents);
+}
+
+const prepare_settings_button = (settings_button: HTMLElement, settings_contents: HTMLElement, expand_if_needed: () => void) => {
     let show_settings = false;
     settings_button.onclick = (e: MouseEvent) => {
         e.preventDefault();
@@ -73,17 +83,17 @@ const convert_to_dynamic_placeholder_table = (config: PluginConfig, element: Ele
         show_settings = !show_settings;
         settings_contents.style.display = show_settings ? "flex" : "none";
 
-        if (show_settings && !expanded) {
-            expanded = true;
-            update_expanded_state(expanded);
+        if (show_settings) {
+            expand_if_needed();
         }
     };
     settings_contents.style.display = show_settings ? "flex" : "none";
     settings_button.classList.add("settings_button");
     settings_button.innerHTML = GEAR_SVG;
     settings_button.title = "Hide / show settings"
+}
 
-    // -------------------- Settings content ----------------------
+const fill_settings_content_container = (config: PluginConfig, settings_contents: HTMLElement) => {
     createChildElement(settings_contents, "b").textContent = "Settings";
     // @TODO: later: when there are multiple settings dialogs, keep their values in sync
     append_boolean_setting_checkbox(settings_contents, config.settings.expand_auto_tables, "expand_auto_tables", "Expand placeholder tables by default*");
@@ -91,11 +101,17 @@ const convert_to_dynamic_placeholder_table = (config: PluginConfig, element: Ele
     append_boolean_setting_checkbox(settings_contents, config.settings.debug, "debug", "Log JavaScript debug messages to console*");
     createChildElement(settings_contents, "i").textContent = "* You need to reload the page for these settings to take effect."
 
-    const reset_button = createChildElement(settings_contents, "button");
-    reset_button.textContent = "Reset to default";
-    reset_button.addEventListener("click", clear_settings);
+    const settings_button_bar = createChildElement(settings_contents, "div");
+    settings_button_bar.classList.add("button-bar");
 
-    // createChildElement(settings_contents, "b").textContent = "Placeholders";
+    const settings_reset_button = createChildElement(settings_button_bar, "button");
+    settings_reset_button.textContent = "Reset settings";
+    settings_reset_button.addEventListener("click", clear_settings);
+
+    const placeholder_reset_button = createChildElement(settings_button_bar, "button");
+    placeholder_reset_button.textContent = "Reset all placeholders";
+    placeholder_reset_button.addEventListener("click", clear_state);
+
 }
 
 const append_boolean_setting_checkbox = (parent_element: HTMLElement, value: boolean, name: string, label_text: string) => {
