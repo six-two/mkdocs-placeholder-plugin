@@ -94,11 +94,25 @@ const prepare_settings_button = (settings_button: HTMLElement, settings_contents
 }
 
 const fill_settings_content_container = (config: PluginConfig, settings_contents: HTMLElement) => {
+    const set_highlight_placeholders = (enabled: boolean) => {
+        for (const placeholder of config.placeholders.values()) {
+            for (const output of placeholder.output_elements) {
+                if (enabled) {
+                    output.classList.add("placeholder-value-highlighted");
+                } else {
+                    output.classList.remove("placeholder-value-highlighted");
+                }
+            }
+        }
+    };
+    set_highlight_placeholders(config.settings.highlight_placeholders);
+
     createChildElement(settings_contents, "b").textContent = "Settings";
     // @TODO: later: when there are multiple settings dialogs, keep their values in sync
     append_boolean_setting_checkbox(settings_contents, config.settings.expand_auto_tables, "expand_auto_tables", "Expand placeholder tables by default*");
     append_boolean_setting_checkbox(settings_contents, config.settings.apply_change_on_focus_change, "apply_change_on_focus_change", "Apply value when focus changes away*");
     append_boolean_setting_checkbox(settings_contents, config.settings.debug, "debug", "Log JavaScript debug messages to console*");
+    append_boolean_setting_checkbox(settings_contents, config.settings.highlight_placeholders, "highlight_placeholders", "Highlight placeholders (useful for debugging)", set_highlight_placeholders);
     createChildElement(settings_contents, "i").textContent = "* You need to reload the page for these settings to take effect."
 
     const settings_button_bar = createChildElement(settings_contents, "div");
@@ -111,10 +125,9 @@ const fill_settings_content_container = (config: PluginConfig, settings_contents
     const placeholder_reset_button = createChildElement(settings_button_bar, "button");
     placeholder_reset_button.textContent = "Reset all placeholders";
     placeholder_reset_button.addEventListener("click", clear_state);
-
 }
 
-const append_boolean_setting_checkbox = (parent_element: HTMLElement, value: boolean, name: string, label_text: string) => {
+const append_boolean_setting_checkbox = (parent_element: HTMLElement, value: boolean, name: string, label_text: string, custom_on_change = (enabled: boolean) => {}) => {
     const label = createChildElement(parent_element, "label");
     label.textContent = `${label_text} `;
     const checkbox = createChildElement(label, "input") as HTMLInputElement;
@@ -122,6 +135,7 @@ const append_boolean_setting_checkbox = (parent_element: HTMLElement, value: boo
     checkbox.checked = value;
     checkbox.addEventListener("change", () => {
         store_boolean_setting(name, checkbox.checked);
+        custom_on_change(checkbox.checked);
     });
 }
 
@@ -129,14 +143,14 @@ const append_boolean_setting_checkbox = (parent_element: HTMLElement, value: boo
 const generate_automatic_placeholder_table = (element: Element, columns: string[], config: PluginConfig, placeholders_to_show: Placeholder[]) => {
     placeholders_to_show = sort_and_remove_duplicate_placeholders(placeholders_to_show);
 
+    const root_element = document.createElement("div");
     if (placeholders_to_show.length == 0) {
-        const empty_table_message = document.createElement("div");
-        empty_table_message.textContent = "No placeholders to be shown";
-        convert_to_dynamic_placeholder_table(config, element, empty_table_message);
+        root_element.textContent = "No placeholders to be shown";
     } else {
         logger.info("Creating automatic input table at", element, "with columns", columns);
+        createChildElement(root_element, "b").innerHTML = "Enter different values in the table below and press <code>Enter</code> to update this page."
 
-        const table = document.createElement("table");
+        const table = createChildElement(root_element, "table");
         const table_head = createChildElement(table, "thead");
         const table_head_row = createChildElement(table_head, "tr");
         const table_body = createChildElement(table, "tbody");
@@ -171,8 +185,10 @@ const generate_automatic_placeholder_table = (element: Element, columns: string[
             "table_element": table,
             "rows": rows,
         });
-        convert_to_dynamic_placeholder_table(config, element, table);
     }
+
+    // Wrap the result in a collapsible wrapper
+    convert_to_dynamic_placeholder_table(config, element, root_element);
 }
 
 const sort_and_remove_duplicate_placeholders = (placeholder_list: Placeholder[]): Placeholder[] => {

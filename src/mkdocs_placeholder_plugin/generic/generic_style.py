@@ -1,6 +1,10 @@
 # Prevent long descriptions from messing up the table too badly
 # Make the input elements take up the whole row
 BASIC_STYLE = """
+.placeholder-value.placeholder-value-highlighted {
+    background-color: orange;
+}
+
 select.placeholder-dropdown {
     max-width: min(30vw, 200px);
 }

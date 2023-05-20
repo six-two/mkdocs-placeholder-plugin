@@ -69,6 +69,7 @@ export interface PluginSettings {
     delay_millis: number;
     apply_change_on_focus_change: boolean;
     expand_auto_tables: boolean;
+    highlight_placeholders: boolean;
 
     // How different placeholder types are marked
     normal_prefix: string;
@@ -206,6 +207,7 @@ const parse_settings = (data: any): PluginSettings => {
         "debug": load_boolean_setting("debug", debug_default),
         "delay_millis": get_number_field("delay_millis", data),
         "expand_auto_tables": load_boolean_setting("expand_auto_tables", expand_auto_tables_default),
+        "highlight_placeholders": load_boolean_setting("highlight_placeholders", false),
         // How normal placeholders are marked
         "normal_prefix": get_string_field("normal_prefix", data),
         "normal_suffix": get_string_field("normal_suffix", data),

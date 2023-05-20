@@ -5,3 +5,4 @@
     - Or even more powerful: Categories that can be toggled individually
 - new validators: mac address, email
 - Better styling for mkdocs material
+- attribute: hide empty placeholder tables
