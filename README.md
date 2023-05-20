@@ -51,6 +51,8 @@ The corresponding documentation is hosted at <https://dev.mkdocs-placeholder-plu
 
 ### HEAD
 
+### Version 0.4.0
+
 - Configuration format changed:
     - Validators are no longer defined in-line and instead defined in a `validators` section -> easier to reuse custom validators.
     - Placeholders now need to be specified in a `placeholders` section.
@@ -159,13 +161,14 @@ This is just for me :)
     ```
 2. Update the changelog in this README file.
 3. Update version number in `setup.cfg`.
-4. Build and update package.
-5. Create a commit for the release (`Version 0.X.Y`) and push it.
-6. Add a tag named `0.X.Y`:
+4. Disable `debug_javascript` in `placeholder-plugin.yaml`.
+5. Build and update package.
+6. Create a commit for the release (`Version 0.X.Y`) and push it.
+7. Add a tag named `0.X.Y`:
     ```
     git tag 0.X.Y
     ```
-7. Update the `latest-release` branch, so that the documentation website gets updated:
+8. Update the `latest-release` branch, so that the documentation website gets updated:
     ```
     git branch --force latest-release HEAD
     git push --tags origin latest-release
