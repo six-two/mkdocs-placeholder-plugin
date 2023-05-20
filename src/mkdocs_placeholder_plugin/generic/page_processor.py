@@ -29,7 +29,7 @@ class PageProcessor:
             markdown = self.dynamic_placeholder_preprocessor.handle_markdown_page(markdown)
         
         if self.config.settings.auto_placeholder_tables:
-            markdown = '<div class="auto-input-table" data-columns="description-or-name,input"></div>\n\n' + markdown
+            markdown = '<div class="auto-input-table" data-hide-empty data-columns="description-or-name,input"></div>\n\n' + markdown
         
         return markdown
 

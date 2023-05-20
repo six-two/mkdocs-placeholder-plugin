@@ -6,6 +6,5 @@
     - Or even more powerful: Categories that can be toggled individually
 - new validators: mac address, email, number, uuid, linux username, linux network interface name
 - Better styling for mkdocs material
-- attribute: hide empty placeholder tables
 - per page options (like disabling the insertion of an placeholder input table at the top)
     - maybe only insert if no table is already defined on the page

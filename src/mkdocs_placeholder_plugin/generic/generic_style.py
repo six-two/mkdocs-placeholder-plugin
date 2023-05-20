@@ -93,7 +93,8 @@ table tr td input.input-for-variable[type="checkbox"] {
 }
 
 .auto-input-table .table-div b {
-    margin-bottom: 10px;
+    margin: 3px auto 10px auto;
+    padding: 0px 5px;
 }
 
 .auto-input-table .auto-table-title .text {

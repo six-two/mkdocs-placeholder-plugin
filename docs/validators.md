@@ -111,7 +111,7 @@ If at least one validator only has warnings, only messages for the validators th
 
 Placeholder specification:
 
-```yaml
+```yaml title="placeholder-plugin.yaml"
 validators:
   ipv6_loopback:
     name: IPv6 loopback

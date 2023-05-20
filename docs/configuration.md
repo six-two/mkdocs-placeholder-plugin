@@ -104,6 +104,7 @@ settings:
     debug_javascript: false
     dynamic_prefix: d
     dynamic_suffix: d
+    expand_auto_tables: true
     html_prefix: i
     html_suffix: i
     normal_prefix: x
@@ -162,7 +163,7 @@ Whether to expand automatic placeholder tables by default.
     
     My recommendation is to both use a suffix and a prefix and make them only contain lowercase characters and underscores (like `var_NAME_html`).
 
-This defines the pattern that will be used to detect when you want to replace a placeholder (and with what replacement method).
+This defines the pattern that will be used to detect when you want to replace a placeholder (and with what [replacement method](./replace-modes.md)).
 When replacing placeholders, the site is searched for the following pattern: `<prefix><placeholder_name><suffix>`.
 For example if you use `normal_prefix: var_` and `normal_suffix: n`, then placeholders will need to use the format `var_NAMEn` instead of `xNAMEx`.
 

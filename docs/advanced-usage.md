@@ -170,27 +170,8 @@ EMAIL:
 
 ## Placeholder input tables
 
-### Build time generated
-
 Placeholder tables using the `<placeholdertable>` tag were removed in version 0.4.0.
-### Dynamically generated
-
-Starting with version 0.2.2 you can add the following tag into your page:
-```html
-<div class="auto-input-table" data-columns="name,description,input"></div>
-```
-
-These tags will be detected by the JavaScript.
-Then a row for each placeholder, that was actually used on the site will be generated and added as children to the element.
-Currently some features of the static tables may not be supported, but they should be in future releases.
-
-Valid column names for `data-columns` are:
-
-- `description`: Shows the placeholder's description (if available)
-- `description-or-name`: Shows the placeholders description. If none exists, the placeholders name is shown instead.
-- `input`: Shows an input element, that can be used to change the placeholder's value
-- `name`: Shows the placeholder's name
-- `value`: Shows the placeholder's expanded value
+For normal tables see the [usage](./usage.md) page.
 
 ## Highlighting placeholders
 

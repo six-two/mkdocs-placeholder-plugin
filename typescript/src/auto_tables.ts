@@ -140,12 +140,19 @@ const append_boolean_setting_checkbox = (parent_element: HTMLElement, value: boo
 }
 
 
-const generate_automatic_placeholder_table = (element: Element, columns: string[], config: PluginConfig, placeholders_to_show: Placeholder[]) => {
+const generate_automatic_placeholder_table = (element: HTMLElement, columns: string[], config: PluginConfig, placeholders_to_show: Placeholder[], show_empty: boolean) => {
     placeholders_to_show = sort_and_remove_duplicate_placeholders(placeholders_to_show);
 
     const root_element = document.createElement("div");
     if (placeholders_to_show.length == 0) {
-        root_element.textContent = "No placeholders to be shown";
+        if (show_empty) {
+            root_element.textContent = "No placeholders to be shown";
+        } else {
+            // Remove the table placeholder
+            element.remove();
+            // No need constructing something that is never added to the DOM -> return immediately
+            return;
+        }
     } else {
         logger.info("Creating automatic input table at", element, "with columns", columns);
 
@@ -291,10 +298,15 @@ export const initialize_auto_tables = (config: PluginConfig) => {
     const element_list = document.querySelectorAll("div.auto-input-table");
     if (element_list.length > 0) {
         const used_placeholders = config.dependency_graph.get_all_used_placeholders().filter(x => !x.read_only);
-        for (let element of element_list) {
-            const columns_str = element.getAttribute("data-columns") || "name,input";
-            const columns = columns_str.includes(",")? columns_str.split(",") : [columns_str];
-            generate_automatic_placeholder_table(element, columns, config, used_placeholders);
+        for (const element of element_list) {
+            if (element instanceof HTMLElement) {
+                const columns_str = element.getAttribute("data-columns") || "name,input";
+                const columns = columns_str.includes(",")? columns_str.split(",") : [columns_str];
+                const show_empty = element.getAttribute("data-hide-empty") === null;
+                generate_automatic_placeholder_table(element, columns, config, used_placeholders, show_empty);
+            } else {
+                console.warn("Element", element, "is expected to be an HTMLElement, but is not");
+            }
         }
     }
 };
