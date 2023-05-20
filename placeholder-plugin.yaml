@@ -1,5 +1,5 @@
 settings:
-  debug_javascript: true
+  # debug_javascript: true
   replace_delay_millis: -1
   show_warnings: true
   # expand_auto_tables: false
