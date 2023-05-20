@@ -166,9 +166,9 @@ placeholders:
     default-function: "return `${Math.floor(Math.random()*100)}`;"
     description: A random number between 0 and 99
 
-  ERROR:
-    default-function: "alert(1"
-    description: Broken on purpose, should cause an error
+  # ERROR:
+  #   default-function: "alert(1"
+  #   description: Broken on purpose, should cause an error
 
   TEST:
     description: An test value, by default '123'

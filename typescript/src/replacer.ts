@@ -55,12 +55,26 @@ export const create_dynamic_placeholder_element = (placeholder: Placeholder): HT
     return span;
 }
 
-const dynamic_replace = (root_element: Element, search_regex: RegExp, placeholder: Placeholder) => {
+const dynamic_replace = (root_element: Element, search_regex: RegExp, placeholder: Placeholder, search_for_pre_replaced: boolean) => {
     const walker = document.createTreeWalker(root_element, NodeFilter.SHOW_TEXT);
     let node;
     if (!search_regex.global) {
         console.warn(`You should set the global flag for the regex. Context: replacing '${search_regex.source}' with '${placeholder.current_value}'`);
     }
+
+    let existing_count = 0;
+    if (search_for_pre_replaced){
+        const already_existing_wrappers = document.querySelectorAll(".placeholder-value[data-placeholder]");
+        for (const wrapper of already_existing_wrappers) {
+            if (wrapper.getAttribute("data-placeholder") === placeholder.name) {
+                existing_count++;
+            }
+        }
+        if (existing_count > 0) {
+            logger.debug(`${existing_count} dynamic placeholder elements already exist for placeholder ${placeholder.name}`);
+        }
+    }
+
     const nodes_to_modify = [];
     while (node = walker.nextNode()) {
         if (node.nodeValue) {
@@ -81,11 +95,11 @@ const dynamic_replace = (root_element: Element, search_regex: RegExp, placeholde
             node.parentElement?.replaceChild(new_node, node);
         }
     }
-    return nodes_to_modify.length;
+    return nodes_to_modify.length + existing_count;
 }
 
 const do_dynamic_replace = (root_element: Element, placeholder: Placeholder, config: PluginConfig): void => {
-    const count = dynamic_replace(root_element, placeholder.regex_dynamic, placeholder);
+    const count = dynamic_replace(root_element, placeholder.regex_dynamic, placeholder, true);
     if (count > 0) {
         logger.debug(`Replaced ${placeholder.name} via dynamic method at least ${count} time(s)`);
         placeholder.count_on_page += count;
@@ -93,7 +107,7 @@ const do_dynamic_replace = (root_element: Element, placeholder: Placeholder, con
 }
 
 const do_normal_replace = (root_element: Element, placeholder: Placeholder, config: PluginConfig): void => {
-    const count = dynamic_replace(root_element, placeholder.regex_normal, placeholder);
+    const count = dynamic_replace(root_element, placeholder.regex_normal, placeholder, false);
     if (count > 0) {
         logger.debug(`Replaced ${placeholder.name} via normal (dynamic) method at least ${count} time(s)`);
         placeholder.count_on_page += count;
