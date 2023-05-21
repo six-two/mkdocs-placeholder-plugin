@@ -7,7 +7,7 @@ from .. import PlaceholderConfigError
 from .parser_utils import assert_no_unknown_fields, get_bool, get_int, get_string, get_dict, add_problematic_data_to_exceptions
 from .validator import Validator, parse_validators
 from .placeholder import Placeholder, parse_placeholders
-from ..validators_predefined import VALIDATOR_PRESETS
+from ..validators import VALIDATOR_PRESETS, ensure_validator_presets_loaded
 
 CONFIGURATION_FIELD_NAMES = {
     "placeholders",
@@ -122,6 +122,7 @@ def parse_configuration(data: dict, location: str) -> PlaceholderConfig:
     validators = parse_validators(validator_data, f"{location}.validators")
 
     # Clone presets and merge/overwrite them with the custom ones
+    ensure_validator_presets_loaded()
     merged_validators = dict(VALIDATOR_PRESETS)
     merged_validators.update(validators)
 

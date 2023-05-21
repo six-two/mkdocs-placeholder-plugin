@@ -4,8 +4,7 @@ from typing import NamedTuple, Any
 # local
 from .. import warning, PlaceholderConfigError
 from .validator import Validator
-from ..validator_functions import assert_matches_one_validator
-from ..validators_predefined import VALIDATOR_PRESETS
+from ..validators import assert_matches_one_validator, VALIDATOR_PRESETS
 from .parser_utils import assert_no_unknown_fields, add_problematic_data_to_exceptions, get_bool, get_string
 
 

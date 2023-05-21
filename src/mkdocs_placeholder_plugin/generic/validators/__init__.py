@@ -1,8 +1,22 @@
 from typing import NamedTuple
 import re
 # local
-from . import warning, PlaceholderConfigError
-from .config import Validator, ValidatorRule
+from .. import warning, PlaceholderConfigError
+from ..config import Validator, ValidatorRule
+
+VALIDATOR_PRESETS: dict[str,Validator] = {}
+
+def register_validator(validator: Validator) -> None:
+    if validator.id in VALIDATOR_PRESETS:
+        raise Exception(f"[Internal error] Validator preset '{validator.id}' is defined twice")
+    else:
+        VALIDATOR_PRESETS[validator.id] = validator
+
+
+def create_and_register_validator(id: str, name: str, first_rule: ValidatorRule, *rules: ValidatorRule) -> None:
+    # We add an extra first_rule so that the typechecker can ensure that at least one rule is specified
+    register_validator(Validator(id, name, [first_rule, *rules]))
+
 
 
 def should_match(regex_string: str, error_message: str) -> ValidatorRule:
@@ -41,6 +55,10 @@ def must_not_match(regex_string: str, error_message: str) -> ValidatorRule:
         error_message=error_message,
     )
 
+
+def ensure_validator_presets_loaded():
+    # Load the classes, since they register the values on load
+    from . import ip_address, internet, files
 
 class ValidationResults(NamedTuple):
     validator_name: str
