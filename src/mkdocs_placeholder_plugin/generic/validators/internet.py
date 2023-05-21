@@ -1,5 +1,5 @@
 # local
-from . import must_match, must_not_match, should_match, should_not_match, create_and_register_validator
+from . import must_match, must_not_match, should_match, should_not_match, create_and_register_validator, create_and_register_validator_that_extends
 
 
 RULE_DOMAIN_CHARS = must_match("^[a-zA-Z0-9-.]+$", "Only letters, numbers, dashes (minus signs), and dots are allowed")
@@ -12,14 +12,10 @@ RULE_URL_NO_WHITESPACE = must_not_match(r"\s", "URLs may not contain whitespace.
 URL_REGEX = r"[a-zA-Z0-9-]+://(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*\(\),]|(?:%[0-9a-fA-F][0-9a-fA-F]))+(#\S*)?"
 PORT_REGEX = r"^((6553[0-5])|(655[0-2][0-9])|(65[0-4][0-9]{2})|(6[0-4][0-9]{3})|([1-5][0-9]{4})|([0-5]{0,5})|([0-9]{1,4}))$"
 
-#@TODO: extend notation?
-create_and_register_validator(
+create_and_register_validator_that_extends(
     "domain",
     "Domain name",
-    RULE_DOMAIN_CHARS,
-    RULE_DOMAIN_START,
-    RULE_DOMAIN_END,
-    RULE_DOMAIN_LENGTH,
+    ["hostname"],
     should_match("\\.", "Should contain multiple elements (for example domain.com or my.domain.com)"),
 )
 

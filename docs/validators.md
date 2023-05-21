@@ -98,6 +98,63 @@ Coresponding input element:
 
 <input data-input-for="CUSTOM_VALIDATORS">
 
+### Extend validators
+
+Starting with version 0.4.1 you can also extend (your own or any predefined) validators.
+This can be useful in reducing duplicate rules, since you can put common rules in a own validator and then reference it via the `import_rules_from` attribute from any validator.
+It is also very useful if you want to tighten down predefined validators without having to recreate them (for example: only specific IP ranges).
+`import_rules_from` is transitive: If (`A` includes `B`) and (`B` includes `C`), then `A` will also include `C`.
+
+#### Example: shared rules
+
+```yaml title="placeholder-plugin.yaml"
+validators:
+  not-empty:
+    name: not empty (never seen)
+    rules:
+    - regex: "^$"
+      should_match: false
+      error_message: "Should not be empty"
+  number:
+    name: Number
+    import_rules_from: [not-empty]
+    rules:
+    - regex: "^[0-9]*$"
+      should_match: true
+      error_message: "Should only be digits"
+  lowercase:
+    name: Lowercase letters
+    import_rules_from: [not-empty]
+    rules:
+    - regex: "^[a-z]*$"
+      should_match: true
+      error_message: "Should only be lowercase letters"
+```
+
+#### Example: expand predefined validator
+
+Expand the domains validator, so that it only accepts german web sites (ending with `.de`):
+
+```yaml title="placeholder-plugin.yaml"
+validators:
+  german-domain:
+    name: German domain
+    import_rules_from:
+    - domain
+    rules:
+    - regex: ".de$"
+      should_match: true
+      error_message: "Should end with '.de'"
+placeholders:
+  DOMAIN_DE:
+    default: www.wikipedia.de
+    validators: german-domain
+```
+
+Coresponding input element:
+
+<input data-input-for="DOMAIN_DE">
+
 
 ## Multiple validators
 
@@ -119,14 +176,15 @@ validators:
     - regex: "^::1$"
       should_match: true
       error_message: "Only the value '::1' is accepted"
-MULTI_VALIDATORS:
-  default: "127.0.0.1"
-  description: "Multiple validators: mest be an IPv4 address, domain name, or hostname"
-  validators:
-  - ipv4_address
-  - domain
-  - hostname
-  - ipv6_loopback
+placeholders:
+  MULTI_VALIDATORS:
+    default: "127.0.0.1"
+    description: "Multiple validators: mest be an IPv4 address, domain name, or hostname"
+    validators:
+    - ipv4_address
+    - domain
+    - hostname
+    - ipv6_loopback
 ```
 
 Coresponding input element:

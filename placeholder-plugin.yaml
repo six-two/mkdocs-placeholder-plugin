@@ -36,6 +36,13 @@ validators:
     - regex: "^::1$"
       should_match: true
       error_message: "Only the value '::1' is accepted"
+  test_import_rules_from:
+    name: test_import_rules_from
+    import_rules_from: [file_name_linux, file_name_windows]
+    rules:
+    - regex: "^::1$"
+      should_match: false
+      error_message: "'::1' is not accepted"
   nice:
     name: Something nice
     id: nice
@@ -54,6 +61,14 @@ validators:
       # regex: will cause an error if is uncommented because of conflict with match_function
       should_match: false
       error_message: "Bad word: 'sh*t'. The custom functions seems to work"
+  german-domain:
+    name: German domain
+    import_rules_from:
+    - domain
+    rules:
+    - regex: ".de$"
+      should_match: true
+      error_message: "Should end with '.de'"
 
 
 placeholders:
@@ -192,6 +207,11 @@ placeholders:
     default: Try changing me
 
 
+  TEST_IMPORT_RULES_FROM:
+    description: Test the import_rules_from attribute of the validator
+    default: test.txt
+    validators: test_import_rules_from
+
   CHECKBOX:
     description: A checkbox would be nice, wouldn't it?
     default: checked
@@ -225,6 +245,11 @@ placeholders:
       "Default": "default"
       "B": "b"
       "C": "c"
+
+
+  DOMAIN_DE:
+    default: www.wikipedia.de
+    validators: german-domain
 
 
   # # This should cause an warning:

@@ -1,5 +1,5 @@
-from .validator import Validator, ValidatorRule
+from .validator import PreValidator, Validator, ValidatorRule
 from .placeholder import Placeholder, InputType
 from .configuration import PlaceholderConfig, PlaceholderSettings
 
-__all__ = ["InputType", "Placeholder", "PlaceholderConfig", "PlaceholderSettings", "Validator", "ValidatorRule",]
+__all__ = ["InputType", "Placeholder", "PlaceholderConfig", "PlaceholderSettings", "PreValidator", "Validator", "ValidatorRule",]

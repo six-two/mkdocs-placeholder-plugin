@@ -1,6 +1,6 @@
 from functools import wraps
 import json
-from typing import Callable, Optional
+from typing import Callable, Optional, Type
 # local
 from .. import PlaceholderConfigError
 
@@ -18,7 +18,7 @@ class PlaceholderConfigErrorWithData(PlaceholderConfigError):
 def assert_no_unknown_fields(data: dict, known_field_names: set[str]) -> None:
     unexpected_fields = set(data).difference(known_field_names)
     if unexpected_fields:
-        raise PlaceholderConfigError(f"Unexpected field(s): {', '.join(unexpected_fields)}")
+        raise PlaceholderConfigError(f"Unexpected field(s): {', '.join(unexpected_fields)}\n[Hint] Allowed fields are: {', '.join(known_field_names)}")
 
 def add_problematic_data_to_exceptions(function: Callable) -> Callable:
     @wraps(function)
@@ -66,6 +66,26 @@ def get_dict(data: dict, name: str, default: Optional[dict] = None) -> dict:
         return value
     else:
         raise PlaceholderConfigError(f"Wrong type for key '{name}': Expected 'dict', got '{type(value).__name__}'")
+
+
+def get_list(data: dict, name: str, item_type: Type, default: Optional[list] = None) -> list:
+    """
+    Reads the given key from data. If no value is used, default is used.
+    If default is None/not set then a KeyError will be thrown.
+    It will also be ensured, that each item has the specified type.
+    """
+    if default == None:
+        value = data[name]
+    else:
+        value = data.get(name, default)
+
+    if type(value) == list:
+        for index, item in enumerate(value):
+            if type(item) != item_type:
+                raise PlaceholderConfigError(f"Wrong type for key '{name}' at index {index}: Expected '{item_type.__name__}', got '{type(item).__name__}'")
+        return value
+    else:
+        raise PlaceholderConfigError(f"Wrong type for key '{name}': Expected 'list', got '{type(value).__name__}'")
 
 
 def get_string(data: dict, name: str, default: Optional[str] = None, allow_empty_string: bool = True, allow_numeric: bool = False) -> str:

@@ -2,11 +2,46 @@ from typing import NamedTuple
 import re
 # local
 from .. import warning, PlaceholderConfigError
-from ..config import Validator, ValidatorRule
 
-VALIDATOR_PRESETS: dict[str,Validator] = {}
 
-def register_validator(validator: Validator) -> None:
+class ValidatorRule(NamedTuple):
+    severity: str # warn or error
+    # you need to either specify regex_string or match_function
+    regex_string: str
+    match_function: str
+    should_match: bool
+    error_message: str
+
+
+class PreValidator:
+    """
+    Like a Validator, but it may contain references to the rules of other validators.
+    Before these are resolved (by converting the object to a normal Validator), they can not be used.
+    """
+    def __init__(self, id: str, name: str, rules: list[ValidatorRule], import_rules_from_ids: list[str]) -> None:
+        self.id = id
+        self.name = name
+        self.rules = rules
+        self.import_rules_from_ids = import_rules_from_ids
+
+
+class Validator:
+    def __init__(self, id: str, name: str, rules: list[ValidatorRule]) -> None:
+        self.id = id
+        self.name = name
+        self.rules = rules
+        self._is_used = False
+
+    def mark_used(self) -> None:
+        self._is_used = True
+
+    def is_used(self) -> bool:
+        return self._is_used
+
+
+VALIDATOR_PRESETS: dict[str,PreValidator] = {}
+
+def register_validator(validator: PreValidator) -> None:
     if validator.id in VALIDATOR_PRESETS:
         raise Exception(f"[Internal error] Validator preset '{validator.id}' is defined twice")
     else:
@@ -15,8 +50,11 @@ def register_validator(validator: Validator) -> None:
 
 def create_and_register_validator(id: str, name: str, first_rule: ValidatorRule, *rules: ValidatorRule) -> None:
     # We add an extra first_rule so that the typechecker can ensure that at least one rule is specified
-    register_validator(Validator(id, name, [first_rule, *rules]))
+    register_validator(PreValidator(id, name, [first_rule, *rules], []))
 
+def create_and_register_validator_that_extends(id: str, name: str, import_rules_from: list[str], first_rule: ValidatorRule, *rules: ValidatorRule) -> None:
+    # We add an extra first_rule so that the typechecker can ensure that at least one rule is specified
+    register_validator(PreValidator(id, name, [first_rule, *rules], import_rules_from))
 
 
 def should_match(regex_string: str, error_message: str) -> ValidatorRule:
@@ -66,6 +104,38 @@ class ValidationResults(NamedTuple):
     warnings: list[str]
     errors: list[str]
 
+
+def convert_to_proper_validators(pre_validator_map: dict[str,PreValidator]) -> dict[str,Validator]:
+    result = {}
+    for id, pv in pre_validator_map.items():
+        rules = pv.rules
+        if pv.import_rules_from_ids:
+            # @TODO: This implementation should just ignore dependency loops. Not sure if this is good without a warning...
+            validators_to_include: dict[str,PreValidator] = {}
+            _recursive_validator_include(pre_validator_map, validators_to_include, pv)
+            
+            rules = []
+            for v in validators_to_include.values():
+                rules += v.rules
+
+            # print(pv.id, list(pv.import_rules_from_ids), list(validators_to_include)) # for debugging
+
+            # remove duplicate rules if they exist
+            rules = list(set(rules))
+        result[id] = Validator(pv.id, pv.name, rules)
+    return result
+
+def _recursive_validator_include(pre_validator_map: dict[str,PreValidator], visited: dict[str,PreValidator], root: PreValidator) -> None:
+    """
+    Recursively visits child nodes. All visited nodes are stored in the `visited` parameter
+    """
+    visited[root.id] = root
+    for child_id in root.import_rules_from_ids:
+        if child_id not in visited:
+            if child := pre_validator_map.get(child_id):
+                _recursive_validator_include(pre_validator_map, visited, child)
+            else:
+                raise PlaceholderConfigError(f"Validator '{root.id}' has a reference to the unknown validator '{child_id}'")
 
 def assert_matches_one_validator(validators: list[Validator], value: str) -> None:
     if not validators:

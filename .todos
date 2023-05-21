@@ -8,3 +8,4 @@
 - Better styling for mkdocs material
 - per page options (like disabling the insertion of an placeholder input table at the top)
     - maybe only insert if no table is already defined on the page
+- idea: debug option / style that shows which placeholder changes will require a page reload

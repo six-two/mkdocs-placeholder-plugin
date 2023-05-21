@@ -1,30 +1,9 @@
 from typing import NamedTuple, Any
 # local
 from .. import PlaceholderConfigError
-from .parser_utils import assert_no_unknown_fields, add_problematic_data_to_exceptions, get_bool, get_string
+from .parser_utils import assert_no_unknown_fields, add_problematic_data_to_exceptions, get_bool, get_string, get_list
+from ..validators import VALIDATOR_PRESETS, ensure_validator_presets_loaded, convert_to_proper_validators, Validator, PreValidator, ValidatorRule
 
-
-class ValidatorRule(NamedTuple):
-    severity: str # warn or error
-    # you need to either specify regex_string or match_function
-    regex_string: str
-    match_function: str
-    should_match: bool
-    error_message: str
-
-
-class Validator:
-    def __init__(self, id: str, name: str, rules: list[ValidatorRule]) -> None:
-        self.id = id
-        self.name = name
-        self.rules = rules
-        self._is_used = False
-
-    def mark_used(self) -> None:
-        self._is_used = True
-
-    def is_used(self) -> bool:
-        return self._is_used
 
 
 VALIDATOR_FIELD_NAMES = {
@@ -46,30 +25,37 @@ SEVERITY_LIST = [
 ]
 
 
+@add_problematic_data_to_exceptions
 def parse_validators(data: dict, location: str) -> dict[str,Validator]:
-    result = {}
+    custom_validators = {}
 
     for validator_name, validator_data in data.items():
         validator = parse_validator_object(validator_data, f"{location}.{validator_name}", validator_name)
-        result[validator_name] = validator
+        if validator_name in custom_validators:
+            raise Exception(f"Should not be possible: User supplied validator '{validator_name}' specified twice ")
+        else:
+            custom_validators[validator_name] = validator
 
-    return result
+    ensure_validator_presets_loaded()
+    merged_validators = dict(VALIDATOR_PRESETS)
+    merged_validators.update(custom_validators)
+
+    return convert_to_proper_validators(merged_validators)
 
 
 @add_problematic_data_to_exceptions
-def parse_validator_object(data: dict[str,Any], location: str, id: str) -> Validator:
+def parse_validator_object(data: dict[str,Any], location: str, id: str) -> PreValidator:
     # id = get_string(data, "id")
     name = get_string(data, "name")
 
-    rules_data = data["rules"]
-    if type(rules_data) != list:
-        raise PlaceholderConfigError(f"Wrong type for key 'rules_data': Expected 'list', got '{type(rules_data).__name__}'")
-
+    rules_data = get_list(data, "rules", dict)
     if not rules_data:
         raise PlaceholderConfigError("Validators neet to have at least a rule, but received an empty list")
 
+    import_rules_from = get_list(data, "import_rules_from", str, default=[])
+
     rules = [parse_validator_rule(x, f"{location}[{i}]") for i, x in enumerate(rules_data)]
-    return Validator(id, name, rules)
+    return PreValidator(id, name, rules, import_rules_from)
 
 
 @add_problematic_data_to_exceptions
