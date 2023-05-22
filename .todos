@@ -9,3 +9,10 @@
 - per page options (like disabling the insertion of an placeholder input table at the top)
     - maybe only insert if no table is already defined on the page
 - idea: debug option / style that shows which placeholder changes will require a page reload
+- idea: add number of placeholders to title of table
+- fix: hide empty fallback html tables
+- fix: move default placeholder table after the heading `<h1>`, instead of above it
+- Improve behavior on really large pages (as ceated by print-page plugin)
+    - segment tables and only let them run in their own segment -> do now show a hunch of unnecessary placeholders that are referenced way farther down the site
+- performance: add options to disable specific replace methods
+- fix: page flashes, maybe related to input tables? -> move fallback in `noscript` tag?
