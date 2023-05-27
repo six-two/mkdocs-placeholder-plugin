@@ -96,7 +96,7 @@ def must_not_match(regex_string: str, error_message: str) -> ValidatorRule:
 
 def ensure_validator_presets_loaded():
     # Load the classes, since they register the values on load
-    from . import ip_address, internet, files
+    from . import ip_address, internet, files, network
 
 class ValidationResults(NamedTuple):
     validator_name: str
@@ -198,4 +198,4 @@ def check_if_matches_validator(validator: Validator, default_value: str) -> Vali
         errors=errors,
     )
 
-
+MUST_NOT_BE_EMPTY = must_not_match("^$", "Can not be empty")

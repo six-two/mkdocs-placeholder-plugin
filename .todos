@@ -4,7 +4,7 @@
 - Formatters (such as for bash-shell) for escaping characters that may break the command that a placeholder is part of
 - Advanced placeholders (placeholders for not often used/very technical fields) whose visibility can be toggled in auto tables
     - Or even more powerful: Categories that can be toggled individually
-- new validators: mac address, email, number, uuid, linux username, linux network interface name
+- new validators: number, linux username
 - Better styling for mkdocs material
 - per page options (like disabling the insertion of an placeholder input table at the top)
     - maybe only insert if no table is already defined on the page
