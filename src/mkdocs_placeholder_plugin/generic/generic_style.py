@@ -73,6 +73,11 @@ table tr td input.input-for-variable[type="checkbox"] {
     display: block;
 }
 
+/* Hide empty auto input tables' borders & co if JS is disabled (not working in Firefox) */
+.auto-input-table:has(noscript:empty) {
+    display: none;
+}
+
 .auto-input-table .button-bar {
     margin-top: 10px;
     display: flex;

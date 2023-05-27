@@ -16,7 +16,7 @@ class TableGenerator:
             used_placeholders = self.get_placeholders_for_table(page_markdown)
             no_js_table = self.generate_table_html(used_placeholders, column_list)
 
-        return f'<div class="auto-input-table" data-columns="{",".join(column_list)}">{no_js_table}</div>'
+        return f'<div class="auto-input-table" data-columns="{",".join(column_list)}"><noscript>{no_js_table}</noscript></div>'
 
     def get_placeholders_for_table(self, page_markdown: str) -> list[Placeholder]:
         directly_referenced = [placeholder for placeholder in self.config.placeholders.values()
@@ -47,6 +47,9 @@ class TableGenerator:
         return f'data-placeholder="{placeholder.name}"' in page_markdown
 
     def generate_table_html(self, placeholder_list: list[Placeholder], column_list: list[str]) -> str:
+        if not placeholder_list:
+            return ""
+        
         #@TODO: actually handle the passed columns? Would be more complicated but also more consistent
         rows = []
         for placeholder in placeholder_list:
