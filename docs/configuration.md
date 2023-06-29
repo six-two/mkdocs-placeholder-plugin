@@ -46,14 +46,14 @@ The path to the file, where the plugin will write its CSS (cascading style sheet
 There are three different setups you can do:
 
 1) Point it to an existing file with CSS code.
-    In this case the plugin will append its own code (leaving your code in place) and ensure that the file is sourced.
+    In this case, the plugin will append its own code (leaving your code in place) and ensure that the file is sourced.
     You can use this to add custom styling for placeholder elements.
 2) Point to an empty / non-existent file.
-    In this case the plugin will create the file and fill it with the default styling.
+    In this case, the plugin will create the file and fill it with the default styling.
 3) Specify an empty string (`""`).
-    In this case the plugin will *not* provide any styles, so you have total control over (and responsibility for) the visual representation of placeholders, input fields, automatic input tables, etc. 
+    In this case, the plugin will *not* provide any styles, so you have total control over (and responsibility for) the visual representation of placeholders, input fields, automatic input tables, etc. 
 
-CSS file. If it exists, the contents will be appended to. add empty string to not include the default styles
+CSS file. If it exists, the contents will be appended to. Add an empty string to not include the default styles
 
 ### placeholder_extra_js
 
@@ -126,14 +126,14 @@ You can disable this if you manually want to specify them (or have them at very 
 
 ### create_no_js_fallback
 
-Create fallback values, so that users with browsers where the code does not run (incompatible/very old browser, JavaScript is disabled, ...) will see a somewhat presenatble page filled with the default values (for placeholders, input elements, and input tables).
-However, since the JavaScript code does not run, users can not update/change any placeholders and the input fields are diabled.
+Create fallback values, so that users with browsers where the code does not run (incompatible/very old browser, JavaScript is disabled, ...) will see a somewhat presentable page filled with the default values (for placeholders, input elements, and input tables).
+However, since the JavaScript code does not run, users can not update/change any placeholders and the input fields are disabled.
 
 This creates slightly bigger pages and takes some extra time during the build process, so you can disable it if you feel like that situation will not happen.
 
 ### debug_javascript
 
-If enabled, JavaScript debugging messages will be printed to the browsers console.
+If enabled, JavaScript debugging messages will be printed to the browser's console.
 These include information such as:
 
 - The placeholder / configuration data passed by the plugin to the JavaScript code
