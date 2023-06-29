@@ -45,12 +45,12 @@ It should not contain any files with the following names, since they may be over
 The path to the file, where the plugin will write its CSS (cascading style sheets) code to.
 There are three different setups you can do:
 
-1) Point it to an existing file with CSS code.
+1. Point it to an existing file with CSS code.
     In this case, the plugin will append its own code (leaving your code in place) and ensure that the file is sourced.
     You can use this to add custom styling for placeholder elements.
-2) Point to an empty / non-existent file.
+2. Point to an empty / non-existent file.
     In this case, the plugin will create the file and fill it with the default styling.
-3) Specify an empty string (`""`).
+3. Specify an empty string (`""`).
     In this case, the plugin will *not* provide any styles, so you have total control over (and responsibility for) the visual representation of placeholders, input fields, automatic input tables, etc. 
 
 CSS file. If it exists, the contents will be appended to. Add an empty string to not include the default styles
