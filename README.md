@@ -26,14 +26,11 @@ If you want to use the latest development version (may be broken/buggy from time
     Choose any of the following ways:
     
     - Build it with npm (natively), by running the `./build-docs.sh` script.
-    - Build it in a (docker/podman) container by using the `Doeckerfile` in the `typescript` directory:
+    - Build it in a (docker/podman) container by using the `Dockerfile` in the `typescript` directory.
+        The whole thing can be done by running the `buils.sh` script in the root directory:
         ```bash
-        cd typescript
-        podman build --tag placeholder-npm .
-        cd ..
+        ./build.sh
         ```
-
-        And then running the `./build.sh` script.
         Once you see mkdocs running, you can terminate it with `Ctrl-C`.
     - Downloading the files from the development version of the documentation (hosted and built by Vercel):
         ```bash
@@ -52,6 +49,7 @@ The corresponding documentation is hosted at <https://dev.mkdocs-placeholder-plu
 ### HEAD
 
 - Validators can copy rules from other validators via the `import_rules_from` attribute
+- More validators
 
 ### Version 0.4.0
 

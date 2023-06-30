@@ -31,7 +31,7 @@ Try it out:
 
 You can also define your own validators.
 Each validator has a name and a collection of rules.
-The name is used in the error/warning messages so it should be somthing human readable.
+The name is used in the error/warning messages so it should be something human readable.
 Each rule is checked and the list of the error messages is shown to the user.
 
 ### Rules
@@ -53,7 +53,7 @@ Each rule consists of the following fields:
 3. `severity` specifies how serious the rule is:
 
     - `warn` will cause the background to turn yellow, but the value will be accepted anyways.
-    - `error` (the default value) will cause the background to trun red and the value will be rejected.
+    - `error` (the default value) will cause the background to turn red and the value will be rejected.
 
 4. `error_message` specifies the message shown.
     This should be informative, so that use user can understand what is wrong and fix the input.
@@ -94,7 +94,7 @@ placeholders:
 
 ```
 
-Coresponding input element:
+Corresponding input element:
 
 <input data-input-for="CUSTOM_VALIDATORS">
 
@@ -151,7 +151,7 @@ placeholders:
     validators: german-domain
 ```
 
-Coresponding input element:
+Corresponding input element:
 
 <input data-input-for="DOMAIN_DE">
 
@@ -187,7 +187,7 @@ placeholders:
     - ipv6_loopback
 ```
 
-Coresponding input element:
+Corresponding input element:
 
 <input data-input-for="MULTI_VALIDATORS">
 

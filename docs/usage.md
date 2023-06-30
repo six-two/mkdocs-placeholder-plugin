@@ -21,11 +21,11 @@ plugins:
   - placeholder
 ```
 
-> If you have no `plugins` entry in your config file yet, you'll likely also want to add the `search` plugin. MkDocs enables it by default if there is no `plugins` entry set.
+> If you have no `plugins` entry in your config file yet, you will likely also want to add the `search` plugin. MkDocs enables it by default if there is no `plugins` entry set.
 
 More information about plugins in the [MkDocs documentation](http://www.mkdocs.org/user-guide/plugins/).
 
-### Defining placeholers
+### Defining placeholders
 
 Add a `placeholder-plugin.yaml` in the root of your MkDocs project and define the placeholder names and initial values here.
 For example:
@@ -119,7 +119,7 @@ You can apply the new value by changing the text in the text box and pressing `E
 #### Checkbox field
 
 You can also define placeholders that have only two different values.
-They can be respresended by a check box.
+They can be represended by a check box.
 
 You can define them in your `placeholder-plugin.yaml` like this:
 ```yaml

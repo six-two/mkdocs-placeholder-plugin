@@ -47,7 +47,7 @@ By default this is enabled for all placeholders, where users can not choose arbi
 === "default"
 
     This is the value, that is used as the initial value for the placeholder.
-    The following two declarations are equivaluent:
+    The following two declarations are equivalent:
     ```yaml
     FIRST_NAME: John
     ```
@@ -65,7 +65,7 @@ By default this is enabled for all placeholders, where users can not choose arbi
     If you want to use complex functions that can not be expressed as a one-liner, you can:
 
     1. Create a javascript file containing your function(s).
-        For example this repo has `placeholder-extra.js`:
+        For example this repository has `placeholder-extra.js`:
         ```javascript
         const generate_placeholder_password = (length) => {
             [...]
@@ -103,12 +103,12 @@ Read-only fields can (and by default will) be hidden from placeholder input tabl
 
 Defaults to `false`.
 If this is set to `false`, only visible text is replaced, which means that the inner HTML replacement method is not allowed for this placeholder.
-If you set it to `true`, it may be replaced anywhere in the page's document object model (probably including scripts, element attributes (such as a link's href), etc) when sing the innter HTML replacement method (`iPLACEHOLDER_NAMEi`).
+If you set it to `true`, it may be replaced anywhere in the page's document object model (probably including scripts, element attributes (such as a link's href), etc) when using the inner HTML replacement method (`iPLACEHOLDER_NAMEi`).
 
 !!! warning "Dangerous - may introduce security vulnerabilities"
     You can very easily create self-XSS vulnerabilities if you set this to `true`.
-    These may be chanied with other vulnerabilities to allow attackers to potentially steal cookies, redirect to malicious pages and/or perform actions as the user.
-    So please use this sparringly, if at all.
+    These may be chained with other vulnerabilities to allow attackers to potentially steal cookies, redirect to malicious pages and/or perform actions as the user.
+    So please use this sparingly, if at all.
 
     Assuming that you just have a static MkDocs site, the impact should be minimal/none, but please think twice before you enable this.
 
@@ -155,11 +155,11 @@ You can combine them into a single value with the following steps:
 Internally the placeholder plugin is using a dependency graph for the placeholders.
 Thus, if you were to update `FIRST_NAME`, the `EMAIL` placeholder would also be updated, since it depends on `FIRST_NAME`.
 You could even use `xEMAILx` in other variables (say `xMAILING_LISTx`).
-The only thing you should not do are recursive placeholders (placeholders referencing themselfes) or dependency loops (A contains B contains C contains A).
+The only thing you should not do are recursive placeholders (placeholders referencing themselves) or dependency loops (A contains B contains C contains A).
 These can will lead to errors, since expanding them would result in a infinite loop.
 
 If you want to hide these fields in placeholder input tables, add the `read_only` field and set it to `true`.
-In this case you do not explicitely need to set `allow_nested`, since it is enabled by default for readonly placeholders:
+In this case you do not explicitly need to set `allow_nested`, since it is enabled by default for readonly placeholders:
 
 ```yaml
 EMAIL:

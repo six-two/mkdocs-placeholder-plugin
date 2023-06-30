@@ -39,7 +39,7 @@ Below you can see the placeholders in action.
 
 You can transfer various files on linux systems using common command line tools.
 This assumes, that you want to transfer the file "xDEMO_FILENAMEx" to/from the server with the IP address xDEMO_SERVER_IPx.
-To sucessfully transfer the files, you need shell access (for example via SSH) to both systems (the server and the client).
+To successfully transfer the files, you need shell access (for example via SSH) to both systems (the server and the client).
 
 ### netcat
 

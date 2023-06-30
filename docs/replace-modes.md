@@ -21,7 +21,7 @@ Currently just is an alias for dynamic, but may change in the future.
 |Replace locations|anywhere (whole DOM)|
 |Safe|false|
 
-Replaces the element **anywhere** in the pages HTML (inside inline scripts, inline sytles, HTML tags and attributes, etc).
+Replaces the element **anywhere** in the pages HTML (inside inline scripts, inline styles, HTML tags and attributes, etc).
 May lead to cross-site scripting attacks and other problems if you use it.
 To allow this, you need to set `replace_everywhere: true` for all placeholders, that use this feature.
 

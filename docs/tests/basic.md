@@ -8,7 +8,7 @@ Variable | Value
 TEST | `xTESTx`
 LINK | [sLINKs](iLINKi)
 CHECKBOX | xCHECKBOXx
-Qouted string | xQUOTE_CHECKBOXxxTESTxxQUOTE_CHECKBOXx
+Quoted string | xQUOTE_CHECKBOXxxTESTxxQUOTE_CHECKBOXx
 DROPDOWN | xDROPDOWNx
 
 ## Replacement methods

@@ -16,7 +16,7 @@ These diagrams require the Material theme to work correctly.
     This may not always work or may cause other issues.
 
     In the page use static placeholder replacement for all placeholders in the diagrams.
-    This will cause the site to be relaoded, when one of the values changes, which is required to update the Mermaid diagrams.
+    This will cause the site to be reloaded, when one of the values changes, which is required to update the Mermaid diagrams.
 
 ## Placeholder values
 
