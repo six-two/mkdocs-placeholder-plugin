@@ -4,7 +4,6 @@ from typing import Callable
 # pip dependency
 from mkdocs.config.defaults import MkDocsConfig
 from mkdocs.plugins import BasePlugin
-from mkdocs.config.base import Config
 from mkdocs.exceptions import PluginError
 # local files
 from .plugin_config import PlaceholderPluginConfig
@@ -32,7 +31,7 @@ def convert_exceptions(function: Callable) -> Callable:
 
 class PlaceholderPlugin(BasePlugin[PlaceholderPluginConfig]):
     @convert_exceptions
-    def on_config(self, config: MkDocsConfig, **kwargs) -> Config:
+    def on_config(self, config: MkDocsConfig, **kwargs) -> MkDocsConfig:
         """
         Called once when the config is loaded.
         It will make modify the config and initialize this plugin.
