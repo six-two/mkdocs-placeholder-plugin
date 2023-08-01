@@ -1,4 +1,4 @@
-from typing import NamedTuple, Any
+from typing import Any
 # local
 from .. import PlaceholderConfigError
 from .parser_utils import assert_no_unknown_fields, add_problematic_data_to_exceptions, get_bool, get_string, get_list

@@ -11,7 +11,7 @@ This plugin allows you to have placeholders in your site, that can be dynamicall
 
 This README is just a short intro to the package.
 For a quick start and detailed information please see the [documentation for the last release](https://mkdocs-placeholder-plugin.six-two.dev/).
-The documentation is also available in the `docs` folder of the source code and can be built localy with [MkDocs](https://www.mkdocs.org/).
+The documentation is also available in the `docs` folder of the source code and can be built locally with [MkDocs](https://www.mkdocs.org/).
 
 ## Development version
 

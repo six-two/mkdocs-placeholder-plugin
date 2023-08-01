@@ -1,5 +1,5 @@
 # local
-from . import must_match, must_not_match, should_match, should_not_match, create_and_register_validator, create_and_register_validator_that_extends, MUST_NOT_BE_EMPTY
+from . import must_not_match, should_not_match, create_and_register_validator, create_and_register_validator_that_extends, MUST_NOT_BE_EMPTY
 
 RULE_WINDOS_NAME_PROHIBITED = must_not_match('[<>:"|?*]', 'Can not contain prohibited characters: \'<>:"|?*\'')
 RULE_WARN_WHITESPACE = should_not_match(r"\s", "Should not contain whitespace")
