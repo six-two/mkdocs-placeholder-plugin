@@ -19,7 +19,7 @@ create_and_register_validator(
 create_and_register_validator(
     "linux_interface",
     "Linux network interface",
-    should_match("^[a-z0-9-_]$", "Should only contain lowercase letters, numbers, underscores, and dashes"),
+    should_match("^[a-z0-9-_]+$", "Should only contain lowercase letters, numbers, underscores, and dashes"),
     MUST_NOT_BE_EMPTY,
 )
 
@@ -33,6 +33,7 @@ create_and_register_validator(
     "email",
     "Email address",
     must_match("^[^@]*@[^@]*$", "Must contain exactly one '@' character"),
+    must_match("[a-zA-Z0-9-.]+@", "Must have something in front of the '@' character"),
     must_match("@[a-zA-Z0-9-.]+$", "Only letters, numbers, dashes (minus signs), and dots are allowed after the @ sign"),
     must_match(r"@.+\...+", "Must have a full domain (like 'gmail.com') after the at sign"),
     must_not_match(r"\s", "Can not contain whitespace"),

@@ -37,6 +37,7 @@ def parse_validators(data: dict, location: str) -> dict[str,Validator]:
             custom_validators[validator_name] = validator
 
     ensure_validator_presets_loaded()
+    print("[Debugging] Builtin validators:", ", ".join(sorted(VALIDATOR_PRESETS.keys())))
     merged_validators = dict(VALIDATOR_PRESETS)
     merged_validators.update(custom_validators)
 

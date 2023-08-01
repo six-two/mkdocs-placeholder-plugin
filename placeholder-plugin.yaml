@@ -103,6 +103,9 @@ placeholders:
   VALIDATOR_DOMAIN:
     default: example.com
     validators: domain
+  VALIDATOR_EMAIL:
+    default: john.doe@example.com
+    validators: email
   VALIDATOR_FILE_LINUX:
     default: my-archive.tar.gz
     validators: file_name_linux
@@ -124,6 +127,12 @@ placeholders:
   VALIDATOR_IPV6_ADDRESS:
     default: 2001:0db8:85a3:0000:0000:8a2e:0370:7334
     validators: ipv6_address
+  VALIDATOR_LINUX_INTERFACE:
+    default: eth0
+    validators: linux_interface
+  VALIDATOR_MAC_ADDRESS:
+    default: 12:34:56:78:9A:BC
+    validators: mac_address
   VALIDATOR_PATH_LINUX:
     default: ~/.bash_profile
     validators: path_linux
@@ -139,6 +148,9 @@ placeholders:
   VALIDATOR_URL_HTTP:
     default: "http://www.example.com/page?a=123&b=c#chapter-2"
     validators: url_http
+  VALIDATOR_UUID:
+    default: 123e4567-e89b-12d3-a456-426614174000
+    validators: uuid
 
   # Test for nested placeholders
 

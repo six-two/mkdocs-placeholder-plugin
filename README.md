@@ -49,7 +49,7 @@ The corresponding documentation is hosted at <https://dev.mkdocs-placeholder-plu
 ### HEAD
 
 - Validators can copy rules from other validators via the `import_rules_from` attribute
-- More validators
+- New validators: `email`, `linux_interface`, `mac_address`, `uuid`
 
 ### Version 0.4.0
 
