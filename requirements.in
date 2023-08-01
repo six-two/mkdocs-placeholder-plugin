@@ -1,3 +1,5 @@
 mkdocs-badges
 mkdocs-material
 mkdocs-spellcheck[all]
+# For type checking:
+types-PyYAML

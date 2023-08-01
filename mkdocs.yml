@@ -69,5 +69,10 @@ markdown_extensions:
   - pymdownx.tabbed:
       alternate_style: true
 
+# For MkDocs 1.5 do not warn me about absolute links or `iLINKi`
+validation:
+  absolute_links: ignore
+  unrecognized_links: ignore
+
 watch:
 - placeholder-plugin.yaml

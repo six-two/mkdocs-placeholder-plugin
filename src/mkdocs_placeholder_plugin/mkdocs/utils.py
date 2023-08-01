@@ -4,7 +4,6 @@ import os
 from mkdocs.config.defaults import MkDocsConfig
 from mkdocs.exceptions import PluginError
 from ..generic import set_logger
-from mkdocs.utils import warning_filter
 
 # local files
 # local
@@ -18,7 +17,6 @@ from ..generic import set_warnings_enabled
 def initialize_plugin(mkdocs_config: MkDocsConfig, plugin_config: PlaceholderPluginConfig) -> PlaceholderConfig:
     # To get the correct looks, the logger needs to have the correct name
     logger = logging.getLogger("mkdocs.plugins.placeholder")
-    logger.addFilter(warning_filter)
     set_logger(logger)
 
     placeholder_config = find_and_parse_configuration_file(mkdocs_config, plugin_config)
@@ -35,6 +33,10 @@ def register_asset_files(mkdocs_config: MkDocsConfig, plugin_config: Placeholder
     js_file_name_list = [DEBUGGABLE_CODE_FILE_NAME, DEBUGGABLE_DATA_FILE_NAME] if placeholder_config.settings.debug_javascript else [COMBINED_FILE_NAME]
     for file_name in js_file_name_list:
         js_file_path = os.path.join(plugin_config.js_output_dir, file_name)
+        # The linter gives a warning here, but it should be fine:
+        # Breaking change: config.extra_javascript is no longer a plain list of strings, but instead a list of ExtraScriptValue items. So you can no longer treat the list values as strings. If you want to keep compatibility with old versions, just always reference the items as str(item) instead. And you can still append plain strings to the list if you wish.
+        # Source: https://www.mkdocs.org/about/release-notes/#version-150-2023-07-26
+        # My note: If I upgraded to use the correct type, it would require MkDocs 1.5.0
         add_to_list_if_not_already_exists(mkdocs_config.extra_javascript, js_file_path)
 
     # Make sure that the custom CSS is included on every page
