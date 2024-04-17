@@ -4,6 +4,8 @@ import { replace_placeholders_in_subtree } from "./replacer";
 import { initialize_all_input_fields } from "./inputs";
 import { export_api_functions } from "./api";
 import { initialize_auto_tables } from "./auto_tables";
+import { register_inline_value_editors } from "./inline-inputs";
+
 
 export const main = () => {
     const config = parse_config((window as any).PlaceholderPluginConfigJson);
@@ -37,5 +39,6 @@ const do_plugin_stuff = (config: PluginConfig) => {
     
     initialize_all_input_fields(config);
     initialize_auto_tables(config);
+    register_inline_value_editors(config);
 }
 

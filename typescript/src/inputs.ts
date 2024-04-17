@@ -181,7 +181,7 @@ const initialize_input_textbox = (config: PluginConfig, placeholder: TextboxPlac
     placeholder.input_elements.push(input_element);
 }
 
-const on_placeholder_change = (config: PluginConfig, placeholder: Placeholder) => {
+export const on_placeholder_change = (config: PluginConfig, placeholder: Placeholder) => {
     const affected_placeholders = config.dependency_graph.get_all_upstream(placeholder);
 
     let require_reload = false;

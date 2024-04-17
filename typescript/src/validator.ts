@@ -218,7 +218,7 @@ const parse_rule = (data: any, validator_id: string): ValidatorRule => {
 }
 
 
-const update_tooltip = (input_field: HTMLInputElement, validation_result: PlaceholderValidatorResult): void => {
+const update_tooltip = (input_field: HTMLElement, validation_result: PlaceholderValidatorResult): void => {
     // Set highlighting
     input_field.classList.remove("validation-error", "validation-warn", "validation-ok", "validation-none");
     if (validation_result.rating == PlaceholderValidatity.Good) {
@@ -247,3 +247,15 @@ export const validate_textbox_input_field = (placeholder: TextboxPlaceholder, in
     const can_accept_value = result.rating != PlaceholderValidatity.Error;
     return can_accept_value;
 }
+
+// Returns "false" if the value has an error, so for example page reloading should be cancelled.
+export const validate_textbox_editable_span = (placeholder: TextboxPlaceholder, input_field: HTMLSpanElement) => {
+    const result = validate_placeholder_value(placeholder, input_field.innerText);
+    update_tooltip(input_field, result);
+
+    logger.debug("Validation: name =", placeholder.name, ", value =", input_field.innerText, ", results =", result.rating);
+
+    const can_accept_value = result.rating != PlaceholderValidatity.Error;
+    return can_accept_value;
+}
+
