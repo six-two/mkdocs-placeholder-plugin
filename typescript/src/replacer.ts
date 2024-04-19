@@ -1,5 +1,6 @@
 import { logger } from "./debug";
-import { Placeholder, PluginConfig } from "./parse_settings";
+import { update_tooltip, validate_placeholder_value } from "./validator";
+import { InputType, Placeholder, PluginConfig, TextboxPlaceholder } from "./parse_settings";
 
 
 type Replacer = (root_element: Element, search_regex: RegExp, replacement_value: string) => number;
@@ -182,12 +183,23 @@ const replace_placeholder_in_string_with = (text: string, placeholder: Placehold
 
 export const replace_dynamic_placeholder_values = (placeholder_list: Placeholder[]) => {
     for (const placeholder of placeholder_list) {
-        for (const element of placeholder.output_elements) {
-            // Delete current contents
-            element.innerHTML = "";
-            // Add the value back as safely escaped text
-            const text = document.createTextNode(placeholder.expanded_value);
-            element.appendChild(text);
+        if (placeholder.output_elements.length > 0) {
+            for (const element of placeholder.output_elements) {
+                element.textContent = placeholder.expanded_value;
+            }
+            if (placeholder.type == InputType.Textbox) {
+                // could have inline editor, and we need to correctly set their validation states.
+                // Perform validation only once and reuse it for all elements
+                //@TODO: Check current_value or expanded_value?
+                const result = validate_placeholder_value(placeholder as TextboxPlaceholder, placeholder.expanded_value);
+
+                for (const element of placeholder.output_elements) {
+                    if (element.classList.contains("placeholder-value-editable")) {
+                        // This element is an inline editor
+                        update_tooltip(element, result);
+                    }
+                }
+            }
         }
     }
 }

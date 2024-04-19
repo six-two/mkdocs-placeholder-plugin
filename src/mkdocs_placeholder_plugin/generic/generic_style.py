@@ -121,6 +121,25 @@ table tr td input.input-for-variable[type="checkbox"] {
 .input-for-variable.value-modified {
     font-weight: bold;
 }
+
+/* Highlight inline editable entries in the page */
+.placeholder-value-editable {
+    cursor: pointer;
+    color: blue;
+    font-style: italic;
+}
+
+.placeholder-value-editable.validation-error {
+    color: red;
+}
+
+.placeholder-value-editable.validation-warn {
+    color: orange;
+}
+
+.placeholder-value-editable.value-modified {
+    font-weight: bold;
+}
 """
 
 

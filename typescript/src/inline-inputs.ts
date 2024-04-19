@@ -31,7 +31,10 @@ export const register_inline_value_editors = (config: PluginConfig) => {
 const prepare_span_for_textbox_editor = (config: PluginConfig, input_element: HTMLSpanElement, placeholder: TextboxPlaceholder) => {
     // This lets users actually modify the span like an input element
     input_element.contentEditable = "true";
-        
+
+    // Add a special class for styling
+    input_element.classList.add("placeholder-value-editable");
+
     // copy paste from inputs.ts @TODO clean up/deduplicate
     const confirm_change = () => {
         if (placeholder.current_value == input_element.innerText) {
@@ -75,10 +78,14 @@ const prepare_span_for_textbox_editor = (config: PluginConfig, input_element: HT
         }
     });
     input_element.addEventListener("keydown", (event: KeyboardEvent) => {
-        // I have no idea, why Escape does not work with the keypress event (Safari on MacOS). As a work aroud, we listen to the keydown event
+        // I have no idea, why Escape does not work with the keypress event (Safari on MacOS). As a work around, we listen to the keydown event
         if (event.key === "Escape") {
             logger.debug("Resetting input field for ", placeholder.name, " to current placeholder value");
             input_element.innerText = placeholder.current_value;
+
+            // reset the validation state
+            validate_textbox_editable_span(placeholder, input_element);
+            input_element.classList.remove("value-modified");
         }
     });
     input_element.addEventListener("focusout", () => {

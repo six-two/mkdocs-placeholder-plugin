@@ -102,7 +102,7 @@ const validate_value = (validator: InputValidator, value: string): ValidatorResu
     }
 }
 
-const validate_placeholder_value = (placeholder: TextboxPlaceholder, value: string): PlaceholderValidatorResult => {
+export const validate_placeholder_value = (placeholder: TextboxPlaceholder, value: string): PlaceholderValidatorResult => {
     const result_list = [];
     let has_no_error = false; // whether at least one placeholder has no errors
     if (placeholder.validators.length > 0) {
@@ -218,7 +218,7 @@ const parse_rule = (data: any, validator_id: string): ValidatorRule => {
 }
 
 
-const update_tooltip = (input_field: HTMLElement, validation_result: PlaceholderValidatorResult): void => {
+export const update_tooltip = (input_field: HTMLElement, validation_result: PlaceholderValidatorResult): void => {
     // Set highlighting
     input_field.classList.remove("validation-error", "validation-warn", "validation-ok", "validation-none");
     if (validation_result.rating == PlaceholderValidatity.Good) {

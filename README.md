@@ -46,6 +46,10 @@ The corresponding documentation is hosted at <https://dev.mkdocs-placeholder-plu
 
 ## Notable changes
 
+### Head
+
+- Inline editable placeholders for textboxes (see [#6](https://github.com/six-two/mkdocs-placeholder-plugin/issues/6))
+
 ### Version 0.4.1
 
 - Validators can copy rules from other validators via the `import_rules_from` attribute

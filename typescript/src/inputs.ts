@@ -166,6 +166,10 @@ const initialize_input_textbox = (config: PluginConfig, placeholder: TextboxPlac
             if (event.key === "Escape") {
                 logger.debug("Resetting input field for ", placeholder.name, " to current placeholder value");
                 input_element.value = placeholder.current_value;
+
+                // reset the validation state
+                validate_textbox_input_field(placeholder, input_element);
+                input_element.classList.remove("value-modified");
             }
         });
         input_element.addEventListener("focusout", () => {
