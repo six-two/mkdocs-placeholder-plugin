@@ -2,7 +2,7 @@
 # Make the input elements take up the whole row
 BASIC_STYLE = """
 .placeholder-value.placeholder-value-highlighted {
-    background-color: orange;
+    background-color: lightcyan;
 }
 
 select.placeholder-dropdown {

@@ -23,6 +23,7 @@ SETTINGS_FIELD_NAMES = {
     "expand_auto_tables",
     "html_prefix",
     "html_suffix",
+    "inline_editors",
     "normal_prefix",
     "normal_suffix",
     "replace_delay_millis",
@@ -44,6 +45,8 @@ class PlaceholderSettings(NamedTuple):
     expand_auto_tables: bool
     html_prefix: str
     html_suffix: str
+    # default value for inline editors
+    inline_editors: bool
     normal_prefix: str
     normal_suffix: str
     # Replace delay millis
@@ -74,6 +77,7 @@ def parse_settings(data: dict, location: str) -> PlaceholderSettings:
         expand_auto_tables=get_bool(data, "expand_auto_tables", default=True),
         html_prefix=get_string(data, "html_prefix", "i"),
         html_suffix=get_string(data, "html_suffix", "i"),
+        inline_editors=get_bool(data, "inline_editors", default=True),
         normal_prefix=get_string(data, "normal_prefix", "x"),
         normal_suffix=get_string(data, "normal_suffix", "x"),
         replace_delay_millis=get_int(data, "replace_delay_millis", default=0, round_float=True),

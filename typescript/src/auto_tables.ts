@@ -1,4 +1,5 @@
 import { logger } from "./debug";
+import { register_inline_value_editors, unregister_inline_value_editors } from "./inline-inputs";
 import { prepare_input_field } from "./inputs";
 import { InputTable, InputTableRow, Placeholder, PluginConfig } from "./parse_settings";
 import { create_dynamic_placeholder_element } from "./replacer";
@@ -107,12 +108,21 @@ const fill_settings_content_container = (config: PluginConfig, settings_contents
     };
     set_highlight_placeholders(config.settings.highlight_placeholders);
 
+    const set_inline_editors_enabled = (enabled: boolean) => {
+        if (enabled) {
+            register_inline_value_editors(config);
+        } else {
+            unregister_inline_value_editors(config);
+        }
+    }
+
     createChildElement(settings_contents, "b").textContent = "Settings";
     // @TODO: later: when there are multiple settings dialogs, keep their values in sync
     append_boolean_setting_checkbox(settings_contents, config.settings.expand_auto_tables, "expand_auto_tables", "Expand placeholder tables by default*");
     append_boolean_setting_checkbox(settings_contents, config.settings.apply_change_on_focus_change, "apply_change_on_focus_change", "Apply value when focus changes away*");
     append_boolean_setting_checkbox(settings_contents, config.settings.debug, "debug", "Log JavaScript debug messages to console*");
     append_boolean_setting_checkbox(settings_contents, config.settings.highlight_placeholders, "highlight_placeholders", "Highlight placeholders (useful for debugging)", set_highlight_placeholders);
+    append_boolean_setting_checkbox(settings_contents, config.settings.inline_editors, "inline_editors", "Allow editing placeholders directly in the page", set_inline_editors_enabled);
     createChildElement(settings_contents, "i").textContent = "* You need to reload the page for these settings to take effect."
 
     const settings_button_bar = createChildElement(settings_contents, "div");

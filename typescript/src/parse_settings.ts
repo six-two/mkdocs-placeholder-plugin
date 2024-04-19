@@ -50,6 +50,8 @@ export interface PluginConfig {
     dropdowns: Map<string,DropdownPlaceholder>;
     settings: PluginSettings;
     dependency_graph: DependencyGraph;
+    // used by the inline editor event listeners. Enables removing them all at once
+    event_listener_abort_controller: AbortController;
     input_tables: InputTable[];
 }
 
@@ -70,6 +72,7 @@ export interface PluginSettings {
     apply_change_on_focus_change: boolean;
     expand_auto_tables: boolean;
     highlight_placeholders: boolean;
+    inline_editors: boolean;
 
     // How different placeholder types are marked
     normal_prefix: string;
@@ -195,6 +198,7 @@ export const parse_config = (data: any): PluginConfig => {
         "settings": settings,
         "dependency_graph": graph,
         "input_tables": [],
+        "event_listener_abort_controller": new AbortController(),
     }
 }
 
@@ -202,12 +206,14 @@ const parse_settings = (data: any): PluginSettings => {
     const apply_change_on_focus_change_default = get_boolean_field("apply_change_on_focus_change", data);
     const debug_default = get_boolean_field("debug", data);
     const expand_auto_tables_default = get_boolean_field("expand_auto_tables", data);
+    const inline_editors = get_boolean_field("inline_editors", data);
     return {
         "apply_change_on_focus_change": load_boolean_setting("apply_change_on_focus_change", apply_change_on_focus_change_default),
         "debug": load_boolean_setting("debug", debug_default),
         "delay_millis": get_number_field("delay_millis", data),
         "expand_auto_tables": load_boolean_setting("expand_auto_tables", expand_auto_tables_default),
         "highlight_placeholders": load_boolean_setting("highlight_placeholders", false),
+        "inline_editors": load_boolean_setting("inline_editors", inline_editors),
         // How normal placeholders are marked
         "normal_prefix": get_string_field("normal_prefix", data),
         "normal_suffix": get_string_field("normal_suffix", data),

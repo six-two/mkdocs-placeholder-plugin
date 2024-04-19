@@ -27,6 +27,22 @@ export const register_inline_value_editors = (config: PluginConfig) => {
     }
 }
 
+export const unregister_inline_value_editors = (config: PluginConfig) => {
+    const placeholder_value_elements = document.querySelectorAll("span.placeholder-value-editable");
+
+    // Remove all previously added event listeners
+    config.event_listener_abort_controller.abort();
+
+    // Replace the now triggered abort controller with a new one
+    config.event_listener_abort_controller = new AbortController();
+
+    // Remove the specific classes and editable attribute that the register method added
+    for (const element of placeholder_value_elements) {
+        const span_element = element as HTMLSpanElement;
+        span_element.classList.remove("placeholder-value-editable");
+        span_element.contentEditable = "false";
+    }
+}
 
 const prepare_span_for_textbox_editor = (config: PluginConfig, input_element: HTMLSpanElement, placeholder: TextboxPlaceholder) => {
     // This lets users actually modify the span like an input element
@@ -34,6 +50,8 @@ const prepare_span_for_textbox_editor = (config: PluginConfig, input_element: HT
 
     // Add a special class for styling
     input_element.classList.add("placeholder-value-editable");
+
+    const abort_signal_object = { signal: config.event_listener_abort_controller.signal };
 
     // copy paste from inputs.ts @TODO clean up/deduplicate
     const confirm_change = () => {
@@ -66,7 +84,7 @@ const prepare_span_for_textbox_editor = (config: PluginConfig, input_element: HT
         } else {
             input_element.classList.add("value-modified");
         }
-    });
+    }, abort_signal_object);
 
     input_element.addEventListener("keypress", (event: KeyboardEvent) => {
         if (event.key === "Enter") {
@@ -76,7 +94,7 @@ const prepare_span_for_textbox_editor = (config: PluginConfig, input_element: HT
             logger.debug("Textbox change confirmed with Enter key for", placeholder.name, "- new value:", input_element.innerText);
             confirm_change();
         }
-    });
+    }, abort_signal_object);
     input_element.addEventListener("keydown", (event: KeyboardEvent) => {
         // I have no idea, why Escape does not work with the keypress event (Safari on MacOS). As a work around, we listen to the keydown event
         if (event.key === "Escape") {
@@ -87,12 +105,12 @@ const prepare_span_for_textbox_editor = (config: PluginConfig, input_element: HT
             validate_textbox_editable_span(placeholder, input_element);
             input_element.classList.remove("value-modified");
         }
-    });
+    }, abort_signal_object);
     input_element.addEventListener("focusout", () => {
         // The value may change on the fly (use changes settings), so we can not just conditionally add the event listener, but need to check each time
         if (config.settings.apply_change_on_focus_change) {
             logger.debug("Textbox change confirmed by changing focus", placeholder.name, "- new value:", input_element.innerText);
             confirm_change();
         }
-    })
+    }, abort_signal_object)
 }

@@ -29,6 +29,7 @@ def settings_to_serializable_dict(settings: PlaceholderSettings) -> dict:
         "expand_auto_tables": settings.expand_auto_tables,
         "html_prefix": settings.html_prefix,
         "html_suffix": settings.html_suffix,
+        "inline_editors": settings.inline_editors,
         "normal_prefix": settings.normal_prefix,
         "normal_suffix": settings.normal_suffix,
         "static_prefix": settings.static_prefix,

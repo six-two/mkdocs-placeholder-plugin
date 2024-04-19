@@ -39,6 +39,9 @@ const do_plugin_stuff = (config: PluginConfig) => {
     
     initialize_all_input_fields(config);
     initialize_auto_tables(config);
-    register_inline_value_editors(config);
+
+    if (config.settings.inline_editors) {
+        register_inline_value_editors(config);
+    }
 }
 
