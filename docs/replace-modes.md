@@ -35,6 +35,7 @@ To allow this, you need to set `replace_everywhere: true` for all placeholders, 
 
 Replaces element with a placeholder wrapper.
 This enables updating the element in-place and is necessary if you want to highlight the placeholders.
+It is also required for the inline-editors (requires version 0.4.2 or later).
 
 ### Direct / Static
 

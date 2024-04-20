@@ -48,7 +48,8 @@ The corresponding documentation is hosted at <https://dev.mkdocs-placeholder-plu
 
 ### Head
 
-- Inline editable placeholders for textboxes (see [#6](https://github.com/six-two/mkdocs-placeholder-plugin/issues/6))
+- Added inline editable placeholders (see [#6](https://github.com/six-two/mkdocs-placeholder-plugin/issues/6)) and enabled them by default.
+    If you want to disable them by default, add `inline_editors: false` to the `settings` attribute in your `placeholder-plugin.yaml`.
 
 ### Version 0.4.1
 
