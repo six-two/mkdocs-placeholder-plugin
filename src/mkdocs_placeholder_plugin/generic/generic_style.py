@@ -134,12 +134,12 @@ table tr td input.input-for-variable[type="checkbox"] {
     display: inline-block;
     width: 1em;
     height: 1em;
-    background-color: lightred;
+    background-color: pink;
     vertical-align: middle;
 }
 
 .placeholder-value-editable:hover, .placeholder-value-checkbox:hover, .placeholder-value-dropdown:hover {
-    border-bottom: 1px dotted black;
+    border-bottom: 2px underline black;
 }
 
 .placeholder-value-editable.validation-error {
