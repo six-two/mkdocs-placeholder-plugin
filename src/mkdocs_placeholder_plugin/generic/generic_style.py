@@ -139,7 +139,7 @@ table tr td input.input-for-variable[type="checkbox"] {
 }
 
 .placeholder-value-editable:hover, .placeholder-value-checkbox:hover, .placeholder-value-dropdown:hover {
-    border-bottom: 2px underline black;
+    border-bottom: 2px solid black;
 }
 
 .placeholder-value-editable.validation-error {
