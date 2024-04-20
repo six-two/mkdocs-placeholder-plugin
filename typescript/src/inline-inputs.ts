@@ -130,7 +130,7 @@ const prepare_span_for_textbox_editor = (config: PluginConfig, input_element: HT
     }
 
     const description = placeholder.description ? `\nDescription: ${placeholder.description}` : "";
-    const tooltip_when_not_focused = `Placeholder name: ${placeholder.name}${description}\nDefault value: ${placeholder.default_value}\nUsage: Click to edit the value. Leaving the text field or pressing enter will store the new value, pressing Escape will revert current changes.`; // @TODO: what if only a function is defined?
+    const tooltip_when_not_focused = `Placeholder name: ${placeholder.name}${description}\nDefault value: ${placeholder.default_value}\nUsage: Click to edit the value. Leaving the text field or pressing enter will store the new value, pressing Escape will revert current changes. While editing the field, the tooltip will show warnings/errors if your value is not what is expected`; // @TODO: what if only a function is defined?
 
     // Check if initial value is valid and initialize the tooltip
     validate_textbox_editable_span(placeholder, input_element);
