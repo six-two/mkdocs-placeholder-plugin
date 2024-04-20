@@ -15,6 +15,5 @@
 - performance: add options to disable specific replace methods
 - refactor: try to convert HTML modification code to use markdown hooks (see https://github.com/six-two/mkdocs-placeholder-plugin/issues/6#issuecomment-2062028205)
 - inline placeholders:
-    - documentation
-    - option to enable / disable
+    - documentation (inline_editors)
     - show default, meaning, etc

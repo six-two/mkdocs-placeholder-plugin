@@ -81,6 +81,7 @@ placeholders:
       wget: "wget http://xDEMO_SERVER_IPx:xDEMO_SERVER_PORTx/xDEMO_FILENAMEx"
   DEMO_SERVER_IP:
     default: 10.1.2.3
+    description: The (public) IPv4 address of your server
     validators: ipv4_address
   DEMO_SERVER_PORT:
     default: 80

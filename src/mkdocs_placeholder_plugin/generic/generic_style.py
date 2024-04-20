@@ -123,10 +123,14 @@ table tr td input.input-for-variable[type="checkbox"] {
 }
 
 /* Highlight inline editable entries in the page */
-.placeholder-value-editable {
+.placeholder-value-editable, .placeholder-value-checkbox {
     cursor: pointer;
     color: blue;
     font-style: italic;
+}
+
+.placeholder-value-editable:hover, .placeholder-value-checkbox:hover {
+    border-bottom: 1px solid black;
 }
 
 .placeholder-value-editable.validation-error {
