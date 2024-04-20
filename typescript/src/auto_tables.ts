@@ -320,3 +320,11 @@ export const initialize_auto_tables = (config: PluginConfig) => {
         }
     }
 };
+
+
+export const initialize_placeholder_settings_divs = (config: PluginConfig) => {
+    const element_list = document.querySelectorAll("div.placeholder-settings-panel");
+    for (const element of element_list) {
+        fill_settings_content_container(config, element as HTMLDivElement);
+    }
+}

@@ -3,7 +3,7 @@ settings:
   replace_delay_millis: -1
   show_warnings: true
   # inline_editors: false
-  # expand_auto_tables: false
+  expand_auto_tables: false
   # # Uncommenting the following lines should cause an error
   # static_prefix: x
   # static_suffix: x

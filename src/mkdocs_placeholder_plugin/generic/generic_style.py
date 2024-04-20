@@ -45,7 +45,7 @@ table tr td input.input-for-variable[type="checkbox"] {
 }
 
 .auto-input-table .expandable_contents,
-.auto-input-table .settings_contents {
+.auto-input-table .settings_contents, .placeholder-settings-panel {
     display: flex;
     flex-direction: column;
 }
@@ -129,8 +129,17 @@ table tr td input.input-for-variable[type="checkbox"] {
     font-style: italic;
 }
 
+/* Make sure that empty placeholders are still shown */
+.placeholder-value-editable:empty, .placeholder-value-checkbox:empty, .placeholder-value-dropdown:empty {
+    display: inline-block;
+    width: 1em;
+    height: 1em;
+    background-color: lightred;
+    vertical-align: middle;
+}
+
 .placeholder-value-editable:hover, .placeholder-value-checkbox:hover, .placeholder-value-dropdown:hover {
-    border-bottom: 1px solid black;
+    border-bottom: 1px dotted black;
 }
 
 .placeholder-value-editable.validation-error {
