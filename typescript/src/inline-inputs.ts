@@ -1,8 +1,8 @@
-import { PluginConfig, InputType, TextboxPlaceholder, CheckboxPlaceholder } from "./parse_settings";
+import { PluginConfig, InputType, TextboxPlaceholder, CheckboxPlaceholder, DropdownPlaceholder } from "./parse_settings";
 import { logger } from "./debug";
 import { validate_textbox_editable_span } from "./validator";
 import { on_placeholder_change } from "./inputs";
-import { store_textbox_state, store_checkbox_state } from "./state_manager";
+import { store_textbox_state, store_checkbox_state, store_dropdown_state } from "./state_manager";
 
 
 export const register_inline_value_editors = (config: PluginConfig) => {
@@ -16,13 +16,12 @@ export const register_inline_value_editors = (config: PluginConfig) => {
             if (placeholder) {
                 if (!placeholder.read_only) {
                     if (placeholder.type == InputType.Textbox) {
-                        // Textboxes should be the easiest, the other ones might be a bit of a headache
                         prepare_span_for_textbox_editor(config, element as HTMLSpanElement, placeholder as TextboxPlaceholder);
                     } else if (placeholder.type == InputType.Checkbox) {
-                        // Checkboxes might be even easier, we click them to toggle
                         prepare_span_for_checkbox_editor(config, element as HTMLSpanElement, placeholder as CheckboxPlaceholder);
+                    } else if (placeholder.type == InputType.Dropdown) {
+                        prepare_span_for_dropdown_editor(config, element as HTMLSpanElement, placeholder as DropdownPlaceholder);
                     }
-
                 }
             } else {
                 console.warn(`Unknown placeholder referenced in input element: '${placeholder_name}'`, element);
@@ -32,7 +31,7 @@ export const register_inline_value_editors = (config: PluginConfig) => {
 }
 
 export const unregister_inline_value_editors = (config: PluginConfig) => {
-    const placeholder_value_elements = document.querySelectorAll("span.placeholder-value-editable,span.placeholder-value-checkbox");
+    const placeholder_value_elements = document.querySelectorAll("span.placeholder-value-editable, span.placeholder-value-checkbox, span.placeholder-value-dropdown");
 
     // Remove all previously added event listeners
     config.event_listener_abort_controller.abort();
@@ -43,12 +42,46 @@ export const unregister_inline_value_editors = (config: PluginConfig) => {
     // Remove the specific classes and editable attribute that the register method added
     for (const element of placeholder_value_elements) {
         const span_element = element as HTMLSpanElement;
-        span_element.classList.remove("placeholder-value-editable", "placeholder-value-checkbox", "validation-error", "validation-warn", "validation-ok", "validation-none");
+        span_element.classList.remove("placeholder-value-editable", "placeholder-value-checkbox", "placeholder-value-dropdown", "validation-error", "validation-warn", "validation-ok", "validation-none");
         // make it non-editable (only affects textbox placeholders)
         span_element.contentEditable = "false";
         // remove the tooltip
         span_element.title = "";
     }
+}
+
+const prepare_span_for_dropdown_editor = (config: PluginConfig, input_element: HTMLSpanElement, placeholder: DropdownPlaceholder) => {
+    input_element.classList.add("placeholder-value-dropdown");
+
+    const abort_signal_object = { signal: config.event_listener_abort_controller.signal };
+
+    const description = placeholder.description ? `\nDescription: ${placeholder.description}` : "";
+    input_element.title = `Placeholder name: ${placeholder.name}${description}\nDefault option: ${placeholder.options[placeholder.default_index].display_name}\nUsage: (left-)click to cycle forward through the values, right-click to cycle through backwards`;
+
+    const modify_index_by = (count: number) => {
+        let index = (placeholder.current_index + count) % placeholder.options.length;
+        if (index < 0) {
+            index += placeholder.options.length;
+        }
+        store_dropdown_state(placeholder, index);
+        placeholder.current_index = index;
+        placeholder.current_value = placeholder.options[index].value;
+        on_placeholder_change(config, placeholder);
+    }
+
+    // Showing an inline dropdown modifies the layout too much and binding it to events like click, mouseenter, etc is problematic. Thus this seems to be the simplest and least buggy solution.
+    input_element.addEventListener("click", (event) => {
+        event.preventDefault();
+        event.stopPropagation();
+        modify_index_by(1);
+    }, abort_signal_object);
+
+    input_element.addEventListener("contextmenu", (event) => {
+        // prevent right click menu
+        event.preventDefault();
+        event.stopPropagation();
+        modify_index_by(-1);
+    }, abort_signal_object);
 }
 
 const prepare_span_for_checkbox_editor = (config: PluginConfig, input_element: HTMLSpanElement, placeholder: CheckboxPlaceholder) => {

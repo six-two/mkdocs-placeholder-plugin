@@ -123,13 +123,13 @@ table tr td input.input-for-variable[type="checkbox"] {
 }
 
 /* Highlight inline editable entries in the page */
-.placeholder-value-editable, .placeholder-value-checkbox {
+.placeholder-value-editable, .placeholder-value-checkbox, .placeholder-value-dropdown {
     cursor: pointer;
     color: blue;
     font-style: italic;
 }
 
-.placeholder-value-editable:hover, .placeholder-value-checkbox:hover {
+.placeholder-value-editable:hover, .placeholder-value-checkbox:hover, .placeholder-value-dropdown:hover {
     border-bottom: 1px solid black;
 }
 
