@@ -77,7 +77,7 @@ def copy_assets_to_mkdocs_site_directory(mkdocs_config: MkDocsConfig, plugin_con
     """
     if plugin_config.placeholder_css:
         theme_name = mkdocs_config.theme.name or "mkdocs"
-        css_text = generate_mkdocs_style_sheet(theme_name, placeholder_config.settings.debug_javascript)
+        css_text = generate_mkdocs_style_sheet(theme_name, placeholder_config.settings.debug_javascript, placeholder_config.settings.inline_editor_icons)
         _write_to_file(mkdocs_config, plugin_config.placeholder_css, css_text, "a")
 
     # Add extra JS

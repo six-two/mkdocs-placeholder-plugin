@@ -129,17 +129,31 @@ table tr td input.input-for-variable[type="checkbox"] {
     font-style: italic;
 }
 
-/* Make sure that empty placeholders are still shown */
-.placeholder-value-editable:empty, .placeholder-value-checkbox:empty, .placeholder-value-dropdown:empty {
-    display: inline-block;
-    width: 1em;
-    height: 1em;
-    background-color: pink;
-    vertical-align: middle;
+.placeholder-value-editable:focus {
+    cursor: initial;
 }
 
 .placeholder-value-editable:hover, .placeholder-value-checkbox:hover, .placeholder-value-dropdown:hover {
-    border-bottom: 2px solid black;
+    border: 1px solid blue;
+    padding: 0px 2px;
+}
+
+.placeholder-value-editable:hover::after, .placeholder-value-checkbox:hover::after, .placeholder-value-dropdown:hover::after {
+    display: inline-block;
+    margin: 0px 3px;
+    font-style: normal;
+}
+
+.placeholder-value-editable:hover::after {
+    content: "🖊";
+}
+
+.placeholder-value-checkbox:hover::after {
+    content: "✔";
+}
+
+.placeholder-value-dropdown:hover::after {
+    content: "↓";
 }
 
 .placeholder-value-editable.validation-error {
@@ -155,6 +169,39 @@ table tr td input.input-for-variable[type="checkbox"] {
 }
 """
 
+NORMAL_INLINE_EDITOR_STYLE = """
+.placeholder-value-editable:empty::before, .placeholder-value-checkbox:empty::before, .placeholder-value-dropdown:empty::before {
+    content: "  ";
+    background-color: pink;
+}
+"""
+
+ICON_INLINE_EDITOR_STYLE = """
+.placeholder-value-editable, .placeholder-value-checkbox, .placeholder-value-dropdown {
+    background-color: lightblue;
+    border-radius: 3px;
+    margin: 0px 3px;
+    padding: 0px 3px;
+}
+
+.placeholder-value-editable::after, .placeholder-value-checkbox::after, .placeholder-value-dropdown::after {
+    display: inline-block;
+    margin: 0px 3px;
+    font-style: normal;
+}
+
+.placeholder-value-editable::after {
+    content: "🖊";
+}
+
+.placeholder-value-checkbox::after {
+    content: "✔";
+}
+
+.placeholder-value-dropdown::after {
+    content: "↓";
+}
+"""
 
 DEBUG_STYLE = """
 .placeholder-value {
@@ -164,8 +211,13 @@ DEBUG_STYLE = """
 }
 """
 
-def generate_generic_style_sheet(debug: bool) -> str:
+def generate_generic_style_sheet(debug: bool, inline_editor_icons: bool) -> str:
+    style = BASIC_STYLE
     if debug:
-        return BASIC_STYLE + DEBUG_STYLE
+        style += DEBUG_STYLE
+    if inline_editor_icons:
+        style += ICON_INLINE_EDITOR_STYLE
     else:
-        return BASIC_STYLE
+        style += NORMAL_INLINE_EDITOR_STYLE
+    
+    return style

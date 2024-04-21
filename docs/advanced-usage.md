@@ -191,6 +191,7 @@ Class name | Element
 `validation-ok` | Inline editors and input elements that pass validation successfully
 `validation-warn` | Inline editors and input elements that pass validation with warnings
 `validation-error` | Inline editors and input elements that fail validation because of errors
+`value-modified` | Inline editors and input elements for a textbox placeholder that has been modified and not yet saved
 
 To overwrite the default rules, define a more specific rule by specifying that it applies only to span elements like the following:
 ```css

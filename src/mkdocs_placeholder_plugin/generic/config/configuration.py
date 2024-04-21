@@ -29,6 +29,7 @@ SETTINGS_FIELD_NAMES = {
     "html_prefix",
     "html_suffix",
     "inline_editors",
+    "inline_editor_icons",
     "normal_is_alias_for",
     "normal_prefix",
     "normal_suffix",
@@ -55,6 +56,7 @@ class PlaceholderSettings(NamedTuple):
     html_suffix: str
     # default value for inline editors
     inline_editors: bool
+    inline_editor_icons: bool
     normal_prefix: str
     normal_suffix: str
     normal_is_alias_for: str
@@ -89,6 +91,7 @@ def parse_settings(data: dict, location: str) -> PlaceholderSettings:
         html_prefix=get_string(data, "html_prefix", "i"),
         html_suffix=get_string(data, "html_suffix", "i"),
         inline_editors=get_bool(data, "inline_editors", default=True),
+        inline_editor_icons=get_bool(data, "inline_editor_icons", default=False),
         normal_is_alias_for=get_string(data, "normal_is_alias_for", "editable"),
         normal_prefix=get_string(data, "normal_prefix", "x"),
         normal_suffix=get_string(data, "normal_suffix", "x"),
