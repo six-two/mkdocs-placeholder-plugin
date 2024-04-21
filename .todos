@@ -16,3 +16,4 @@
 - refactor: try to convert HTML modification code to use markdown hooks (see https://github.com/six-two/mkdocs-placeholder-plugin/issues/6#issuecomment-2062028205)
 - inline placeholders:
     - documentation (inline_editors)
+- bug with `<https://xTESTx>`

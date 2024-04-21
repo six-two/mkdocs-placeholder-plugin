@@ -72,7 +72,7 @@ const convert_to_dynamic_placeholder_table = (config: PluginConfig, element: Ele
         }
     });
 
-    fill_settings_content_container(config, settings_contents);
+    fill_settings_content_container(config, settings_contents, true);
 }
 
 const prepare_settings_button = (settings_button: HTMLElement, settings_contents: HTMLElement, expand_if_needed: () => void) => {
@@ -94,7 +94,7 @@ const prepare_settings_button = (settings_button: HTMLElement, settings_contents
     settings_button.title = "Hide / show settings"
 }
 
-const fill_settings_content_container = (config: PluginConfig, settings_contents: HTMLElement) => {
+const fill_settings_content_container = (config: PluginConfig, settings_contents: HTMLElement, in_placeholder_table: boolean) => {
     const set_highlight_placeholders = (enabled: boolean) => {
         for (const placeholder of config.placeholders.values()) {
             for (const output of placeholder.output_elements) {
@@ -116,7 +116,10 @@ const fill_settings_content_container = (config: PluginConfig, settings_contents
         }
     }
 
-    createChildElement(settings_contents, "b").textContent = "Settings";
+    if (in_placeholder_table) {
+        createChildElement(settings_contents, "b").textContent = "Settings";
+    }
+
     // @TODO: later: when there are multiple settings dialogs, keep their values in sync
     append_boolean_setting_checkbox(settings_contents, config.settings.expand_auto_tables, "expand_auto_tables", "Expand placeholder tables by default*");
     append_boolean_setting_checkbox(settings_contents, config.settings.apply_change_on_focus_change, "apply_change_on_focus_change", "Apply value when focus changes away*");
@@ -325,6 +328,6 @@ export const initialize_auto_tables = (config: PluginConfig) => {
 export const initialize_placeholder_settings_divs = (config: PluginConfig) => {
     const element_list = document.querySelectorAll("div.placeholder-settings-panel");
     for (const element of element_list) {
-        fill_settings_content_container(config, element as HTMLDivElement);
+        fill_settings_content_container(config, element as HTMLDivElement, false);
     }
 }

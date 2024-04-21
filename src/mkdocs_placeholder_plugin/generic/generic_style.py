@@ -60,12 +60,12 @@ table tr td input.input-for-variable[type="checkbox"] {
     text-align: center;
 }
 
-.auto-input-table .settings_button {
+.auto-input-table .settings_button, .placeholder-settings-panel .settings_button {
     display: flex;
     align-items: center;
 }
 
-.auto-input-table .settings_button svg {
+.auto-input-table .settings_button svg, .placeholder-settings-panel .settings_button svg {
     width: 1.1em;
     height: 1.1em;
     cursor: pointer;
@@ -78,12 +78,12 @@ table tr td input.input-for-variable[type="checkbox"] {
     display: none;
 }
 
-.auto-input-table .button-bar {
+.auto-input-table .button-bar, .placeholder-settings-panel .button-bar {
     margin-top: 10px;
     display: flex;
 }
 
-.auto-input-table button {
+.auto-input-table button, .placeholder-settings-panel button {
     padding: 4px;
     border-radius: 5px;
     background-color: gray;

@@ -38,16 +38,42 @@ xTExTESTxSTx
 
 ## In different content
 
-### xTESTx
+### Section title: xTESTx
 
 - [xTESTx](#)
 - _xTESTx_, *xTESTx*
 - __xTESTx__
 - `xTESTx`
+- ++ctrl+xTESTx++
+- <u>xTESTx</u>
 
 ```
 xTESTx
 ```
+
+!!! note "Admonition title: xTESTx"
+    The contents are xTESTx
+
+Direct link: <https://xTESTx>
+
+Text can be {--deleted xTESTx--} and replacement text {++added xTESTx++}. This can also be
+combined into {~~one xTESTx~>a single xTESTx~~} operation. {==Highlighting xTESTx==} is also
+possible {>>and comments can be added inline xTESTx<<}.
+
+{==
+
+Some of this is taken from <https://squidfunk.github.io/mkdocs-material/reference/formatting/>
+
+Test placeholder: xTESTx
+
+==}
+
+Dynamic keys: ++ctrl+xTESTx++, ++ctrl+"xTESTx"++
+
+Static keys: ++ctrl+sTESTs++, ++ctrl+"sTESTs"++
+
+Sub~xTESTx~script, super^xTESTx^script
+
 
 ## Invalid
 

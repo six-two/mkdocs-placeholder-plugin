@@ -12,13 +12,12 @@ You can view the relevant files on GitHub:
 - [placeholder-plugin.yaml](https://github.com/six-two/mkdocs-placeholder-plugin/blob/main/placeholder-plugin.yaml): Defines the page's placeholders.
     The relevant values are named `DEMO_*` and are at/near the top of the file.
 
-## Settings
-
-These settings can be used by each user to control how the placeholder plugin behaves for them:
-
-<div class="placeholder-settings-panel"></div>
-
 ## Inputs
+
+??? info "Expand to show general placeholder settings"
+
+    <div class="placeholder-settings-panel"></div>
+
 
 Enter the values for your variables here:
 

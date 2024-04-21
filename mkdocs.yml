@@ -57,6 +57,12 @@ markdown_extensions:
   # Message/error/warning boxes
   - admonition
   - pymdownx.details
+  # Different formatting options
+  - pymdownx.critic
+  - pymdownx.caret
+  - pymdownx.keys
+  - pymdownx.mark
+  - pymdownx.tilde
   # For search exclusion
   - attr_list
   # For mermaid diagrams
