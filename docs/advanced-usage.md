@@ -173,14 +173,46 @@ EMAIL:
 Placeholder tables using the `<placeholdertable>` tag were removed in version 0.4.0.
 For normal tables see the [usage](./usage.md) page.
 
-## Highlighting placeholders
+## Custom styling
+
+You can see the default style in `src/mkdocs_placeholder_plugin/generic/generic_style.py`.
+The following are some common classes you may want to restyle.
+
+Class name | Element
+---|---
+`placeholder-value` | All placeholders, both with and without inline editors
+`inline-editor-requested` | Placeholder which will be assigned an inline editor, unless they are disabled by the user settings
+`placeholder-value-static` | Placeholders without inline editors
+`placeholder-value-checkbox` | Checkbox placeholder with inline editor
+`placeholder-value-dropdown` | Dropdown placeholder with inline editor
+`placeholder-value-editable` | Textbox placeholder with inline editor
+`input-for-variable` | (non-inline) input element for an placeholder
+`validation-none` | Inline editors and input elements without a validator
+`validation-ok` | Inline editors and input elements that pass validation successfully
+`validation-warn` | Inline editors and input elements that pass validation with warnings
+`validation-error` | Inline editors and input elements that fail validation because of errors
+
+To overwrite the default rules, define a more specific rule by specifying that it applies only to span elements like the following:
+```css
+span.placeholder-value-static {
+    color: black;
+}
+```
+
+Some other values you may want to overwrite are:
+
+- `span.placeholder-value-*:empty`: The placeholder shown when an inline editor has an empty value.
+    By default it is just a pink square.
+- `span.placeholder-value-*:hover`: Style when a user moves their mouse pointer over an inline editor.
+
+### Highlighting placeholders
 
 You may want to show users, which values they can change via the input boxes.
 To do this, you can style the wrapper inserted by the dynamic replacement method.
 Since the wrapper has the class `placeholder-value`, you can add styling for it like this:
 
 ```css
-.placeholder-value {
+span.placeholder-value {
     background-color: yellow;
 }
 ```

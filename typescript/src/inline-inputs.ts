@@ -91,7 +91,7 @@ const prepare_span_for_checkbox_editor = (config: PluginConfig, input_element: H
     const description = placeholder.description ? `\nDescription: ${placeholder.description}` : "";
     input_element.title = `Placeholder name: ${placeholder.name}${description}\nUsage: Click to toggle the value`;
 
-    input_element.addEventListener("click", (event: MouseEvent) => {
+    input_element.addEventListener("click", (_event: MouseEvent) => {
         // toggle checkbox state
         const new_value = !placeholder.current_is_checked;
         placeholder.current_value = new_value ? placeholder.value_checked : placeholder.value_unchecked;

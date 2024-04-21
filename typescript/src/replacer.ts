@@ -3,17 +3,15 @@ import { update_tooltip, validate_placeholder_value } from "./validator";
 import { InputType, Placeholder, PluginConfig, TextboxPlaceholder } from "./parse_settings";
 
 
-type Replacer = (root_element: Element, search_regex: RegExp, replacement_value: string) => number;
-
 // Replace a specific placeholder and return the estimated number of occurences (underestimated, may actually be higher)
-const static_replace: Replacer = (root_element, search_regex, replacement_value) => {
+const static_replace = (root_element: Element, search_regex: RegExp, replacement_value: string) => {
     const walker = document.createTreeWalker(root_element, NodeFilter.SHOW_TEXT);
     let node;
     let count = 0;
     if (!search_regex.global) {
         console.warn(`You should set the global flag for the regex. Context: replacing '${search_regex.source}' with '${replacement_value}'`);
     }
-    while (node = walker.nextNode()) {
+    while ((node = walker.nextNode())) {
         if (node.nodeValue) {
             const replaced_str = node.nodeValue.replace(search_regex, replacement_value);
             if (node.nodeValue != replaced_str) {
@@ -32,7 +30,7 @@ const escapeHTML = (text: string): string => {
     return element.innerHTML;
 }
 
-const inner_html_replace: Replacer = (root_element, search_regex, replacement_value) => {
+const inner_html_replace = (root_element: Element, search_regex: RegExp, replacement_value: string) => {
     // User supplied input, HTML escape it before we inject it in the page
     replacement_value = escapeHTML(replacement_value);
 
@@ -65,10 +63,13 @@ const editable_replace = (root_element: Element, search_regex: RegExp, placehold
     switch (placeholder.type) {
         case InputType.Checkbox:
             extra_class = "placeholder-value-checkbox";
+            break;
         case InputType.Dropdown:
             extra_class = "placeholder-value-dropdown";
+            break;
         case InputType.Textbox:
             extra_class = "placeholder-value-editable";
+            break;
         default:
             console.warn(`Unexpected placeholder type '${placeholder.type}' in editable_replace`);
     }
@@ -99,7 +100,7 @@ const inner_dynamic_or_editable_replace = (root_element: Element, search_regex: 
     }
 
     const nodes_to_modify = [];
-    while (node = walker.nextNode()) {
+    while ((node = walker.nextNode())) {
         if (node.nodeValue) {
             if (node.nodeValue.match(search_regex)) {
                 // Do not modify in-place while iterating over the DOM
@@ -122,7 +123,7 @@ const inner_dynamic_or_editable_replace = (root_element: Element, search_regex: 
     return nodes_to_modify.length + existing_count;
 }
 
-const do_dynamic_replace = (root_element: Element, placeholder: Placeholder, config: PluginConfig): void => {
+const do_dynamic_replace = (root_element: Element, placeholder: Placeholder): void => {
     const count = dynamic_replace(root_element, placeholder.regex_dynamic, placeholder, true);
     if (count > 0) {
         logger.debug(`Replaced ${placeholder.name} via dynamic method at least ${count} time(s)`);
@@ -130,7 +131,7 @@ const do_dynamic_replace = (root_element: Element, placeholder: Placeholder, con
     }
 }
 
-const do_editable_replace = (root_element: Element, placeholder: Placeholder, config: PluginConfig): void => {
+const do_editable_replace = (root_element: Element, placeholder: Placeholder): void => {
     const count = editable_replace(root_element, placeholder.regex_dynamic, placeholder, true);
     if (count > 0) {
         logger.debug(`Replaced ${placeholder.name} via editable method at least ${count} time(s)`);
@@ -165,7 +166,7 @@ const inner_do_normal_replace = (root_element: Element, placeholder: Placeholder
 }
 
 
-const do_static_replace = (root_element: Element, placeholder: Placeholder, config: PluginConfig): void => {
+const do_static_replace = (root_element: Element, placeholder: Placeholder): void => {
     const count = static_replace(root_element, placeholder.regex_static, placeholder.expanded_value);
     if (count > 0) {
         logger.debug(`Replaced ${placeholder.name} via static method at least ${count} time(s)`);
@@ -174,7 +175,7 @@ const do_static_replace = (root_element: Element, placeholder: Placeholder, conf
     }
 }
 
-const do_html_replace = (root_element: Element, placeholder: Placeholder, config: PluginConfig): void => {
+const do_html_replace = (root_element: Element, placeholder: Placeholder): void => {
     const count = inner_html_replace(root_element, placeholder.regex_html, placeholder.expanded_value);
     if (count > 0) {
         logger.debug(`Replaced ${placeholder.name} via innerHTML method at least ${count} time(s)`);
@@ -187,13 +188,13 @@ const do_html_replace = (root_element: Element, placeholder: Placeholder, config
 // Replace all placeholders in the given order and return which placeholders actually were actually found in the page
 export const replace_placeholders_in_subtree = (root_element: Element, config: PluginConfig): void => {
     for (const placeholder of config.placeholders.values()) {
-        do_editable_replace(root_element, placeholder, config);
-        do_dynamic_replace(root_element, placeholder, config);
+        do_dynamic_replace(root_element, placeholder);
+        do_editable_replace(root_element, placeholder);
         do_normal_replace(root_element, placeholder, config);
-        do_static_replace(root_element, placeholder, config);
+        do_static_replace(root_element, placeholder);
 
         if (placeholder.allow_inner_html) {
-            do_html_replace(root_element, placeholder, config);
+            do_html_replace(root_element, placeholder);
         }
     }
 

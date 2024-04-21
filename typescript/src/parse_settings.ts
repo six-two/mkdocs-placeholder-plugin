@@ -1,9 +1,9 @@
 import { load_checkbox_state, load_dropdown_state, load_textbox_state, load_boolean_setting } from "./state_manager";
 import { InputValidator, parse_validator } from "./validator";
 import { DependencyGraph } from "./dependency_graph";
-// This should be a more type safe reimplementation of 10_parse_data.js.
-// It has some breaking changes, since I try to improve how the javascript code works
 
+// It parses random unspecified data, so any should be fine
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const assert_field_type = (name: string, expected_type_str: string, parent_object: any): any => {
     const value = parent_object[name];
     const actual_type_str = typeof(value);
@@ -15,18 +15,23 @@ export const assert_field_type = (name: string, expected_type_str: string, paren
 }
 
 // These functions are here to make sure, that I the type checker can properly work (since they have a specific return type)
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const get_string_field = (name: string, parent_object: any): string => {
     return assert_field_type(name, "string", parent_object);
 }
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const get_boolean_field = (name: string, parent_object: any): boolean => {
     return assert_field_type(name, "boolean", parent_object);
 }
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const get_number_field = (name: string, parent_object: any): number => {
     return assert_field_type(name, "number", parent_object);
 }
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const get_array_field = (name: string, element_type: string, parent_object: any): any[] => {
     const array = parent_object[name];
     if (Array.isArray(array)) {
@@ -160,6 +165,7 @@ export enum InputType {
 
 export type Placeholder = TextboxPlaceholder | CheckboxPlaceholder | DropdownPlaceholder;
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const parse_config = (data: any): PluginConfig => {
     const placeholder_map: Map<string,Placeholder> = new Map<string,Placeholder>();
     const textboxes: Map<string,TextboxPlaceholder> = new Map<string,TextboxPlaceholder>();
@@ -211,6 +217,7 @@ export const parse_config = (data: any): PluginConfig => {
     }
 }
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const parse_settings = (data: any): PluginSettings => {
     const apply_change_on_focus_change_default = get_boolean_field("apply_change_on_focus_change", data);
     const debug_default = get_boolean_field("debug", data);
@@ -246,14 +253,19 @@ const escapeRegExp = (regex_pattern: string) => {
     // @SOURCE https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Regular_Expressions#escaping
     return regex_pattern.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"); // $& means the whole matched string
   }
+
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const parse_any_placeholder = (data: any, validator_map: Map<string,InputValidator>, settings: PluginSettings, index: number): Placeholder => {
     const type = get_string_field("type", data);
     // Parse fields that are shared between all placeholders
     const name = get_string_field("name", data);
-    let parsed = {
+    const parsed = {
         "name": name,
         "order_index": index,
         // The regexes for the different replace methods. Stored here so that I only need to compile them once
+
+        // @TODO: editable
         "regex_dynamic": RegExp(escapeRegExp(settings.dynamic_prefix) + name + escapeRegExp(settings.dynamic_suffix), "g"),
         "regex_html": RegExp(escapeRegExp(settings.html_prefix) + name + escapeRegExp(settings.html_suffix), "g"),
         "regex_normal": RegExp(escapeRegExp(settings.normal_prefix) + name + escapeRegExp(settings.normal_suffix), "g"),
@@ -289,6 +301,7 @@ const parse_any_placeholder = (data: any, validator_map: Map<string,InputValidat
 }
 
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const finish_parse_textbox = (parsed: BasePlaceholer, data: any, validator_map: Map<string,InputValidator>): TextboxPlaceholder => {
     let default_function, default_value;
     if (data["default_value"] != undefined) {
@@ -333,6 +346,7 @@ const finish_parse_textbox = (parsed: BasePlaceholer, data: any, validator_map: 
     }
 }
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const finish_parse_checkbox = (parsed: BasePlaceholer, data: any): CheckboxPlaceholder => {
     return {
         ...parsed,
@@ -345,6 +359,7 @@ const finish_parse_checkbox = (parsed: BasePlaceholer, data: any): CheckboxPlace
     }
 }
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const finish_parse_dropdown = (parsed: BasePlaceholer, data: any): DropdownPlaceholder => {
     const raw_options = get_array_field("options", "object", data);
     const options: DropdownOption[] = [];

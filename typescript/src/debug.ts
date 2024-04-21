@@ -1,19 +1,23 @@
 const timestamp = () => `${new Date().toISOString().slice(11,23)} (TS)`;
 let is_reload_enabled = true;
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 function internal_log(...args: any[]) {
-    console.log.apply(console, [`${timestamp()} |`, ...arguments]);
+    console.log.apply(console, [`${timestamp()} |`, ...args]);
 }
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 function internal_info(...args: any[]) {
-    console.info.apply(console, [`${timestamp()} |`, ...arguments]);
+    console.info.apply(console, [`${timestamp()} |`, ...args]);
 }
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 function internal_debug(...args: any[]) {
-    console.debug.apply(console, [`${timestamp()} |`, ...arguments]);
+    console.debug.apply(console, [`${timestamp()} |`, ...args]);
 }
 
-function noop(...args: any[]) {
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+function noop(..._args: any[]) {
 }
 
 export const reload_page = () => {

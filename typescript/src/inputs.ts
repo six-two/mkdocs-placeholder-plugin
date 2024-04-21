@@ -7,7 +7,7 @@ import { validate_textbox_input_field } from "./validator";
 
 export const initialize_all_input_fields = (config: PluginConfig): void => {
     const input_list: NodeListOf<HTMLInputElement> = document.querySelectorAll("input[data-input-for], select[data-input-for]");
-    for (let input_element of input_list) {
+    for (const input_element of input_list) {
         const placeholder_name = input_element.getAttribute("data-input-for");
         if (placeholder_name == null) {
             throw new Error("How can this be, the selector forces the 'data-input-for' attribute to exist");

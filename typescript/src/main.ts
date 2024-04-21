@@ -8,6 +8,8 @@ import { register_inline_value_editors } from "./inline-inputs";
 
 
 export const main = () => {
+    // This is the easiest way to read the attribute from the window. It should be set by "placeholder-data.js"
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const config = parse_config((window as any).PlaceholderPluginConfigJson);
     
     init_logging(config.settings.debug);
