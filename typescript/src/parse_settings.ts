@@ -73,10 +73,13 @@ export interface PluginSettings {
     expand_auto_tables: boolean;
     highlight_placeholders: boolean;
     inline_editors: boolean;
+    normal_is_alias_for: string;
 
     // How different placeholder types are marked
     normal_prefix: string;
     normal_suffix: string;
+    editable_prefix: string;
+    editable_suffix: string;
     html_prefix: string;
     html_suffix: string;
     static_prefix: string;
@@ -141,6 +144,12 @@ export interface DropdownPlaceholder extends BasePlaceholer {
 export interface DropdownOption {
     display_name: string;
     value: string;
+}
+
+export enum ReplaceType {
+    // Excluding normal, since it is just an alias for one of the other types
+    Editable = "editable",
+
 }
 
 export enum InputType {
@@ -214,9 +223,13 @@ const parse_settings = (data: any): PluginSettings => {
         "expand_auto_tables": load_boolean_setting("expand_auto_tables", expand_auto_tables_default),
         "highlight_placeholders": load_boolean_setting("highlight_placeholders", false),
         "inline_editors": load_boolean_setting("inline_editors", inline_editors),
+        "normal_is_alias_for": get_string_field("normal_is_alias_for", data),
         // How normal placeholders are marked
         "normal_prefix": get_string_field("normal_prefix", data),
         "normal_suffix": get_string_field("normal_suffix", data),
+        // How editable placeholders are marked
+        "editable_prefix": get_string_field("editable_prefix", data),
+        "editable_suffix": get_string_field("editable_suffix", data),
         // How placeholders using the innerHTML method are marked
         "html_prefix": get_string_field("html_prefix", data),
         "html_suffix": get_string_field("html_suffix", data),

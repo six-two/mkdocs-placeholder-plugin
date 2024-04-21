@@ -16,10 +16,13 @@ DROPDOWN | xDROPDOWNx
 Type | Test
 ---|---
 Dynamic | dTESTd
+Editable | eTESTe
 HTML (allowed, should work) | iLINKi
 HTML (prohibited, should fail) | iTESTi
 Normal | xTESTx
 Static | sTESTs
+
+EDIT_TEST_END
 
 <label><input data-input-for="QUOTE_CHECKBOX">Use double quotes</label>
 

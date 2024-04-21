@@ -8,6 +8,10 @@ settings:
   # static_prefix: x
   # static_suffix: x
   # create_no_js_fallback: false
+  # ## Tests for new editable field placeholder type
+  # editable_prefix: EDIT_
+  # editable_suffix: _END
+  # normal_is_alias_for: dynamic
 validators:
   unused:
     name: "Unused: should not be in final JSON"

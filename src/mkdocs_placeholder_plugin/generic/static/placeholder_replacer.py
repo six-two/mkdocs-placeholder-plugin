@@ -3,7 +3,7 @@ import random
 import string
 import time
 # local
-from ..config import PlaceholderConfig, Placeholder
+from ..config import PlaceholderConfig, Placeholder, InputType
 
 SAFE_CHARS_IN_MARKDOWN = list(string.ascii_letters + string.digits)
 CACHED_EXPANDED_DEFAULT_VALUES: dict[str,str] = {}
@@ -19,11 +19,18 @@ def paraniod_html_escape(input: str) -> str:
 def html_for_dynamic_placeholder(placeholder: Placeholder, config: PlaceholderConfig) -> str:
     placeholder_default_value = placeholder_expanded_default_value(placeholder, config)
     # no need to escape the placeholder name, since I do strict validation on it when I parse the placeholders
-    return f'<span class="placeholder-value" data-placeholder="{placeholder.name}">{html.escape(placeholder_default_value)}</span>'
+    return f'<span class="placeholder-value placeholder-value-static" data-placeholder="{placeholder.name}">{html.escape(placeholder_default_value)}</span>'
+
+def html_for_editable_placeholder(placeholder: Placeholder, config: PlaceholderConfig) -> str:
+    placeholder_default_value = placeholder_expanded_default_value(placeholder, config)
+    # no need to escape the placeholder name, since I do strict validation on it when I parse the placeholders
+    return f'<span class="placeholder-value inline-editor-requested" data-placeholder="{placeholder.name}">{html.escape(placeholder_default_value)}</span>'
+
 
 def get_all_placeholder_patterns(placeholder: Placeholder, config: PlaceholderConfig) -> list[str]:
     s = config.settings
     return [
+        s.editable_prefix + placeholder.name + s.editable_suffix,
         s.dynamic_prefix + placeholder.name + s.dynamic_suffix,
         s.html_prefix + placeholder.name + s.html_suffix,
         s.normal_prefix + placeholder.name + s.normal_suffix,
@@ -83,22 +90,30 @@ class DynamicPlaceholderPreprocessor:
         for placeholder in self.config.placeholders.values():
             replace_with_value = f"x{placeholder.name}_{self.unique}x"
 
-            # Handle explicitely maked dynamic placeholders
+            # Handle explicitly marked dynamic placeholders
             search_expression = self.config.settings.dynamic_prefix + placeholder.name + self.config.settings.dynamic_suffix
-            page_markdown = page_markdown.replace(search_expression, replace_with_value)
+            page_markdown = page_markdown.replace(search_expression, f"x{placeholder.name}_{self.unique}_DYNAMICx")
 
-            # Handle normal placeholders, whic are currently just an alias for dynamic placeholders
-            search_expression = self.config.settings.normal_prefix + placeholder.name + self.config.settings.normal_suffix
-            page_markdown = page_markdown.replace(search_expression, replace_with_value)
-        
+            # Handle explicitly marked editable placeholders
+            search_expression = self.config.settings.editable_prefix + placeholder.name + self.config.settings.editable_suffix
+            page_markdown = page_markdown.replace(search_expression, f"x{placeholder.name}_{self.unique}_EDITABLEx")
+
+            # Handle normal placeholders, if they are just an alias for dynamic or editable placeholders
+            if self.config.settings.normal_is_alias_for in ["editable", "dynamic"]:
+                search_expression = self.config.settings.normal_prefix + placeholder.name + self.config.settings.normal_suffix
+                page_markdown = page_markdown.replace(search_expression, f"x{placeholder.name}_{self.unique}_{self.config.settings.normal_is_alias_for.upper()}x")
+
         return page_markdown
 
     def handle_html_page(self, page_html: str) -> str:
         # needs to happen in the HTML document, since otherwise listings will screw things up
         for placeholder in self.config.placeholders.values():
-            search_expression = f"x{placeholder.name}_{self.unique}x"
-            replace_with_value = html_for_dynamic_placeholder(placeholder, self.config)
-            page_html = page_html.replace(search_expression, replace_with_value)
+            page_html = page_html.replace(
+                f"x{placeholder.name}_{self.unique}_DYNAMICx", html_for_dynamic_placeholder(placeholder, self.config)
+            )
+            page_html = page_html.replace(
+                f"x{placeholder.name}_{self.unique}_EDITABLEx", html_for_editable_placeholder(placeholder, self.config)
+            )
 
         return page_html
 

@@ -57,6 +57,25 @@ export const create_dynamic_placeholder_element = (placeholder: Placeholder): HT
 }
 
 const dynamic_replace = (root_element: Element, search_regex: RegExp, placeholder: Placeholder, search_for_pre_replaced: boolean) => {
+    return inner_dynamic_or_editable_replace(root_element, search_regex, placeholder, search_for_pre_replaced, "placeholder-value-static");
+}
+
+const editable_replace = (root_element: Element, search_regex: RegExp, placeholder: Placeholder, search_for_pre_replaced: boolean) => {
+    let extra_class = "placeholder-value-unknown";
+    switch (placeholder.type) {
+        case InputType.Checkbox:
+            extra_class = "placeholder-value-checkbox";
+        case InputType.Dropdown:
+            extra_class = "placeholder-value-dropdown";
+        case InputType.Textbox:
+            extra_class = "placeholder-value-editable";
+        default:
+            console.warn(`Unexpected placeholder type '${placeholder.type}' in editable_replace`);
+    }
+    return inner_dynamic_or_editable_replace(root_element, search_regex, placeholder, search_for_pre_replaced, extra_class);
+}
+
+const inner_dynamic_or_editable_replace = (root_element: Element, search_regex: RegExp, placeholder: Placeholder, search_for_pre_replaced: boolean, extra_class: string | null) => {
     const walker = document.createTreeWalker(root_element, NodeFilter.SHOW_TEXT);
     let node;
     if (!search_regex.global) {
@@ -65,14 +84,17 @@ const dynamic_replace = (root_element: Element, search_regex: RegExp, placeholde
 
     let existing_count = 0;
     if (search_for_pre_replaced){
-        const already_existing_wrappers = document.querySelectorAll(".placeholder-value[data-placeholder]");
+        const extra_class_query = extra_class ? `.${extra_class}` : "";
+        const already_existing_wrappers = document.querySelectorAll(`${extra_class_query}.placeholder-value[data-placeholder]`);
         for (const wrapper of already_existing_wrappers) {
             if (wrapper.getAttribute("data-placeholder") === placeholder.name) {
                 existing_count++;
             }
+
         }
         if (existing_count > 0) {
-            logger.debug(`${existing_count} dynamic placeholder elements already exist for placeholder ${placeholder.name}`);
+            const query_type = extra_class ? "editable" : "dynamic";
+            logger.debug(`${existing_count} ${query_type} placeholder elements already exist for placeholder ${placeholder.name}`);
         }
     }
 
@@ -87,7 +109,8 @@ const dynamic_replace = (root_element: Element, search_regex: RegExp, placeholde
     }
     
     // Do not put in the value yet, otherwise it may be replaced by other placeholders
-    const replacement_value = `<span class="placeholder-value" data-placeholder="${escapeHTML(placeholder.name)}">TEMPORARY PLACEHOLDER</span>`;
+    const extra_class_insert = extra_class ? ` ${extra_class}` : "";
+    const replacement_value = `<span class="placeholder-value${extra_class_insert}" data-placeholder="${escapeHTML(placeholder.name)}">TEMPORARY PLACEHOLDER</span>`;
     for (const node of nodes_to_modify) {
         if (node.nodeValue) {
             const replaced_str = escapeHTML(node.nodeValue).replace(search_regex, replacement_value);
@@ -107,13 +130,40 @@ const do_dynamic_replace = (root_element: Element, placeholder: Placeholder, con
     }
 }
 
-const do_normal_replace = (root_element: Element, placeholder: Placeholder, config: PluginConfig): void => {
-    const count = dynamic_replace(root_element, placeholder.regex_normal, placeholder, false);
+const do_editable_replace = (root_element: Element, placeholder: Placeholder, config: PluginConfig): void => {
+    const count = editable_replace(root_element, placeholder.regex_dynamic, placeholder, true);
     if (count > 0) {
-        logger.debug(`Replaced ${placeholder.name} via normal (dynamic) method at least ${count} time(s)`);
+        logger.debug(`Replaced ${placeholder.name} via editable method at least ${count} time(s)`);
         placeholder.count_on_page += count;
     }
 }
+
+
+const do_normal_replace = (root_element: Element, placeholder: Placeholder, config: PluginConfig): void => {
+    const count = inner_do_normal_replace(root_element, placeholder, config);
+    if (count > 0) {
+        logger.debug(`Replaced ${placeholder.name} via normal (${config.settings.normal_is_alias_for}) method at least ${count} time(s)`);
+        placeholder.count_on_page += count;
+    }
+}
+
+const inner_do_normal_replace = (root_element: Element, placeholder: Placeholder, config: PluginConfig): number => {
+    // Replace with the actual method that normal maps to and return the count
+    switch (config.settings.normal_is_alias_for) {
+        case "dynamic":
+            return dynamic_replace(root_element, placeholder.regex_normal, placeholder, false);
+        case "editable":
+            return editable_replace(root_element, placeholder.regex_normal, placeholder, false);
+        case "html":
+            return inner_html_replace(root_element, placeholder.regex_html, placeholder.expanded_value);
+        case "static":
+            return static_replace(root_element, placeholder.regex_static, placeholder.expanded_value);
+        default:
+            console.warn(`Unknown replace type mapped in 'settings.normal_is_alias_for': ${config.settings.normal_is_alias_for}. Skipping replacing normal placeholders`);
+            return 0;
+    }
+}
+
 
 const do_static_replace = (root_element: Element, placeholder: Placeholder, config: PluginConfig): void => {
     const count = static_replace(root_element, placeholder.regex_static, placeholder.expanded_value);
@@ -137,6 +187,7 @@ const do_html_replace = (root_element: Element, placeholder: Placeholder, config
 // Replace all placeholders in the given order and return which placeholders actually were actually found in the page
 export const replace_placeholders_in_subtree = (root_element: Element, config: PluginConfig): void => {
     for (const placeholder of config.placeholders.values()) {
+        do_editable_replace(root_element, placeholder, config);
         do_dynamic_replace(root_element, placeholder, config);
         do_normal_replace(root_element, placeholder, config);
         do_static_replace(root_element, placeholder, config);

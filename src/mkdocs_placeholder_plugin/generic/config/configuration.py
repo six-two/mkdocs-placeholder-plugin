@@ -8,6 +8,9 @@ from .parser_utils import assert_no_unknown_fields, get_bool, get_int, get_strin
 from .validator import Validator, parse_validators
 from .placeholder import Placeholder, parse_placeholders
 
+# Valid values for normal_is_alias_for
+ALLOWED_REPLACE_SCHEMES = ["dynamic", "editable", "html", "static"]
+
 CONFIGURATION_FIELD_NAMES = {
     "placeholders",
     "settings",
@@ -20,10 +23,13 @@ SETTINGS_FIELD_NAMES = {
     "debug_javascript",
     "dynamic_prefix",
     "dynamic_suffix",
+    "editable_prefix",
+    "editable_suffix",
     "expand_auto_tables",
     "html_prefix",
     "html_suffix",
     "inline_editors",
+    "normal_is_alias_for",
     "normal_prefix",
     "normal_suffix",
     "replace_delay_millis",
@@ -42,6 +48,8 @@ class PlaceholderSettings(NamedTuple):
     # Default prefixes / suffixes used for different replacement methods
     dynamic_prefix: str
     dynamic_suffix: str
+    editable_prefix: str
+    editable_suffix: str
     expand_auto_tables: bool
     html_prefix: str
     html_suffix: str
@@ -49,6 +57,7 @@ class PlaceholderSettings(NamedTuple):
     inline_editors: bool
     normal_prefix: str
     normal_suffix: str
+    normal_is_alias_for: str
     # Replace delay millis
     replace_delay_millis: int
     # Whether to show warings in the python code
@@ -74,10 +83,13 @@ def parse_settings(data: dict, location: str) -> PlaceholderSettings:
         debug_javascript=get_bool(data, "debug_javascript", default=False),
         dynamic_prefix=get_string(data, "dynamic_prefix", "d"),
         dynamic_suffix=get_string(data, "dynamic_suffix", "d"),
+        editable_prefix=get_string(data, "editable_prefix", "e"),
+        editable_suffix=get_string(data, "editable_suffix", "e"),
         expand_auto_tables=get_bool(data, "expand_auto_tables", default=True),
         html_prefix=get_string(data, "html_prefix", "i"),
         html_suffix=get_string(data, "html_suffix", "i"),
         inline_editors=get_bool(data, "inline_editors", default=True),
+        normal_is_alias_for=get_string(data, "normal_is_alias_for", "editable"),
         normal_prefix=get_string(data, "normal_prefix", "x"),
         normal_suffix=get_string(data, "normal_suffix", "x"),
         replace_delay_millis=get_int(data, "replace_delay_millis", default=0, round_float=True),
@@ -90,13 +102,17 @@ def parse_settings(data: dict, location: str) -> PlaceholderSettings:
     name = "PLACEHOLDER_NAME"
     patterns = [
         settings.dynamic_prefix + name + settings.dynamic_suffix,
+        settings.editable_prefix + name + settings.editable_suffix,
         settings.html_prefix + name + settings.html_suffix,
         settings.normal_prefix + name + settings.normal_suffix,
         settings.static_prefix + name + settings.static_suffix,
     ]
 
+    if settings.normal_is_alias_for not in ALLOWED_REPLACE_SCHEMES:
+        raise PlaceholderConfigError(f"'normal_is_alias_for' has unexpected value '{settings.normal_is_alias_for}'. The allowed values are: {', '.join(ALLOWED_REPLACE_SCHEMES)}")
+
     if len(set(patterns)) != len(patterns):
-        raise PlaceholderConfigError(f"Multiple differnet replacement methods search for the same pattern. The patterns are: {', '.join(patterns)}")
+        raise PlaceholderConfigError(f"Multiple different replacement methods search for the same pattern. The patterns are: {', '.join(patterns)}")
 
     return settings
 

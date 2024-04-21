@@ -6,10 +6,9 @@ import { store_textbox_state, store_checkbox_state, store_dropdown_state } from 
 
 
 export const register_inline_value_editors = (config: PluginConfig) => {
-    const placeholder_value_elements = document.querySelectorAll("span.placeholder-value[data-placeholder]");
+    const placeholder_value_elements = document.querySelectorAll("span.placeholder-value.inline-editor-requested[data-placeholder]");
     for (const element of placeholder_value_elements) {
         const placeholder_name = element.getAttribute("data-placeholder");
-        console.debug("patching", placeholder_name, element);
         if (placeholder_name) {
             // ^-- Should always be true, since we check for it in our query
             const placeholder = config.placeholders.get(placeholder_name);
