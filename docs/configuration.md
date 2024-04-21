@@ -84,10 +84,13 @@ create_no_js_fallback | `bool` | `True`
 debug_javascript | `bool` | `False`
 dynamic_prefix | `str` | `d`
 dynamic_suffix | `str` | `d`
+editable_prefix | `str` | `e`
+editable_suffix | `str` | `e`
 expand_auto_tables | `bool` | `True`
 html_prefix | `str` | `i`
 html_suffix | `str` | `i`
 inline_editors | `bool` | `True`
+normal_is_alias_for | `str` | `editable`
 normal_prefix | `str` | `x`
 normal_suffix | `str` | `x`
 replace_delay_millis | `int` | `0`
@@ -105,10 +108,13 @@ settings:
     debug_javascript: false
     dynamic_prefix: d
     dynamic_suffix: d
+    editable_prefix: e
+    editable_suffix: e
     expand_auto_tables: true
     html_prefix: i
     html_suffix: i
     inline_editors: true
+    normal_is_alias_for: editable
     normal_prefix: x
     normal_suffix: x
     replace_delay_millis: 0
@@ -174,6 +180,15 @@ This defines the pattern that will be used to detect when you want to replace a 
 When replacing placeholders, the site is searched for the following pattern: `<prefix><placeholder_name><suffix>`.
 For example if you use `normal_prefix: var_` and `normal_suffix: n`, then placeholders will need to use the format `var_NAMEn` instead of `xNAMEx`.
 
+### normal_is_alias_for
+
+This defines what [replacement method](./replace-modes.md) normal placeholders (by default `xPLACEHOLDERx`) should use.
+Valid values are:
+
+- `dynamic`: Use dynamic placeholders without inline editors.
+- `editable`: Use dynamic placeholders with inline editors.
+- `html`: Use InnerHTML replacement method. **Use this at your own risk**
+- `static`: Use the static replacement. Also not recommended.
 
 ### replace_delay_millis
 

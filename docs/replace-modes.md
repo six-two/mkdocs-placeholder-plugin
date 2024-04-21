@@ -12,7 +12,8 @@ However be advised, that some types do not support dynamic reloading, so the who
 |Default pattern|xPLACEHOLDER_NAMEx|
 
 Unless there is a good reason to use something else, you should probably default to using this.
-Currently just is an alias for dynamic, but may change in the future.
+Currently just is an alias for `editable`, but may change in the future.
+You can also explicitly map it to any replacement method with the `normal_is_alias_for` setting in your placeholder file.
 
 ### InnerHTML
 
@@ -35,7 +36,18 @@ To allow this, you need to set `replace_everywhere: true` for all placeholders, 
 
 Replaces element with a placeholder wrapper.
 This enables updating the element in-place and is necessary if you want to highlight the placeholders.
-It is also required for the inline-editors (requires version 0.4.2 or later).
+This method explicitly disables inline editors.
+
+### Editable
+
+|Default pattern|ePLACEHOLDER_NAMEe|
+|Change requires reload|false|
+|Replace locations|text nodes|
+|Safe|true|
+
+Replaces element with a placeholder wrapper.
+This enables updating the element in-place and is necessary if you want to highlight the placeholders.
+It is also required for the inline editors (requires version 0.4.2 or later).
 
 ### Direct / Static
 
