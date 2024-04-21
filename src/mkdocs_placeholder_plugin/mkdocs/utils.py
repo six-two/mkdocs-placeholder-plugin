@@ -5,7 +5,6 @@ from mkdocs.config.defaults import MkDocsConfig
 from mkdocs.exceptions import PluginError
 from ..generic import set_logger
 
-# local files
 # local
 from ..generic.config import PlaceholderConfig
 from .style import generate_mkdocs_style_sheet
@@ -37,7 +36,7 @@ def register_asset_files(mkdocs_config: MkDocsConfig, plugin_config: Placeholder
         # Breaking change: config.extra_javascript is no longer a plain list of strings, but instead a list of ExtraScriptValue items. So you can no longer treat the list values as strings. If you want to keep compatibility with old versions, just always reference the items as str(item) instead. And you can still append plain strings to the list if you wish.
         # Source: https://www.mkdocs.org/about/release-notes/#version-150-2023-07-26
         # My note: If I upgraded to use the correct type, it would require MkDocs 1.5.0
-        add_to_list_if_not_already_exists(mkdocs_config.extra_javascript, js_file_path)
+        add_to_list_if_not_already_exists(mkdocs_config.extra_javascript, js_file_path) # type: ignore
 
     # Make sure that the custom CSS is included on every page
     if plugin_config.placeholder_css:

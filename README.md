@@ -160,11 +160,14 @@ I will update the docs after I also clean up / rewrite the python code (planed f
 This is just for me :)
 
 1. Run linters:
-    ```
+    ```bash
     mypy src
     ```
-    ```
+    ```bash
     pyflakes src
+    ```
+    ```bash
+    podman run -it --rm --workdir /typescript -v "$(pwd)/typescript:/typescript" localhost/placeholder-npm:latest npm run lint
     ```
 2. Update the changelog in this README file.
 3. Update version number in `setup.cfg`.
@@ -172,11 +175,11 @@ This is just for me :)
 5. Build and update package.
 6. Create a commit for the release (`Version 0.X.Y`) and push it.
 7. Add a tag named `0.X.Y`:
-    ```
+    ```bash
     git tag 0.X.Y
     ```
 8. Update the `latest-release` branch, so that the documentation website gets updated:
-    ```
+    ```bash
     git branch --force latest-release HEAD
     git push --tags origin latest-release
     ```

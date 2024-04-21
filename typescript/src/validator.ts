@@ -37,6 +37,8 @@ export interface PlaceholderValidatorResult {
     message: string,
 }
 
+// We accept unknown data to parse, so I think the any type is ok.
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const parse_validator = (data: any): InputValidator => {
     const rules = get_array_field("rules", "object", data);
     if (rules.length == 0) {
@@ -175,7 +177,8 @@ const placeholder_is_good = (placeholder: TextboxPlaceholder): PlaceholderValida
 }
 
 
-
+// We accept unknown data to parse, so I think the any type is ok.
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const parse_rule = (data: any, validator_id: string): ValidatorRule => {
     const severity_str = get_string_field("severity", data);
     let severity;
@@ -187,7 +190,7 @@ const parse_rule = (data: any, validator_id: string): ValidatorRule => {
         throw new Error(`Unknown severity '${severity_str}'`);
     }
     let is_match_function;
-    if ((data as any).regex) {
+    if (data.regex) {
         const regex = get_string_field("regex", data);
         const compiled_regex = new RegExp(regex);
         is_match_function = (value: string) => compiled_regex.test(value);

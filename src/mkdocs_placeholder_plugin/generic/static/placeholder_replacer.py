@@ -3,7 +3,7 @@ import random
 import string
 import time
 # local
-from ..config import PlaceholderConfig, Placeholder, InputType
+from ..config import PlaceholderConfig, Placeholder
 
 SAFE_CHARS_IN_MARKDOWN = list(string.ascii_letters + string.digits)
 CACHED_EXPANDED_DEFAULT_VALUES: dict[str,str] = {}
@@ -88,8 +88,6 @@ class DynamicPlaceholderPreprocessor:
         # This works similar to safe_replace_multiple_placeholders_in_string in replacer.ts.
         # The roundabout way is needed to ensure that placeholders that are in a previously replaced placeholder's value are not replaced
         for placeholder in self.config.placeholders.values():
-            replace_with_value = f"x{placeholder.name}_{self.unique}x"
-
             # Handle explicitly marked dynamic placeholders
             search_expression = self.config.settings.dynamic_prefix + placeholder.name + self.config.settings.dynamic_suffix
             page_markdown = page_markdown.replace(search_expression, f"x{placeholder.name}_{self.unique}_DYNAMICx")

@@ -120,10 +120,12 @@ const fill_settings_content_container = (config: PluginConfig, settings_contents
         createChildElement(settings_contents, "b").textContent = "Settings";
     }
 
+    const do_nothing = (_enabled: boolean) => {};
+
     // @TODO: later: when there are multiple settings dialogs, keep their values in sync
-    append_boolean_setting_checkbox(settings_contents, config.settings.expand_auto_tables, "expand_auto_tables", "Expand placeholder tables by default*");
-    append_boolean_setting_checkbox(settings_contents, config.settings.apply_change_on_focus_change, "apply_change_on_focus_change", "Apply value when focus changes away*");
-    append_boolean_setting_checkbox(settings_contents, config.settings.debug, "debug", "Log JavaScript debug messages to console*");
+    append_boolean_setting_checkbox(settings_contents, config.settings.expand_auto_tables, "expand_auto_tables", "Expand placeholder tables by default*", do_nothing);
+    append_boolean_setting_checkbox(settings_contents, config.settings.apply_change_on_focus_change, "apply_change_on_focus_change", "Apply value when focus changes away*", do_nothing);
+    append_boolean_setting_checkbox(settings_contents, config.settings.debug, "debug", "Log JavaScript debug messages to console*", do_nothing);
     append_boolean_setting_checkbox(settings_contents, config.settings.highlight_placeholders, "highlight_placeholders", "Highlight placeholders (useful for debugging)", set_highlight_placeholders);
     append_boolean_setting_checkbox(settings_contents, config.settings.inline_editors, "inline_editors", "Allow editing placeholders directly in the page", set_inline_editors_enabled);
     createChildElement(settings_contents, "i").textContent = "* You need to reload the page for these settings to take effect."
@@ -140,7 +142,7 @@ const fill_settings_content_container = (config: PluginConfig, settings_contents
     placeholder_reset_button.addEventListener("click", clear_state);
 }
 
-const append_boolean_setting_checkbox = (parent_element: HTMLElement, value: boolean, name: string, label_text: string, custom_on_change = (enabled: boolean) => {}) => {
+const append_boolean_setting_checkbox = (parent_element: HTMLElement, value: boolean, name: string, label_text: string, custom_on_change: (enabled: boolean) => void) => {
     const label = createChildElement(parent_element, "label");
     label.textContent = `${label_text} `;
     const checkbox = createChildElement(label, "input") as HTMLInputElement;
@@ -262,7 +264,7 @@ const update_auto_table = (config: PluginConfig, table: InputTable, new_placehol
     const reversed_new: Placeholder[] = [...new_placeholder_list].reverse();
 
     let next_new;
-    while (next_new = reversed_new.pop()) {
+    while ((next_new = reversed_new.pop())) {
         // const next_new = reversed_new.pop();
         const next_current = reversed_current.slice(-1)[0];
         if (next_current && next_current.placeholder === next_new) {
