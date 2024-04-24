@@ -174,39 +174,39 @@ table tr td input.input-for-variable[type="checkbox"] {
 """
 
 NORMAL_INLINE_EDITOR_STYLE = """
-.placeholder-value-editable:empty::before, .placeholder-value-checkbox:empty::before, .placeholder-value-dropdown:empty::before {
+.inline-editor-simple .placeholder-value-editable:empty::before, .inline-editor-simple .placeholder-value-checkbox:empty::before, .inline-editor-simple .placeholder-value-dropdown:empty::before {
     content: "  ";
     background-color: pink;
 }
 """
 
 ICON_INLINE_EDITOR_STYLE = """
-.placeholder-value-editable, .placeholder-value-checkbox, .placeholder-value-dropdown {
+.inline-editor-icons .placeholder-value-editable, .inline-editor-icons .placeholder-value-checkbox, .inline-editor-icons .placeholder-value-dropdown {
     background-color: lightblue;
     border-radius: 3px;
     margin: 0px 3px;
     padding: 0px 3px;
 }
 
-.placeholder-value-editable::after, .placeholder-value-checkbox::after, .placeholder-value-dropdown::after {
+.inline-editor-icons .placeholder-value-editable::after, .inline-editor-icons .placeholder-value-checkbox::after, .inline-editor-icons .placeholder-value-dropdown::after {
     display: inline-block;
     margin: 0px 3px;
     font-style: normal;
 }
 
-.placeholder-value-editable::after {
+.inline-editor-icons .placeholder-value-editable::after {
     content: "🖊";
 }
 
-.placeholder-value-checkbox.checked::after {
+.inline-editor-icons .placeholder-value-checkbox.checked::after {
     content: "☑";
 }
 
-.placeholder-value-checkbox.unchecked::after {
+.inline-editor-icons .placeholder-value-checkbox.unchecked::after {
     content: "☐";
 }
 
-.placeholder-value-dropdown::after {
+.inline-editor-icons .placeholder-value-dropdown::after {
     content: "↓";
 }
 """
@@ -223,9 +223,10 @@ def generate_generic_style_sheet(debug: bool, inline_editor_icons: bool) -> str:
     style = BASIC_STYLE
     if debug:
         style += DEBUG_STYLE
-    if inline_editor_icons:
-        style += ICON_INLINE_EDITOR_STYLE
-    else:
-        style += NORMAL_INLINE_EDITOR_STYLE
+    #if inline_editor_icons:
+    #     style += ICON_INLINE_EDITOR_STYLE
+    # else:
+    #     style += NORMAL_INLINE_EDITOR_STYLE
+    style += ICON_INLINE_EDITOR_STYLE + NORMAL_INLINE_EDITOR_STYLE
     
     return style

@@ -1,5 +1,5 @@
 import { logger } from "./debug";
-import { register_inline_value_editors, unregister_inline_value_editors } from "./inline-inputs";
+import { register_inline_value_editors, set_inline_editor_icons_enabled, unregister_inline_value_editors } from "./inline-inputs";
 import { prepare_input_field } from "./inputs";
 import { InputTable, InputTableRow, Placeholder, PluginConfig } from "./parse_settings";
 import { create_dynamic_placeholder_element } from "./replacer";
@@ -128,6 +128,7 @@ const fill_settings_content_container = (config: PluginConfig, settings_contents
     append_boolean_setting_checkbox(settings_contents, config.settings.debug, "debug", "Log JavaScript debug messages to console*", do_nothing);
     append_boolean_setting_checkbox(settings_contents, config.settings.highlight_placeholders, "highlight_placeholders", "Highlight placeholders (useful for debugging)", set_highlight_placeholders);
     append_boolean_setting_checkbox(settings_contents, config.settings.inline_editors, "inline_editors", "Allow editing placeholders directly in the page", set_inline_editors_enabled);
+    append_boolean_setting_checkbox(settings_contents, config.settings.inline_editor_icons, "inline_editor_icons", "Use icons and other styling to highlight inline editors", set_inline_editor_icons_enabled);
     createChildElement(settings_contents, "i").textContent = "* You need to reload the page for these settings to take effect."
 
     const settings_button_bar = createChildElement(settings_contents, "div");

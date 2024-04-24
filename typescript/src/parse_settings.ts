@@ -78,6 +78,7 @@ export interface PluginSettings {
     expand_auto_tables: boolean;
     highlight_placeholders: boolean;
     inline_editors: boolean;
+    inline_editor_icons: boolean;
     normal_is_alias_for: string;
 
     // How different placeholder types are marked
@@ -224,6 +225,8 @@ const parse_settings = (data: any): PluginSettings => {
     const debug_default = get_boolean_field("debug", data);
     const expand_auto_tables_default = get_boolean_field("expand_auto_tables", data);
     const inline_editors = get_boolean_field("inline_editors", data);
+    const inline_editor_icons = get_boolean_field("inline_editor_icons", data);
+    
     return {
         "apply_change_on_focus_change": load_boolean_setting("apply_change_on_focus_change", apply_change_on_focus_change_default),
         "debug": load_boolean_setting("debug", debug_default),
@@ -231,6 +234,7 @@ const parse_settings = (data: any): PluginSettings => {
         "expand_auto_tables": load_boolean_setting("expand_auto_tables", expand_auto_tables_default),
         "highlight_placeholders": load_boolean_setting("highlight_placeholders", false),
         "inline_editors": load_boolean_setting("inline_editors", inline_editors),
+        "inline_editor_icons": load_boolean_setting("inline_editor_icons", inline_editor_icons),
         "normal_is_alias_for": get_string_field("normal_is_alias_for", data),
         // How normal placeholders are marked
         "normal_prefix": get_string_field("normal_prefix", data),

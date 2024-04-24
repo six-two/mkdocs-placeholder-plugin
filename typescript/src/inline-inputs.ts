@@ -16,7 +16,21 @@ export const update_inline_checkbox_editor_classes = (element: HTMLElement, plac
     }
 }
 
+export const set_inline_editor_icons_enabled = (enabled: boolean) => {
+    // We add the class to the body, so that it will apply to all placeholders (at once)
+    if (enabled) {
+        document.body.classList.add("inline-editor-icons");
+        document.body.classList.remove("inline-editor-simple");
+    } else {
+        document.body.classList.add("inline-editor-simple");
+        document.body.classList.remove("inline-editor-icons");
+    }
+}
+
 export const register_inline_value_editors = (config: PluginConfig) => {
+    // Ensure that the correct class is set before the editors are created
+    set_inline_editor_icons_enabled(config.settings.inline_editor_icons);
+
     const placeholder_value_elements = document.querySelectorAll("span.placeholder-value.inline-editor-requested[data-placeholder]");
     for (const element of placeholder_value_elements) {
         const placeholder_name = element.getAttribute("data-placeholder");
@@ -66,7 +80,13 @@ const prepare_span_for_dropdown_editor = (config: PluginConfig, input_element: H
     const abort_signal_object = { signal: config.event_listener_abort_controller.signal };
 
     const description = placeholder.description ? `\nDescription: ${placeholder.description}` : "";
-    input_element.title = `Placeholder name: ${placeholder.name}${description}\nDefault option: ${placeholder.options[placeholder.default_index].display_name}\nUsage: (left-)click to cycle forward through the values, right-click to cycle through backwards`;
+    let tooltip = `Placeholder name: ${placeholder.name}${description}\nDefault option: ${placeholder.options[placeholder.default_index].value}\nUsage: (left-)click to cycle forward through the values, right-click to cycle through backwards\nPossible values:`;
+
+    for (const option of placeholder.options) {
+        tooltip += `\n- ${option.value}`;
+    }
+
+    input_element.title = tooltip;
 
     const modify_index_by = (count: number) => {
         let index = (placeholder.current_index + count) % placeholder.options.length;
@@ -111,6 +131,8 @@ const prepare_span_for_checkbox_editor = (config: PluginConfig, input_element: H
         store_checkbox_state(placeholder, new_value);
         on_placeholder_change(config, placeholder);
     }, abort_signal_object);
+
+    update_inline_checkbox_editor_classes(input_element, placeholder);
 }
 
 const prepare_span_for_textbox_editor = (config: PluginConfig, input_element: HTMLSpanElement, placeholder: TextboxPlaceholder) => {
