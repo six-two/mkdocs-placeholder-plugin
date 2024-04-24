@@ -5,6 +5,17 @@ import { on_placeholder_change } from "./inputs";
 import { store_textbox_state, store_checkbox_state, store_dropdown_state } from "./state_manager";
 
 
+export const update_inline_checkbox_editor_classes = (element: HTMLElement, placeholder: CheckboxPlaceholder) => {
+    // these classes can be used to show the current state with inline placeholders
+    if (placeholder.current_is_checked) {
+        element.classList.add("checked");
+        element.classList.remove("unchecked");
+    } else {
+        element.classList.add("unchecked");
+        element.classList.remove("checked");
+    }
+}
+
 export const register_inline_value_editors = (config: PluginConfig) => {
     const placeholder_value_elements = document.querySelectorAll("span.placeholder-value.inline-editor-requested[data-placeholder]");
     for (const element of placeholder_value_elements) {

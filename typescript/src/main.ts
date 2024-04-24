@@ -1,6 +1,6 @@
 import { parse_config, PluginConfig } from "./parse_settings";
 import { init_logging, logger } from "./debug";
-import { replace_placeholders_in_subtree } from "./replacer";
+import { replace_dynamic_placeholder_values, replace_placeholders_in_subtree } from "./replacer";
 import { initialize_all_input_fields } from "./inputs";
 import { export_api_functions } from "./api";
 import { initialize_auto_tables, initialize_placeholder_settings_divs } from "./auto_tables";
@@ -46,5 +46,9 @@ const do_plugin_stuff = (config: PluginConfig) => {
     if (config.settings.inline_editors) {
         register_inline_value_editors(config);
     }
+
+    // Normally it should not be necessary, but without it the initial values for checkbox placeholdersdo not have the checked/unchecked class assigned
+    // @TODO later: investigate and fix
+    replace_dynamic_placeholder_values([...config.placeholders.values()]);
 }
 

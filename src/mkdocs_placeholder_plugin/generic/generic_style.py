@@ -148,8 +148,12 @@ table tr td input.input-for-variable[type="checkbox"] {
     content: "🖊";
 }
 
-.placeholder-value-checkbox:hover::after {
-    content: "✔";
+.placeholder-value-checkbox.checked:hover::after {
+    content: "☑";
+}
+
+.placeholder-value-checkbox.unchecked:hover::after {
+    content: "☐";
 }
 
 .placeholder-value-dropdown:hover::after {
@@ -194,8 +198,12 @@ ICON_INLINE_EDITOR_STYLE = """
     content: "🖊";
 }
 
-.placeholder-value-checkbox::after {
-    content: "✔";
+.placeholder-value-checkbox.checked::after {
+    content: "☑";
+}
+
+.placeholder-value-checkbox.unchecked::after {
+    content: "☐";
 }
 
 .placeholder-value-dropdown::after {

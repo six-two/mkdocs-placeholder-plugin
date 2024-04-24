@@ -1,6 +1,7 @@
 import { logger } from "./debug";
 import { update_tooltip, validate_placeholder_value } from "./validator";
-import { InputType, Placeholder, PluginConfig, TextboxPlaceholder } from "./parse_settings";
+import { CheckboxPlaceholder, InputType, Placeholder, PluginConfig, TextboxPlaceholder } from "./parse_settings";
+import { update_inline_checkbox_editor_classes } from "./inline-inputs";
 
 
 // Replace a specific placeholder and return the estimated number of occurences (underestimated, may actually be higher)
@@ -249,6 +250,13 @@ export const replace_dynamic_placeholder_values = (placeholder_list: Placeholder
                     if (element.classList.contains("placeholder-value-editable")) {
                         // This element is an inline editor
                         update_tooltip(element, result);
+                    }
+                }
+            } else if (placeholder.type == InputType.Checkbox) {
+                for (const element of placeholder.output_elements) {
+                    if (element.classList.contains("placeholder-value-checkbox")) {
+                        // This element is an inline editor
+                        update_inline_checkbox_editor_classes(element, placeholder as CheckboxPlaceholder);
                     }
                 }
             }
