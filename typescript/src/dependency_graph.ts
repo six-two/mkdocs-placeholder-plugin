@@ -185,6 +185,7 @@ export class DependencyGraph {
 
 const string_contains_placeholder = (string_to_test: string, placeholder_to_find: Placeholder): boolean => {
     return placeholder_to_find.regex_dynamic.test(string_to_test) ||
+            placeholder_to_find.regex_editable.test(string_to_test) ||
             placeholder_to_find.regex_html.test(string_to_test) ||
             placeholder_to_find.regex_normal.test(string_to_test) ||
             placeholder_to_find.regex_static.test(string_to_test);

@@ -7,7 +7,7 @@ settings:
   # # Uncommenting the following lines should cause an error
   # static_prefix: x
   # static_suffix: x
-  # create_no_js_fallback: false
+  create_no_js_fallback: false
   # ## Tests for new editable field placeholder type
   # editable_prefix: EDIT_
   # editable_suffix: _END

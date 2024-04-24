@@ -60,21 +60,21 @@ const dynamic_replace = (root_element: Element, search_regex: RegExp, placeholde
 }
 
 const editable_replace = (root_element: Element, search_regex: RegExp, placeholder: Placeholder, search_for_pre_replaced: boolean) => {
-    let extra_class = "placeholder-value-unknown";
-    switch (placeholder.type) {
-        case InputType.Checkbox:
-            extra_class = "placeholder-value-checkbox";
-            break;
-        case InputType.Dropdown:
-            extra_class = "placeholder-value-dropdown";
-            break;
-        case InputType.Textbox:
-            extra_class = "placeholder-value-editable";
-            break;
-        default:
-            console.warn(`Unexpected placeholder type '${placeholder.type}' in editable_replace`);
-    }
-    return inner_dynamic_or_editable_replace(root_element, search_regex, placeholder, search_for_pre_replaced, extra_class);
+    // let extra_class = "placeholder-value-unknown";
+    // switch (placeholder.type) {
+    //     case InputType.Checkbox:
+    //         extra_class = "placeholder-value-checkbox";
+    //         break;
+    //     case InputType.Dropdown:
+    //         extra_class = "placeholder-value-dropdown";
+    //         break;
+    //     case InputType.Textbox:
+    //         extra_class = "placeholder-value-editable";
+    //         break;
+    //     default:
+    //         console.warn(`Unexpected placeholder type '${placeholder.type}' in editable_replace`);
+    // }
+    return inner_dynamic_or_editable_replace(root_element, search_regex, placeholder, search_for_pre_replaced, "inline-editor-requested");
 }
 
 const inner_dynamic_or_editable_replace = (root_element: Element, search_regex: RegExp, placeholder: Placeholder, search_for_pre_replaced: boolean, extra_class: string | null) => {
@@ -110,15 +110,17 @@ const inner_dynamic_or_editable_replace = (root_element: Element, search_regex: 
         }
     }
     
-    // Do not put in the value yet, otherwise it may be replaced by other placeholders
-    const extra_class_insert = extra_class ? ` ${extra_class}` : "";
-    const replacement_value = `<span class="placeholder-value${extra_class_insert}" data-placeholder="${escapeHTML(placeholder.name)}">TEMPORARY PLACEHOLDER</span>`;
-    for (const node of nodes_to_modify) {
-        if (node.nodeValue) {
-            const replaced_str = escapeHTML(node.nodeValue).replace(search_regex, replacement_value);
-            const new_node = document.createElement("span");
-            new_node.innerHTML = replaced_str;
-            node.parentElement?.replaceChild(new_node, node);
+    if (nodes_to_modify) {
+        // Do not put in the value yet, otherwise it may be replaced by other placeholders
+        const extra_class_insert = extra_class ? ` ${extra_class}` : "";
+        const replacement_value = `<span class="placeholder-value${extra_class_insert}" data-placeholder="${escapeHTML(placeholder.name)}">TEMPORARY PLACEHOLDER</span>`;
+        for (const node of nodes_to_modify) {
+            if (node.nodeValue) {
+                const replaced_str = escapeHTML(node.nodeValue).replace(search_regex, replacement_value);
+                const new_node = document.createElement("span");
+                new_node.innerHTML = replaced_str;
+                node.parentElement?.replaceChild(new_node, node);
+            }
         }
     }
     return nodes_to_modify.length + existing_count;
@@ -133,7 +135,7 @@ const do_dynamic_replace = (root_element: Element, placeholder: Placeholder): vo
 }
 
 const do_editable_replace = (root_element: Element, placeholder: Placeholder): void => {
-    const count = editable_replace(root_element, placeholder.regex_dynamic, placeholder, true);
+    const count = editable_replace(root_element, placeholder.regex_editable, placeholder, true);
     if (count > 0) {
         logger.debug(`Replaced ${placeholder.name} via editable method at least ${count} time(s)`);
         placeholder.count_on_page += count;
@@ -229,6 +231,7 @@ export const safe_replace_multiple_placeholders_in_string = (text: string, place
 const replace_placeholder_in_string_with = (text: string, placeholder: Placeholder, value: string): string => {
     // This funtion will perform replacements, but will ignore the replacement type (all will be simple/direct replace)
     return text.replace(placeholder.regex_dynamic, value)
+        .replace(placeholder.regex_editable, value)
         .replace(placeholder.regex_html, value)
         .replace(placeholder.regex_normal, value)
         .replace(placeholder.regex_static, value);

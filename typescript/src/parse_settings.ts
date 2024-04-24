@@ -102,6 +102,7 @@ export interface BasePlaceholer {
     order_index: number;
     // Regexes for finding placeholder in page
     regex_dynamic: RegExp;
+    regex_editable: RegExp;
     regex_html: RegExp;
     regex_normal: RegExp;
     regex_static: RegExp;
@@ -267,6 +268,7 @@ const parse_any_placeholder = (data: any, validator_map: Map<string,InputValidat
 
         // @TODO: editable
         "regex_dynamic": RegExp(escapeRegExp(settings.dynamic_prefix) + name + escapeRegExp(settings.dynamic_suffix), "g"),
+        "regex_editable": RegExp(escapeRegExp(settings.editable_prefix) + name + escapeRegExp(settings.editable_suffix), "g"),
         "regex_html": RegExp(escapeRegExp(settings.html_prefix) + name + escapeRegExp(settings.html_suffix), "g"),
         "regex_normal": RegExp(escapeRegExp(settings.normal_prefix) + name + escapeRegExp(settings.normal_suffix), "g"),
         "regex_static": RegExp(escapeRegExp(settings.static_prefix) + name + escapeRegExp(settings.static_suffix), "g"),
