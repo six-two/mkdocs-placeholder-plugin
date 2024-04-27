@@ -39,6 +39,7 @@ export const register_inline_value_editors = (config: PluginConfig) => {
             const placeholder = config.placeholders.get(placeholder_name);
             if (placeholder) {
                 if (!placeholder.read_only) {
+                    element.classList.add("placeholder-value-any");
                     if (placeholder.type == InputType.Textbox) {
                         prepare_span_for_textbox_editor(config, element as HTMLSpanElement, placeholder as TextboxPlaceholder);
                     } else if (placeholder.type == InputType.Checkbox) {
@@ -66,21 +67,25 @@ export const unregister_inline_value_editors = (config: PluginConfig) => {
     // Remove the specific classes and editable attribute that the register method added
     for (const element of placeholder_value_elements) {
         const span_element = element as HTMLSpanElement;
-        span_element.classList.remove("placeholder-value-editable", "placeholder-value-checkbox", "placeholder-value-dropdown", "validation-error", "validation-warn", "validation-ok", "validation-none");
+        span_element.classList.remove("placeholder-value-editable", "placeholder-value-checkbox", "placeholder-value-dropdown", "placeholder-value-any", "validation-error", "validation-warn", "validation-ok", "validation-none");
         // make it non-editable (only affects textbox placeholders)
         span_element.contentEditable = "false";
         // remove the tooltip
         span_element.title = "";
+        // remove the ability to focus them via tab
+        span_element.removeAttribute("tabindex");
     }
 }
 
 const prepare_span_for_dropdown_editor = (config: PluginConfig, input_element: HTMLSpanElement, placeholder: DropdownPlaceholder) => {
     input_element.classList.add("placeholder-value-dropdown");
 
+    input_element.setAttribute("tabindex", "0");
+
     const abort_signal_object = { signal: config.event_listener_abort_controller.signal };
 
     const description = placeholder.description ? `\nDescription: ${placeholder.description}` : "";
-    let tooltip = `Placeholder name: ${placeholder.name}${description}\nDefault option: ${placeholder.options[placeholder.default_index].value}\nUsage: (left-)click to cycle forward through the values, right-click to cycle through backwards\nPossible values:`;
+    let tooltip = `Placeholder name: ${placeholder.name}${description}\nDefault option: ${placeholder.options[placeholder.default_index].value}\nUsage: (left-)click to cycle forward through the values, right-click to cycle through backwards. You can also use the Enter, Up, and Down keys if the placeholder is selected.\nPossible values:`;
 
     for (const option of placeholder.options) {
         tooltip += `\n- ${option.value}`;
@@ -112,17 +117,29 @@ const prepare_span_for_dropdown_editor = (config: PluginConfig, input_element: H
         event.stopPropagation();
         modify_index_by(-1);
     }, abort_signal_object);
+
+    input_element.addEventListener("keydown", (event) => {
+        if (event.key === "Enter" || event.key === "ArrowDown") {
+            modify_index_by(1);
+            event.preventDefault();
+        } else if (event.key === 'ArrowUp') {
+            modify_index_by(-1);
+            event.preventDefault();
+        }
+    }, abort_signal_object);
 }
 
 const prepare_span_for_checkbox_editor = (config: PluginConfig, input_element: HTMLSpanElement, placeholder: CheckboxPlaceholder) => {
     input_element.classList.add("placeholder-value-checkbox");
 
+    input_element.setAttribute("tabindex", "0");
+
     const abort_signal_object = { signal: config.event_listener_abort_controller.signal };
 
     const description = placeholder.description ? `\nDescription: ${placeholder.description}` : "";
-    input_element.title = `Placeholder name: ${placeholder.name}${description}\nUsage: Click to toggle the value`;
+    input_element.title = `Placeholder name: ${placeholder.name}${description}\nUsage: Click to toggle the value. You can also press Enter if the placeholder is focused.`;
 
-    input_element.addEventListener("click", (_event: MouseEvent) => {
+    const fn_change_value = () => {
         // toggle checkbox state
         const new_value = !placeholder.current_is_checked;
         placeholder.current_value = new_value ? placeholder.value_checked : placeholder.value_unchecked;
@@ -130,6 +147,14 @@ const prepare_span_for_checkbox_editor = (config: PluginConfig, input_element: H
 
         store_checkbox_state(placeholder, new_value);
         on_placeholder_change(config, placeholder);
+    }
+
+    input_element.addEventListener("click", fn_change_value, abort_signal_object);
+    input_element.addEventListener("keydown", (event: KeyboardEvent) => {
+        if (event.key === "Enter") {
+            fn_change_value();
+            event.preventDefault();
+         }
     }, abort_signal_object);
 
     update_inline_checkbox_editor_classes(input_element, placeholder);
