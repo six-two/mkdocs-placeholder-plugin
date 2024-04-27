@@ -181,17 +181,23 @@ The following are some common classes you may want to restyle.
 Class name | Element
 ---|---
 `placeholder-value` | All placeholders, both with and without inline editors
+`inline-editor-simple` | Applied to the body itself, this signifies that a minimal styling for inline editors should be used (icon hidden by default)
+`inline-editor-icons` | Applied to the body itself, this signifies that a stronger styling for inline editors should be used (shown icons, background color, ...)
 `inline-editor-requested` | Placeholder which will be assigned an inline editor, unless they are disabled by the user settings
 `placeholder-value-static` | Placeholders without inline editors
 `placeholder-value-checkbox` | Checkbox placeholder with inline editor
 `placeholder-value-dropdown` | Dropdown placeholder with inline editor
 `placeholder-value-editable` | Textbox placeholder with inline editor
+`placeholder-value-any` | Any placeholder with inline editor (checkbox, dropdown, or textbox)
 `input-for-variable` | (non-inline) input element for an placeholder
 `validation-none` | Inline editors and input elements without a validator
 `validation-ok` | Inline editors and input elements that pass validation successfully
 `validation-warn` | Inline editors and input elements that pass validation with warnings
 `validation-error` | Inline editors and input elements that fail validation because of errors
 `value-modified` | Inline editors and input elements for a textbox placeholder that has been modified and not yet saved
+
+For inline editors there are also `:focus` and `:hover` rules.
+The icons are created by the `::after` pseudo element (like `placeholder-value-any::after` and `placeholder-value-any:focus::after`).
 
 To overwrite the default rules, define a more specific rule by specifying that it applies only to span elements like the following:
 ```css

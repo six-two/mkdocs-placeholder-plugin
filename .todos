@@ -16,5 +16,4 @@
 - refactor: try to convert HTML modification code to use markdown hooks (see https://github.com/six-two/mkdocs-placeholder-plugin/issues/6#issuecomment-2062028205)
 - inline placeholders:
     - edge case: how to handle editable placeholders in other placeholders? For editable placeholders in a read-only placeholder showing the individual inputs if the outer one is replaced with editable seems most logical
-    - make inline editors tabable (currently only textboxes)
 - bug with `<https://xTESTx>`
