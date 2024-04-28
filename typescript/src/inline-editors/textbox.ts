@@ -5,8 +5,8 @@ import { on_placeholder_change } from "../inputs";
 import { store_textbox_state } from "../state_manager";
 
 export const prepare_span_for_textbox_editor = (config: PluginConfig, input_element: HTMLSpanElement, placeholder: TextboxPlaceholder) => {
-    // This lets users actually modify the span like an input element
-    input_element.contentEditable = "true";
+    // We need to set this so that the element can obtain focus.
+    input_element.tabIndex = 0;
 
     // Add a special class for styling
     input_element.classList.add("placeholder-value-editable");
@@ -59,6 +59,7 @@ export const prepare_span_for_textbox_editor = (config: PluginConfig, input_elem
             confirm_change();
         }
     }, abort_signal_object);
+
     input_element.addEventListener("keydown", (event: KeyboardEvent) => {
         // I have no idea, why Escape does not work with the keypress event (Safari on MacOS). As a work around, we listen to the keydown event
         if (event.key === "Escape") {
@@ -70,7 +71,10 @@ export const prepare_span_for_textbox_editor = (config: PluginConfig, input_elem
             input_element.classList.remove("value-modified");
         }
     }, abort_signal_object);
+
     input_element.addEventListener("focusout", () => {
+        logger.debug("Focus lost");
+
         // The value may change on the fly (use changes settings), so we can not just conditionally add the event listener, but need to check each time
         if (config.settings.apply_change_on_focus_change) {
             logger.debug("Textbox change confirmed by changing focus", placeholder.name, "- new value:", input_element.innerText);
@@ -78,9 +82,39 @@ export const prepare_span_for_textbox_editor = (config: PluginConfig, input_elem
         }
         // restore the original tooltip
         input_element.title = tooltip_when_not_focused;
+
+        // disable editing to make selecting (part of the) text work
+        input_element.contentEditable = "false";
+
+        // Remove the selection range (by default entire element)
+        window.getSelection()?.removeAllRanges();
     }, abort_signal_object)
+
     input_element.addEventListener("focusin", () => {
+        logger.debug("Focus gained");
+
+        // This lets users actually modify the span like an input element
+        input_element.contentEditable = "true";
         // show the validation popup instead
         validate_textbox_editable_span(placeholder, input_element);
+
+        // Check if the browser supports the Selection and Range APIs
+        if (window.getSelection && document.createRange) {
+            // Select the whole contents of the element when it gains focus. This is required for tabbing into the element to create a cursor.
+            // It also makes it quicker to replace the whole value of an element.
+            const selection = window.getSelection();
+            if (selection && selection.focusNode != input_element) {
+                const range = document.createRange();
+                // Set the range to the end of the element
+                range.selectNodeContents(input_element);
+
+                // Remove any existing selections
+                if (selection.rangeCount > 0) {
+                    selection.removeAllRanges();
+                }
+                // Add the new range to the selection
+                selection.addRange(range);
+            }
+        }
     }, abort_signal_object)
 }
