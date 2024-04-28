@@ -8,6 +8,11 @@ export const prepare_span_for_textbox_editor = (config: PluginConfig, input_elem
     // We need to set this so that the element can obtain focus.
     input_element.tabIndex = 0;
 
+    // Stop browsers from trying to be smart
+    input_element.spellcheck = false;
+    input_element.translate = false;
+    input_element.autocapitalize = "off";
+
     // Add a special class for styling
     input_element.classList.add("placeholder-value-editable");
 
@@ -57,6 +62,7 @@ export const prepare_span_for_textbox_editor = (config: PluginConfig, input_elem
 
             logger.debug("Textbox change confirmed with Enter key for", placeholder.name, "- new value:", input_element.innerText);
             confirm_change();
+            select_all_text_in_element(input_element);
         }
     }, abort_signal_object);
 
@@ -69,6 +75,7 @@ export const prepare_span_for_textbox_editor = (config: PluginConfig, input_elem
             // reset the validation state
             validate_textbox_editable_span(placeholder, input_element);
             input_element.classList.remove("value-modified");
+            select_all_text_in_element(input_element);
         }
     }, abort_signal_object);
 
@@ -98,23 +105,31 @@ export const prepare_span_for_textbox_editor = (config: PluginConfig, input_elem
         // show the validation popup instead
         validate_textbox_editable_span(placeholder, input_element);
 
-        // Check if the browser supports the Selection and Range APIs
-        if (window.getSelection && document.createRange) {
-            // Select the whole contents of the element when it gains focus. This is required for tabbing into the element to create a cursor.
-            // It also makes it quicker to replace the whole value of an element.
-            const selection = window.getSelection();
-            if (selection && selection.focusNode != input_element) {
-                const range = document.createRange();
-                // Set the range to the end of the element
-                range.selectNodeContents(input_element);
-
-                // Remove any existing selections
-                if (selection.rangeCount > 0) {
-                    selection.removeAllRanges();
-                }
-                // Add the new range to the selection
-                selection.addRange(range);
-            }
-        }
+        // Select the whole contents of the element when it gains focus. This is required for tabbing into the element to create a cursor.
+        // It also makes it quicker to replace the whole value of an element.
+        select_all_text_in_element(input_element);
     }, abort_signal_object)
+}
+
+let shown_no_selection_warning = false;
+const select_all_text_in_element = (element: HTMLElement) => {
+    // Check if the browser supports the Selection and Range APIs
+    if (window.getSelection && document.createRange) {
+        const selection = window.getSelection();
+        if (selection) {
+            selection.removeAllRanges();
+            
+            const range = document.createRange();
+            range.selectNodeContents(element);
+            selection.addRange(range);
+        } else if (!shown_no_selection_warning) {
+            shown_no_selection_warning = true;
+            console.warn("getSelection returned null");
+        }
+    } else {
+        if (!shown_no_selection_warning) {
+            shown_no_selection_warning = true;
+            console.warn("Can not set selection, because window.getSelection or document.createRange are not supported");
+        }
+    }
 }

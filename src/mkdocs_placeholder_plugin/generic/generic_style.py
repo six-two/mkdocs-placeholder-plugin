@@ -133,9 +133,8 @@ table tr td input.input-for-variable[type="checkbox"] {
     cursor: initial;
 }
 
-.placeholder-value-any:hover,
-.placeholder-value-any:focus {
-    border: 2px solid blue;
+.placeholder-value-any:hover {
+    border-bottom: 2px solid blue;
     padding: 0px 2px;
 }
 
@@ -167,16 +166,20 @@ table tr td input.input-for-variable[type="checkbox"] {
 }
 
 .inline-editor-icons .placeholder-value-any {
-    background-color: lightblue;
-    border-radius: 3px;
+    border-bottom: 2px dotted blue;
     margin: 0px 3px;
     padding: 0px 3px;
 }
 
-.inline-editor-icons .placeholder-value-any:focus,
 .inline-editor-icons .placeholder-value-any:hover {
-    background-color: transparent;
+    border-bottom: 2px solid blue;
 }
+
+.inline-editor-simple .placeholder-value-any:focus,
+.inline-editor-icons  .placeholder-value-any:focus {
+    border-bottom: 0px;
+}
+
 
 .inline-editor-simple .placeholder-value-any:focus::after,
 .inline-editor-simple .placeholder-value-any:hover::after,
