@@ -1,5 +1,5 @@
 import { logger } from "./debug";
-import { register_inline_value_editors, set_inline_editor_icons_enabled, unregister_inline_value_editors } from "./inline-inputs";
+import { register_inline_value_editors, set_inline_editor_icons_enabled, unregister_inline_value_editors } from "./inline-editors/register";
 import { prepare_input_field } from "./inputs";
 import { InputTable, InputTableRow, Placeholder, PluginConfig } from "./parse_settings";
 import { create_dynamic_placeholder_element } from "./replacer";

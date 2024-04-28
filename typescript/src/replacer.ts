@@ -1,7 +1,7 @@
 import { logger } from "./debug";
 import { update_tooltip, validate_placeholder_value } from "./validator";
 import { CheckboxPlaceholder, InputType, Placeholder, PluginConfig, TextboxPlaceholder } from "./parse_settings";
-import { update_inline_checkbox_editor_classes } from "./inline-inputs";
+import { update_inline_checkbox_editor_classes } from "./inline-editors/checkbox";
 
 
 // Replace a specific placeholder and return the estimated number of occurences (underestimated, may actually be higher)

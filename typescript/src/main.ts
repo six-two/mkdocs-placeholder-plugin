@@ -4,7 +4,7 @@ import { replace_placeholders_in_subtree } from "./replacer";
 import { initialize_all_input_fields } from "./inputs";
 import { export_api_functions } from "./api";
 import { initialize_auto_tables, initialize_placeholder_settings_divs } from "./auto_tables";
-import { register_inline_value_editors } from "./inline-inputs";
+import { register_inline_value_editors } from "./inline-editors/register";
 
 
 export const main = () => {
