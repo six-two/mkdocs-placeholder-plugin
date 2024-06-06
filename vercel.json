@@ -1,5 +1,7 @@
 {
     "github": {
         "silent": true
-    }
+    },
+    "buildCommand": "bash +x ./build-docs.sh",
+    "outputDirectory": "public"
 }
