@@ -17,8 +17,6 @@ cd ..
 [[ ! -d src/mkdocs_placeholder_plugin/assets/ ]] && mkdir src/mkdocs_placeholder_plugin/assets/
 # Files for use by the plugin
 cp typescript/build/placeholder.min.js* src/mkdocs_placeholder_plugin/assets/
-# Files for download
-cp typescript/build/placeholder.min.js* public/
 
 # install the dependencies
 python3 -m pip install -r requirements.txt
@@ -27,6 +25,9 @@ python3 -m pip install .
 
 # Vercel prefers outputs to be in public/
 python3 -m mkdocs build -d public
+
+# Files for download
+cp typescript/build/placeholder.min.js* public/
 
 build_with_theme() {
     python3 -m mkdocs build -t "$1" -d public/"$1"
