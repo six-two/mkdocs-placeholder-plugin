@@ -15,8 +15,10 @@ cd ..
 
 # Copy the JavaScript build output to the expected locations
 [[ ! -d src/mkdocs_placeholder_plugin/assets/ ]] && mkdir src/mkdocs_placeholder_plugin/assets/
+# Files for use by the plugin
 cp typescript/build/placeholder.min.js* src/mkdocs_placeholder_plugin/assets/
-
+# Files for download
+cp typescript/build/placeholder.min.js* public/
 
 # install the dependencies
 python3 -m pip install -r requirements.txt

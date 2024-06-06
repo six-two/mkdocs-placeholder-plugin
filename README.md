@@ -34,8 +34,8 @@ If you want to use the latest development version (may be broken/buggy from time
         Once you see mkdocs running, you can terminate it with `Ctrl-C`.
     - Downloading the files from the development version of the documentation (hosted and built by Vercel):
         ```bash
-        curl https://dev.mkdocs-placeholder-plugin.six-two.dev/assets/javascripts/placeholder.min.js -o src/mkdocs_placeholder_plugin/assets/placeholder.min.js
-        curl https://dev.mkdocs-placeholder-plugin.six-two.dev/assets/javascripts/placeholder.min.js.map -o src/mkdocs_placeholder_plugin/assets/placeholder.min.js.map
+        curl https://dev.mkdocs-placeholder-plugin.six-two.dev/placeholder.min.js -o src/mkdocs_placeholder_plugin/assets/placeholder.min.js
+        curl https://dev.mkdocs-placeholder-plugin.six-two.dev/placeholder.min.js.map -o src/mkdocs_placeholder_plugin/assets/placeholder.min.js.map
         ```
 3. Installing the package with pip:
     ```bash
