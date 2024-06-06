@@ -51,8 +51,9 @@ export const main = () => {
 
 const do_plugin_stuff = (config: PluginConfig) => {
     logger.info("Called do_plugin_stuff (function for parsing and modifying the page)")
-    // @TODO: clear current state in case we are called multiple times (instant loading)
-    config.dependency_graph.reset();
+
+    // Clear current state in case we are called multiple times (instant loading)
+    // config.dependency_graph.reset();
     config.placeholders.forEach((placeholder, _key, _map) => {
         placeholder.count_on_page = 0;
         placeholder.input_elements = [];
