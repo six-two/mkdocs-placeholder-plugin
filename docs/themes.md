@@ -9,3 +9,6 @@ But the following themes should also work and you can see this documentation bui
 
 Other themes will likely work too.
 If they do not, feel free to fix it (the relevant files are `src/mkdocs_placeholder_plugin/mkdocs/style.py` and maybe `src/mkdocs_placeholder_plugin/generic/generic_style.py`) and submit a [pull request](https://github.com/six-two/mkdocs-placeholder-plugin/pulls).
+
+!!! warning "Material's Instant Loading"
+    The instant loading feature of the material theme may cause this plugin to malfunction.

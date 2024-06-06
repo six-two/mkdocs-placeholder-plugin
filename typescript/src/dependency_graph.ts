@@ -7,14 +7,21 @@ import { clear_state } from "./state_manager";
 // Should be a directed acyclical graph
 export class DependencyGraph {
     private nodes: Map<string, GraphNode>;
+    private placeholders: Map<string, Placeholder>;
 
     constructor(placeholders: Map<string, Placeholder>) {
+        this.placeholders = placeholders;
         this.nodes = new Map<string, GraphNode>();
-        for (const placeholder of placeholders.values()) {
+        this.reset();
+    }
+
+    reset() {
+        this.nodes.clear();
+        for (const placeholder of this.placeholders.values()) {
             this.nodes.set(placeholder.name, new GraphNode(placeholder));
         }
         // Needs to be in different loops to ensure that all nodes have been created first
-        for (const placeholder of placeholders.values()) {
+        for (const placeholder of this.placeholders.values()) {
             try {
                 this.on_placeholder_value_change(placeholder);
             } catch (e) {

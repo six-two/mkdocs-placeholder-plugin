@@ -21,21 +21,43 @@ export const main = () => {
     const delay_millis = config.settings.delay_millis;
     
     // Then do the placeholder replacing at the user-specified time
-    if (delay_millis < 0) {
-        // For values smaller than 0, immediately do the replacements
-        do_plugin_stuff(config);
-    } else if (delay_millis == 0) {
-        // Replace placeholders as soon as the page finished loading
-        window.addEventListener("load", () => do_plugin_stuff(config));
+    const document_listener = (window as any).document$;
+    if (document_listener) {
+        // This means we are using MkDocs, so we hook into it's init system
+        // SEE https://github.com/squidfunk/mkdocs-material/discussions/5925
+        document_listener.subscribe(() => {
+            if (delay_millis > 0) {
+                setTimeout(() => do_plugin_stuff(config), delay_millis);
+            } else {
+                do_plugin_stuff(config);
+            }
+        })
     } else {
-        // Wait the amount of millis specified by the user
-        window.addEventListener("load", () => {
-            setTimeout(() => do_plugin_stuff(config), delay_millis);
-        });
+        // Use the normal HTML5 way of waiting for the execution (window.onload)
+        if (delay_millis < 0) {
+            // For values smaller than 0, immediately do the replacements
+            do_plugin_stuff(config);
+        } else if (delay_millis == 0) {
+            // Replace placeholders as soon as the page finished loading
+            window.addEventListener("load", () => do_plugin_stuff(config));
+        } else {
+            // Wait the amount of millis specified by the user
+            window.addEventListener("load", () => {
+                setTimeout(() => do_plugin_stuff(config), delay_millis);
+            });
+        }
     }
 }
 
 const do_plugin_stuff = (config: PluginConfig) => {
+    logger.info("Called do_plugin_stuff (function for parsing and modifying the page)")
+    // @TODO: clear current state in case we are called multiple times (instant loading)
+    config.dependency_graph.reset();
+    config.placeholders.forEach((placeholder, _key, _map) => {
+        placeholder.count_on_page = 0;
+        placeholder.input_elements = [];
+    });
+
     replace_placeholders_in_subtree(document.body, config);
     config.dependency_graph.debug_print_representation();
     

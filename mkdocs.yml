@@ -24,6 +24,8 @@ theme:
   - navigation.sections
   - content.code.copy
   - navigation.footer
+  # For testing issue 7
+  - navigation.instant
 plugins:
 - placeholder:
     placeholder_extra_js: placeholder-extra.js
