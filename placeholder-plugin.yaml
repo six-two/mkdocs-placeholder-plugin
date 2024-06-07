@@ -13,6 +13,7 @@ settings:
   # editable_suffix: _END
   # normal_is_alias_for: dynamic
   inline_editor_icons: true
+  # apply_change_on_focus_change: false
 validators:
   unused:
     name: "Unused: should not be in final JSON"

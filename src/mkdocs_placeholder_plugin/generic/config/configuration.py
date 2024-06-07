@@ -18,6 +18,7 @@ CONFIGURATION_FIELD_NAMES = {
 }
 
 SETTINGS_FIELD_NAMES = {
+    "apply_change_on_focus_change",
     "auto_placeholder_tables",
     "create_no_js_fallback",
     "debug_javascript",
