@@ -69,5 +69,7 @@ const do_plugin_stuff = (config: PluginConfig) => {
     if (config.settings.inline_editors) {
         register_inline_value_editors(config);
     }
+
+    document.body.classList.add("placeholder-plugin-init-done");
 }
 

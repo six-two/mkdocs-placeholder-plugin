@@ -1,5 +1,6 @@
 settings:
   # debug_javascript: true
+  #replace_delay_millis: 3000
   replace_delay_millis: -1
   show_warnings: true
   # inline_editors: false

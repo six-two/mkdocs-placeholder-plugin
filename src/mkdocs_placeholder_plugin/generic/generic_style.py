@@ -30,7 +30,12 @@ table tr td input.input-for-variable[type="checkbox"] {
     min-width: initial;
 }
 
+/* prevent visual glitch for slow loading pages or with high replace_delay_millis */
 .auto-input-table {
+    display: none;
+}
+
+.placeholder-plugin-init-done .auto-input-table {
     display: flex;
     flex-direction: column;
     border: 3px solid gray;
@@ -135,7 +140,6 @@ table tr td input.input-for-variable[type="checkbox"] {
 
 .placeholder-value-any:hover {
     border-bottom: 2px solid blue;
-    padding: 0px 2px;
 }
 
 .placeholder-value-any::after {
@@ -177,9 +181,8 @@ table tr td input.input-for-variable[type="checkbox"] {
 
 .inline-editor-simple .placeholder-value-any:focus,
 .inline-editor-icons  .placeholder-value-any:focus {
-    border-bottom: 0px;
+    border: 2px solid blue;
 }
-
 
 .inline-editor-simple .placeholder-value-any:focus::after,
 .inline-editor-simple .placeholder-value-any:hover::after,
