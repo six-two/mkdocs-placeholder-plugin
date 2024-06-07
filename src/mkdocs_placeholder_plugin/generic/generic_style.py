@@ -1,6 +1,9 @@
 # Prevent long descriptions from messing up the table too badly
 # Make the input elements take up the whole row
 BASIC_STYLE = """
+/* For the licensing of inline icons (data URLs) see https://pictogrammers.com/docs/general/license/,
+   They should be under the Apache License 2.0 */
+
 .placeholder-value.placeholder-value-highlighted {
     background-color: lightcyan;
 }
@@ -149,7 +152,14 @@ table tr td input.input-for-variable[type="checkbox"] {
 }
 
 .placeholder-value-editable::after {
-    content: "🖊";
+    /* https://pictogrammers.com/library/mdi/icon/pencil/ */
+    /* should work but does not:
+     content: url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCI+PHRpdGxlPnBlbmNpbDwvdGl0bGU+PHBhdGggZD0iTTIwLjcxLDcuMDRDMjEuMSw2LjY1IDIxLjEsNiAyMC43MSw1LjYzTDE4LjM3LDMuMjlDMTgsMi45IDE3LjM1LDIuOSAxNi45NiwzLjI5TDE1LjEyLDUuMTJMMTguODcsOC44N00zLDE3LjI1VjIxSDYuNzVMMTcuODEsOS45M0wxNC4wNiw2LjE4TDMsMTcuMjVaIiAvPjwvc3ZnPg==");
+    */
+
+    background-image: url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCI+PHRpdGxlPnBlbmNpbDwvdGl0bGU+PHBhdGggZD0iTTIwLjcxLDcuMDRDMjEuMSw2LjY1IDIxLjEsNiAyMC43MSw1LjYzTDE4LjM3LDMuMjlDMTgsMi45IDE3LjM1LDIuOSAxNi45NiwzLjI5TDE1LjEyLDUuMTJMMTguODcsOC44N00zLDE3LjI1VjIxSDYuNzVMMTcuODEsOS45M0wxNC4wNiw2LjE4TDMsMTcuMjVaIiAvPjwvc3ZnPg==");
+    content: "  ";
+    background-repeat: no-repeat;
 }
 
 .placeholder-value-checkbox.checked::after {
