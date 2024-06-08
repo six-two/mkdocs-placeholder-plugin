@@ -1,6 +1,6 @@
 import { PluginConfig, TextboxPlaceholder } from "../parse_settings";
 import { logger } from "../debug";
-import { validate_textbox_editable_span } from "../validator";
+import { validate_textbox_editable_span, validate_placeholder_value, PlaceholderValidatity } from "../validator";
 import { on_placeholder_change } from "../inputs";
 import { store_textbox_state } from "../state_manager";
 
@@ -35,12 +35,9 @@ export const prepare_span_for_textbox_editor = (config: PluginConfig, input_elem
         }
     }
 
-    const description = placeholder.description ? `\nDescription: ${placeholder.description}` : "";
-    const tooltip_when_not_focused = `Placeholder name: ${placeholder.name}${description}\nDefault value: ${placeholder.default_value}\nUsage: Click to edit the value. Leaving the text field or pressing enter will store the new value, pressing Escape will revert current changes. While editing the field, the tooltip will show warnings/errors if your value is not what is expected`; // @TODO: what if only a function is defined?
-
     // Check if initial value is valid and initialize the tooltip
     validate_textbox_editable_span(placeholder, input_element);
-    input_element.title = tooltip_when_not_focused;
+    input_element.title = placeholder.default_tooltip;
 
     // Listen for state changes
     input_element.addEventListener("input", () => {
@@ -87,8 +84,15 @@ export const prepare_span_for_textbox_editor = (config: PluginConfig, input_elem
             logger.debug("Textbox change confirmed by changing focus", placeholder.name, "- new value:", input_element.innerText);
             confirm_change();
         }
-        // restore the original tooltip
-        input_element.title = tooltip_when_not_focused;
+        // if there are no validation warnings or errors, restore the original tooltip for all inline editors (since they are updated to reflect the validation status)
+        const validation_result = validate_placeholder_value(placeholder, input_element.innerText);
+        if (validation_result.rating == PlaceholderValidatity.Good || validation_result.rating == PlaceholderValidatity.NoValidator) {
+            for (const element of placeholder.output_elements) {
+                if (element.classList.contains("placeholder-value-editable")) {
+                    element.title = placeholder.default_tooltip;
+                }
+            }
+        }
 
         // disable editing to make selecting (part of the) text work
         input_element.contentEditable = "false";
