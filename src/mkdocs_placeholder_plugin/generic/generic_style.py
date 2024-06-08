@@ -1,5 +1,34 @@
-# Prevent long descriptions from messing up the table too badly
-# Make the input elements take up the whole row
+import base64
+
+def svg_to_data_url(svg_html_code: str) -> str:
+    svg_as_base64 = base64.b64encode(svg_html_code.encode()).decode()
+    return f"data:image/svg+xml;base64,{svg_as_base64}"
+
+def show_icon_for_placeholder_class(placeholder_css_selector: str, icon_svg_url: str) -> str:
+    # should work but does not:
+    # content: url("{SVG_URL}");
+
+    return """
+{CSS_SELECTOR}::after {
+    background-image: url("{SVG_URL}");
+    content: "  ";
+    background-repeat: no-repeat;
+}
+""".replace("{SVG_URL}", icon_svg_url).replace("{CSS_SELECTOR}", placeholder_css_selector)
+
+# Source: https://pictogrammers.com/library/mdi/icon/pencil/
+PEN_SVG_URL = svg_to_data_url('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><title>pencil</title><path d="M20.71,7.04C21.1,6.65 21.1,6 20.71,5.63L18.37,3.29C18,2.9 17.35,2.9 16.96,3.29L15.12,5.12L18.87,8.87M3,17.25V21H6.75L17.81,9.93L14.06,6.18L3,17.25Z" /></svg>')
+
+# Source: https://pictogrammers.com/library/mdi/icon/checkbox-outline/
+CHECKED_SVG_URL = svg_to_data_url('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><title>checkbox-outline</title><path d="M19,3H5A2,2 0 0,0 3,5V19A2,2 0 0,0 5,21H19A2,2 0 0,0 21,19V5A2,2 0 0,0 19,3M19,5V19H5V5H19M10,17L6,13L7.41,11.58L10,14.17L16.59,7.58L18,9" /></svg>')
+
+# Source: https://pictogrammers.com/library/mdi/icon/checkbox-blank-outline/
+UNCHECKED_SVG_URL = svg_to_data_url('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><title>checkbox-blank-outline</title><path d="M19,3H5C3.89,3 3,3.89 3,5V19A2,2 0 0,0 5,21H19A2,2 0 0,0 21,19V5C21,3.89 20.1,3 19,3M19,5V19H5V5H19Z" /></svg>')
+
+# Source: https://pictogrammers.com/library/mdi/icon/swap-horizontal/
+SWAP_SVG_URL = svg_to_data_url('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><title>swap-horizontal</title><path d="M21,9L17,5V8H10V10H17V13M7,11L3,15L7,19V16H14V14H7V11Z" /></svg>')
+
+
 BASIC_STYLE = """
 /* For the licensing of inline icons (data URLs) see https://pictogrammers.com/docs/general/license/,
    They should be under the Apache License 2.0 */
@@ -151,29 +180,6 @@ table tr td input.input-for-variable[type="checkbox"] {
     font-style: normal;
 }
 
-.placeholder-value-editable::after {
-    /* https://pictogrammers.com/library/mdi/icon/pencil/ */
-    /* should work but does not:
-     content: url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCI+PHRpdGxlPnBlbmNpbDwvdGl0bGU+PHBhdGggZD0iTTIwLjcxLDcuMDRDMjEuMSw2LjY1IDIxLjEsNiAyMC43MSw1LjYzTDE4LjM3LDMuMjlDMTgsMi45IDE3LjM1LDIuOSAxNi45NiwzLjI5TDE1LjEyLDUuMTJMMTguODcsOC44N00zLDE3LjI1VjIxSDYuNzVMMTcuODEsOS45M0wxNC4wNiw2LjE4TDMsMTcuMjVaIiAvPjwvc3ZnPg==");
-    */
-
-    background-image: url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCI+PHRpdGxlPnBlbmNpbDwvdGl0bGU+PHBhdGggZD0iTTIwLjcxLDcuMDRDMjEuMSw2LjY1IDIxLjEsNiAyMC43MSw1LjYzTDE4LjM3LDMuMjlDMTgsMi45IDE3LjM1LDIuOSAxNi45NiwzLjI5TDE1LjEyLDUuMTJMMTguODcsOC44N00zLDE3LjI1VjIxSDYuNzVMMTcuODEsOS45M0wxNC4wNiw2LjE4TDMsMTcuMjVaIiAvPjwvc3ZnPg==");
-    content: "  ";
-    background-repeat: no-repeat;
-}
-
-.placeholder-value-checkbox.checked::after {
-    content: "☑";
-}
-
-.placeholder-value-checkbox.unchecked::after {
-    content: "☐";
-}
-
-.placeholder-value-dropdown::after {
-    content: "↓";
-}
-
 .inline-editor-simple .placeholder-value-any:empty::before {
     content: "  ";
     background-color: pink;
@@ -211,7 +217,11 @@ table tr td input.input-for-variable[type="checkbox"] {
 .placeholder-value-editable.value-modified {
     font-weight: bold;
 }
-"""
+""" \
+    + show_icon_for_placeholder_class(".placeholder-value-editable", PEN_SVG_URL) \
+    + show_icon_for_placeholder_class(".placeholder-value-checkbox.checked", CHECKED_SVG_URL) \
+    + show_icon_for_placeholder_class(".placeholder-value-checkbox.unchecked", UNCHECKED_SVG_URL) \
+    + show_icon_for_placeholder_class(".placeholder-value-dropdown", SWAP_SVG_URL)
 
 DEBUG_STYLE = """
 .placeholder-value {
