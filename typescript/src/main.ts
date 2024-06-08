@@ -20,7 +20,9 @@ export const main = () => {
 
     const delay_millis = config.settings.delay_millis;
     
-    // Then do the placeholder replacing at the user-specified time
+    // Then do the placeholder replacing at the user-specified time.
+    // This is the simplest way to read an non-standard attribute from the window object without TypeScript complaining, so I keep it
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const document_listener = (window as any).document$;
     if (document_listener) {
         // This means we are using MkDocs, so we hook into it's init system

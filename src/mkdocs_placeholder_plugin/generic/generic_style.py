@@ -10,9 +10,8 @@ def show_icon_for_placeholder_class(placeholder_css_selector: str, icon_svg_url:
 
     return """
 {CSS_SELECTOR}::after {
-    background-image: url("{SVG_URL}");
-    content: "  ";
-    background-repeat: no-repeat;
+    content: url("{SVG_URL}");
+    width: 1em;
 }
 """.replace("{SVG_URL}", icon_svg_url).replace("{CSS_SELECTOR}", placeholder_css_selector)
 

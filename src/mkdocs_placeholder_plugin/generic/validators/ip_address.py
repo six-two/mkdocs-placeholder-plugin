@@ -45,7 +45,7 @@ create_and_register_validator(
     "ipv4_range_dashes",
     "IPv4 adress range (dash)",
     must_match("^[0-9-.]+$", "Only numbers, dots and minuses are allowed"),
-    must_not_match("(-\.|\.-)", "Number should be on both sites of the dash"),
+    must_not_match(r"(-\.|\.-|^-|-$)", "Number should be on both sites of the dash"),
     must_not_match("--", "Consecutive dashes are not allowed"),
     # There are other ways of specifying IP addresses, that not all software understands. For example: 2130706433, 017700000001, and 127.1 are alternative representations of 127.0.0.1
     # So we just filter for expected characters, but not for the pattern
