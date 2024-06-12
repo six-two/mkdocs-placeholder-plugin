@@ -241,7 +241,7 @@ export const replace_dynamic_placeholder_values = (placeholder_list: Placeholder
     for (const placeholder of placeholder_list) {
         if (placeholder.output_elements.length > 0) {
             for (const element of placeholder.output_elements) {
-                element.textContent = placeholder.expanded_value;
+                change_text_keep_other_children(element, placeholder.expanded_value);
             }
             if (placeholder.type == InputType.Textbox) {
                 // could have inline editor, and we need to correctly set their validation states.
@@ -265,6 +265,25 @@ export const replace_dynamic_placeholder_values = (placeholder_list: Placeholder
             }
         }
     }
+}
+
+const change_text_keep_other_children = (element: HTMLElement, new_text: string) => {
+    if (new_text) {
+        element.classList.remove("value-empty");
+    } else {
+        element.classList.add("value-empty");
+    }
+
+    // If it exists, replace the first text node
+    for (const child of element.childNodes) {
+        if (child.nodeType === Node.TEXT_NODE) {
+            child.textContent = new_text;
+            return
+        }
+    }
+
+    // If no text node exists, add a text node to the beginning
+    element.insertAdjacentText("afterbegin", new_text);
 }
 
 const find_dynamic_placeholder_wrappers = (config: PluginConfig) => {

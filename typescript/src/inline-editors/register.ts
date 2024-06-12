@@ -16,6 +16,11 @@ export const register_inline_value_editors = (config: PluginConfig) => {
             if (placeholder) {
                 if (!placeholder.read_only) {
                     element.classList.add("placeholder-value-any");
+
+                    const icon = document.createElement("span");
+                    icon.classList.add("inline-editor-icon-span");
+                    element.appendChild(icon);
+
                     if (placeholder.type == InputType.Textbox) {
                         prepare_span_for_textbox_editor(config, element as HTMLSpanElement, placeholder as TextboxPlaceholder);
                     } else if (placeholder.type == InputType.Checkbox) {
@@ -50,6 +55,8 @@ export const unregister_inline_value_editors = (config: PluginConfig) => {
         span_element.title = "";
         // remove the ability to focus them via tab
         span_element.removeAttribute("tabindex");
+        // remove the icon
+        span_element.querySelectorAll(".inline-editor-icon-span").forEach(icon => icon.remove());
     }
 }
 

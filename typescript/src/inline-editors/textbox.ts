@@ -4,6 +4,9 @@ import { validate_textbox_editable_span, validate_placeholder_value, Placeholder
 import { on_placeholder_change } from "../inputs";
 import { store_textbox_state } from "../state_manager";
 
+// Source: https://pictogrammers.com/library/mdi/icon/pencil/
+const PEN_SVG = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><title>pencil</title><path d="M20.71,7.04C21.1,6.65 21.1,6 20.71,5.63L18.37,3.29C18,2.9 17.35,2.9 16.96,3.29L15.12,5.12L18.87,8.87M3,17.25V21H6.75L17.81,9.93L14.06,6.18L3,17.25Z" /></svg>';
+
 export const prepare_span_for_textbox_editor = (config: PluginConfig, input_element: HTMLSpanElement, placeholder: TextboxPlaceholder) => {
     // We need to set this so that the element can obtain focus.
     input_element.tabIndex = 0;
@@ -15,6 +18,9 @@ export const prepare_span_for_textbox_editor = (config: PluginConfig, input_elem
 
     // Add a special class for styling
     input_element.classList.add("placeholder-value-editable");
+
+    // There should be only one, but this prevents crashes if there are more or even none
+    input_element.querySelectorAll(".inline-editor-icon-span").forEach(icon => {icon.innerHTML = PEN_SVG});
 
     const abort_signal_object = { signal: config.event_listener_abort_controller.signal };
 
