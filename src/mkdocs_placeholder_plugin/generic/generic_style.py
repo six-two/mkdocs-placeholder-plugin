@@ -38,7 +38,7 @@ BASIC_STYLE = """
     --inline-editor-color-error: red;
 }
 
-.placeholder-value-editable {
+.placeholder-value-any {
     --inline-editor-color: var(--inline-editor-color-default);
 }
 
@@ -189,7 +189,8 @@ table tr td input.input-for-variable[type="checkbox"] {
     cursor: initial;
 }
 
-.placeholder-value-any:hover {
+.placeholder-value-any:hover,
+.inline-editor-icons .placeholder-value-any:hover {
     border-bottom: 2px solid;
 }
 
