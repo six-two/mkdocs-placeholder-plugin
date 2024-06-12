@@ -212,6 +212,13 @@ Some other values you may want to overwrite are:
     By default it is just a pink square.
 - `span.placeholder-value-*:hover`: Style when a user moves their mouse pointer over an inline editor.
 
+You can also overwrite the default colors for placeholders (and any other variables I may introduce in the future), for example with:
+```css
+body {
+    --inline-editor-color-default: blue;
+}
+```
+
 ### Highlighting placeholders
 
 You may want to show users, which values they can change via the input boxes.

@@ -32,6 +32,24 @@ BASIC_STYLE = """
 /* For the licensing of inline icons (data URLs) see https://pictogrammers.com/docs/general/license/,
    They should be under the Apache License 2.0 */
 
+:root {
+    --inline-editor-color-default: green;
+    --inline-editor-color-warning: orange;
+    --inline-editor-color-error: red;
+}
+
+.placeholder-value-editable {
+    --inline-editor-color: var(--inline-editor-color-default);
+}
+
+.placeholder-value-editable.validation-error {
+    --inline-editor-color: var(--inline-editor-color-error);
+}
+
+.placeholder-value-editable.validation-warn {
+    --inline-editor-color: var(--inline-editor-color-warning);
+}
+
 .placeholder-value.placeholder-value-highlighted {
     background-color: lightcyan;
 }
@@ -161,8 +179,10 @@ table tr td input.input-for-variable[type="checkbox"] {
 /* Highlight inline editable entries in the page */
 .placeholder-value-any {
     cursor: pointer;
-    color: blue;
+    color: var(--inline-editor-color);
+    border-color: var(--inline-editor-color);
     font-style: italic;
+    outline: none;
 }
 
 .placeholder-value-editable:focus {
@@ -170,13 +190,14 @@ table tr td input.input-for-variable[type="checkbox"] {
 }
 
 .placeholder-value-any:hover {
-    border-bottom: 2px solid blue;
+    border-bottom: 2px solid;
 }
 
 .placeholder-value-any::after {
     display: none;
     margin: 0px 3px;
     font-style: normal;
+    fill: var(--inline-editor-color);
 }
 
 .inline-editor-simple .placeholder-value-any:empty::before {
@@ -185,32 +206,20 @@ table tr td input.input-for-variable[type="checkbox"] {
 }
 
 .inline-editor-icons .placeholder-value-any {
-    border-bottom: 2px dotted blue;
+    border-bottom: 2px dotted;
     margin: 0px 3px;
     padding: 0px 3px;
 }
 
-.inline-editor-icons .placeholder-value-any:hover {
-    border-bottom: 2px solid blue;
-}
-
 .inline-editor-simple .placeholder-value-any:focus,
 .inline-editor-icons  .placeholder-value-any:focus {
-    border: 2px solid blue;
+    border: 2px solid;
 }
 
 .inline-editor-simple .placeholder-value-any:focus::after,
 .inline-editor-simple .placeholder-value-any:hover::after,
 .inline-editor-icons  .placeholder-value-any::after {
     display: inline-block;
-}
-
-.placeholder-value-editable.validation-error {
-    color: red;
-}
-
-.placeholder-value-editable.validation-warn {
-    color: orange;
 }
 
 .placeholder-value-editable.value-modified {
