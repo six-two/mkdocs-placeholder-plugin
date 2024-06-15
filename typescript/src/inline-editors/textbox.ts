@@ -156,7 +156,7 @@ export const prepare_span_for_textbox_editor = (config: PluginConfig, input_elem
 
         // Select the whole contents of the element when it gains focus. This is required for tabbing into the element to create a cursor.
         // It also makes it quicker to replace the whole value of an element.
-        select_all_text_in_element(input_element);
+        setTimeout(() => select_all_text_in_element(input_element), 50);
     }, abort_signal_object)
 }
 
@@ -169,7 +169,7 @@ const select_all_text_in_element = (element: HTMLElement) => {
             selection.removeAllRanges();
             
             const range = document.createRange();
-            range.selectNodeContents(element);
+            range.selectNodeContents(element.firstChild || element); // fix safari bug? Select only the text node, not the icon too
             selection.addRange(range);
         } else if (!shown_no_selection_warning) {
             shown_no_selection_warning = true;
