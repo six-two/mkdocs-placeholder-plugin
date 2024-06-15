@@ -18,6 +18,25 @@ const add_icon_back_if_user_deleted_it = (input_element: HTMLSpanElement) => {
         icon.innerHTML = PEN_SVG;
         input_element.appendChild(icon);
     }
+
+    // Make sure that text is not on both sides of the icon
+    const text_nodes = []
+    for (const child of input_element.childNodes) {
+        if (child.nodeType === Node.TEXT_NODE) {
+            text_nodes.push(child);
+        }
+    }
+
+    let combined_text = "";
+    if (text_nodes.length > 1 || input_element.firstChild?.nodeType != Node.TEXT_NODE) {
+        // the user entered something after the icon :/
+        for (const text_child of text_nodes) {
+            combined_text += text_child.textContent;
+            text_child.remove();
+        }
+        input_element.insertAdjacentText("afterbegin", combined_text);
+    }
+
 }
 
 export const prepare_span_for_textbox_editor = (config: PluginConfig, input_element: HTMLSpanElement, placeholder: TextboxPlaceholder) => {
