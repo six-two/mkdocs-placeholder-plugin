@@ -3,7 +3,7 @@ import { on_placeholder_change } from "../inputs";
 import { store_dropdown_state } from "../state_manager";
 
 // Source: https://pictogrammers.com/library/mdi/icon/swap-horizontal/
-const SWAP_SVG_URL = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><title>swap-horizontal</title><path d="M21,9L17,5V8H10V10H17V13M7,11L3,15L7,19V16H14V14H7V11Z" /></svg>'
+const SWAP_SVG_URL = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21,9L17,5V8H10V10H17V13M7,11L3,15L7,19V16H14V14H7V11Z" /></svg>'
 
 export const prepare_span_for_dropdown_editor = (config: PluginConfig, input_element: HTMLSpanElement, placeholder: DropdownPlaceholder) => {
     input_element.classList.add("placeholder-value-dropdown");

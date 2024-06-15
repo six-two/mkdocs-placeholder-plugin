@@ -153,6 +153,7 @@ table tr td input.input-for-variable[type="checkbox"] {
     border-color: var(--inline-editor-color);
     font-style: italic;
     outline: none;
+    word-wrap: break-word;
 }
 
 .placeholder-value-any .inline-editor-icon-span {

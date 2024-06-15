@@ -60,20 +60,6 @@ const dynamic_replace = (root_element: Element, search_regex: RegExp, placeholde
 }
 
 const editable_replace = (root_element: Element, search_regex: RegExp, placeholder: Placeholder, search_for_pre_replaced: boolean) => {
-    // let extra_class = "placeholder-value-unknown";
-    // switch (placeholder.type) {
-    //     case InputType.Checkbox:
-    //         extra_class = "placeholder-value-checkbox";
-    //         break;
-    //     case InputType.Dropdown:
-    //         extra_class = "placeholder-value-dropdown";
-    //         break;
-    //     case InputType.Textbox:
-    //         extra_class = "placeholder-value-editable";
-    //         break;
-    //     default:
-    //         console.warn(`Unexpected placeholder type '${placeholder.type}' in editable_replace`);
-    // }
     return inner_dynamic_or_editable_replace(root_element, search_regex, placeholder, search_for_pre_replaced, "inline-editor-requested");
 }
 
