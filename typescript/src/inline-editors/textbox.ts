@@ -3,9 +3,22 @@ import { logger } from "../debug";
 import { validate_textbox_editable_span, validate_placeholder_value, PlaceholderValidatity } from "../validator";
 import { on_placeholder_change } from "../inputs";
 import { store_textbox_state } from "../state_manager";
+import { change_text_keep_other_children } from "../replacer";
 
 // Source: https://pictogrammers.com/library/mdi/icon/pencil/
 const PEN_SVG = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20.71,7.04C21.1,6.65 21.1,6 20.71,5.63L18.37,3.29C18,2.9 17.35,2.9 16.96,3.29L15.12,5.12L18.87,8.87M3,17.25V21H6.75L17.81,9.93L14.06,6.18L3,17.25Z" /></svg>';
+
+const add_icon_back_if_user_deleted_it = (input_element: HTMLSpanElement) => {
+    if (!input_element.querySelector(".inline-editor-icon-span")) {
+        // The icon was deleted, the user probably uses firefox
+        // we just quickly recreate the icon
+        const icon = document.createElement("span");
+        icon.classList.add("inline-editor-icon-span");
+        icon.contentEditable = "false";
+        icon.innerHTML = PEN_SVG;
+        input_element.appendChild(icon);
+    }
+}
 
 export const prepare_span_for_textbox_editor = (config: PluginConfig, input_element: HTMLSpanElement, placeholder: TextboxPlaceholder) => {
     // We need to set this so that the element can obtain focus.
@@ -56,6 +69,8 @@ export const prepare_span_for_textbox_editor = (config: PluginConfig, input_elem
         } else {
             input_element.classList.add("value-modified");
         }
+
+        add_icon_back_if_user_deleted_it(input_element);
     }, abort_signal_object);
 
     input_element.addEventListener("keypress", (event: KeyboardEvent) => {
@@ -73,7 +88,7 @@ export const prepare_span_for_textbox_editor = (config: PluginConfig, input_elem
         // I have no idea, why Escape does not work with the keypress event (Safari on MacOS). As a work around, we listen to the keydown event
         if (event.key === "Escape") {
             logger.debug("Resetting input field for ", placeholder.name, " to current placeholder value");
-            input_element.innerText = placeholder.current_value;
+            change_text_keep_other_children(input_element, placeholder.current_value);
 
             // reset the validation state
             validate_textbox_editable_span(placeholder, input_element);
@@ -111,7 +126,12 @@ export const prepare_span_for_textbox_editor = (config: PluginConfig, input_elem
         logger.debug("Focus gained");
 
         // This lets users actually modify the span like an input element
-        input_element.contentEditable = "true";
+        // Because firefox does not support this attribute, we need to do exception handling and fall back to the one it supports
+        try {
+            input_element.contentEditable = "plaintext-only";
+        } catch {
+            input_element.contentEditable = "true";
+        }
         // show the validation popup instead
         validate_textbox_editable_span(placeholder, input_element);
 

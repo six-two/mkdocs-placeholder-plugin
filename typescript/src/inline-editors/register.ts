@@ -19,6 +19,7 @@ export const register_inline_value_editors = (config: PluginConfig) => {
 
                     const icon = document.createElement("span");
                     icon.classList.add("inline-editor-icon-span");
+                    icon.contentEditable = "false";
                     element.appendChild(icon);
 
                     if (placeholder.type == InputType.Textbox) {

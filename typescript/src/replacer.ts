@@ -253,7 +253,7 @@ export const replace_dynamic_placeholder_values = (placeholder_list: Placeholder
     }
 }
 
-const change_text_keep_other_children = (element: HTMLElement, new_text: string) => {
+export const change_text_keep_other_children = (element: HTMLElement, new_text: string) => {
     if (new_text) {
         element.classList.remove("value-empty");
     } else {
