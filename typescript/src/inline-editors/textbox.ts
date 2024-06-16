@@ -8,37 +8,6 @@ import { change_text_keep_other_children } from "../replacer";
 // Source: https://pictogrammers.com/library/mdi/icon/pencil/
 const PEN_SVG = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20.71,7.04C21.1,6.65 21.1,6 20.71,5.63L18.37,3.29C18,2.9 17.35,2.9 16.96,3.29L15.12,5.12L18.87,8.87M3,17.25V21H6.75L17.81,9.93L14.06,6.18L3,17.25Z" /></svg>';
 
-const add_icon_back_if_user_deleted_it = (input_element: HTMLSpanElement) => {
-    if (!input_element.querySelector(".inline-editor-icon-span")) {
-        // The icon was deleted, the user probably uses firefox
-        // we just quickly recreate the icon
-        const icon = document.createElement("span");
-        icon.classList.add("inline-editor-icon-span");
-        icon.contentEditable = "false";
-        icon.innerHTML = PEN_SVG;
-        input_element.appendChild(icon);
-    }
-
-    // Make sure that text is not on both sides of the icon
-    const text_nodes = []
-    for (const child of input_element.childNodes) {
-        if (child.nodeType === Node.TEXT_NODE) {
-            text_nodes.push(child);
-        }
-    }
-
-    let combined_text = "";
-    if (text_nodes.length > 1 || input_element.firstChild?.nodeType != Node.TEXT_NODE) {
-        // the user entered something after the icon :/
-        for (const text_child of text_nodes) {
-            combined_text += text_child.textContent;
-            text_child.remove();
-        }
-        input_element.insertAdjacentText("afterbegin", combined_text);
-    }
-
-}
-
 export const prepare_span_for_textbox_editor = (config: PluginConfig, input_element: HTMLSpanElement, placeholder: TextboxPlaceholder) => {
     // We need to set this so that the element can obtain focus.
     input_element.tabIndex = 0;
@@ -88,8 +57,6 @@ export const prepare_span_for_textbox_editor = (config: PluginConfig, input_elem
         } else {
             input_element.classList.add("value-modified");
         }
-
-        add_icon_back_if_user_deleted_it(input_element);
     }, abort_signal_object);
 
     input_element.addEventListener("keypress", (event: KeyboardEvent) => {

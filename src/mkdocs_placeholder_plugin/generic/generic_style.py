@@ -169,6 +169,19 @@ table tr td input.input-for-variable[type="checkbox"] {
     cursor: initial;
 }
 
+.inline-editor-icons .placeholder-value-editable:focus .inline-editor-icon-span,
+.inline-editor-simple .placeholder-value-editable:focus .inline-editor-icon-span {
+    display: none !important;
+}
+
+.placeholder-value-editable:focus::after {
+    /* Source: https://pictogrammers.com/library/mdi/icon/pencil/ */
+    content: url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0iZ3JlZW4iPjxwYXRoIGQ9Ik0yMC43MSw3LjA0QzIxLjEsNi42NSAyMS4xLDYgMjAuNzEsNS42M0wxOC4zNywzLjI5QzE4LDIuOSAxNy4zNSwyLjkgMTYuOTYsMy4yOUwxNS4xMiw1LjEyTDE4Ljg3LDguODdNMywxNy4yNVYyMUg2Ljc1TDE3LjgxLDkuOTNMMTQuMDYsNi4xOEwzLDE3LjI1WiIgLz48L3N2Zz4=");
+    width: 0em;
+    height: 1em;
+    display: inline-block;
+}
+
 .placeholder-value-any:hover,
 .inline-editor-icons .placeholder-value-any:hover {
     border-bottom: 2px solid;

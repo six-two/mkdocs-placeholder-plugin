@@ -61,7 +61,7 @@ You can disable the automatic insertion of tables by disabling the `auto_placeho
 
 ### Inline editors
 
-Starting with version 0.4.2 you can also edit placeholders inline with the `editable` replacement method.
+Starting with version 0.5.0 you can also edit placeholders inline with the `editable` replacement method.
 For checkbox or dropdown placeholders, clicking on where the placeholder is embedded in the page will switch it to the next possible value.
 For textbox placeholders, the value will become editable like a text field.
 
