@@ -169,7 +169,8 @@ The available options are:
 
 - `simple`: will highlight the placeholders with color. When hovered it will show an underline and an icon, signifying the placeholder type and where the value starts / ends.
 - `icons`: will highlight the placeholders with color and dashed underline. It will always display the icon.
-- `custom`: this is for if you want to use custom highlighting such as for example use a specific background color. It applies almost no styling (except the cursor style) to placeholders, so that they look like normal text. Prefix your own CSS rules with `.inline-editor-custom` so that they are only applied when the user selects this style. Example rule:
+- `custom`: this is for if you want to use custom highlighting such as for example use a specific background color. It applies almost no styling (except the cursor style) to placeholders, so that they look like normal text. You can include custom CSS in mkdocs and prefix your own CSS rules with `.inline-editor-custom` so that they are only applied when the user selects this style.
+    Example rule:
     ```css
     .inline-editor-custom .placeholder-value-editable {
         color: white;
@@ -177,9 +178,6 @@ The available options are:
         border-radius: 5px;
     }
     ```
-
-When it is set to `False`, placeholders are only highlighted by their color and by being in italic.
-The icons are only shown, when the placeholder is hovered.
 
 ### \*\_prefix and \*\_suffix
 

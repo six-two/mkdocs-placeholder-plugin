@@ -189,9 +189,16 @@ table tr td input.input-for-variable[type="checkbox"] {
     display: inline-block;
 }
 
-.inline-editor-simple .placeholder-value-any:hover,
-.inline-editor-icons .placeholder-value-any:hover {
-    border-bottom: 2px solid;
+/* https://itnext.io/finally-a-css-only-solution-to-hover-on-touchscreens-c498af39c31c */
+@media(hover: hover) and (pointer: fine) {
+    .inline-editor-simple .placeholder-value-any:hover,
+    .inline-editor-icons .placeholder-value-any:hover {
+        border-bottom: 2px solid;
+    }
+
+    .inline-editor-simple .placeholder-value-any:hover .inline-editor-icon-span {
+        display: inline-block;
+    }
 }
 
 .inline-editor-simple .placeholder-value-any.value-empty::before {
@@ -211,7 +218,6 @@ table tr td input.input-for-variable[type="checkbox"] {
 }
 
 .inline-editor-simple .placeholder-value-any:focus .inline-editor-icon-span,
-.inline-editor-simple .placeholder-value-any:hover .inline-editor-icon-span,
 .inline-editor-icons  .placeholder-value-any .inline-editor-icon-span {
     display: inline-block;
 }

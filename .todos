@@ -14,5 +14,3 @@
 - inline placeholders:
     - edge case: how to handle editable placeholders in other placeholders? For editable placeholders in a read-only placeholder showing the individual inputs if the outer one is replaced with editable seems most logical
 - bug with `<https://xTESTx>`
-
-- bug with safari on ipad (onhover)

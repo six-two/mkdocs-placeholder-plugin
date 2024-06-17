@@ -123,7 +123,7 @@ export const prepare_span_for_textbox_editor = (config: PluginConfig, input_elem
 
         // Select the whole contents of the element when it gains focus. This is required for tabbing into the element to create a cursor.
         // It also makes it quicker to replace the whole value of an element.
-        setTimeout(() => select_all_text_in_element(input_element), 50);
+        setTimeout(() => select_all_text_in_element(input_element), 5);
     }, abort_signal_object)
 }
 
