@@ -90,7 +90,7 @@ expand_auto_tables | `bool` | `True`
 html_prefix | `str` | `i`
 html_suffix | `str` | `i`
 inline_editors | `bool` | `True`
-inline_editor_icons | `bool` | `False`
+inline_editor_style | `string` | `simple`
 normal_is_alias_for | `str` | `editable`
 normal_prefix | `str` | `x`
 normal_suffix | `str` | `x`
@@ -115,7 +115,7 @@ settings:
     html_prefix: i
     html_suffix: i
     inline_editors: true
-    inline_editor_icons: false
+    inline_editor_style: simple
     normal_is_alias_for: editable
     normal_prefix: x
     normal_suffix: x
@@ -162,10 +162,21 @@ Whether to expand automatic placeholder tables by default.
 Whether to enable inline editors by default.
 Inline editors allow you to change a placeholder from anywhere it is inserted into the page by clicking it.
 
-### inline_editor_icons
+### inline_editor_style
 
 This determines how inline editors are styled.
-When it is set to `True` it will always show icons next to placeholders and will also highlight placeholders more aggressively (background color, margins, etc).
+The available options are:
+
+- `simple`: will highlight the placeholders with color. When hovered it will show an underline and an icon, signifying the placeholder type and where the value starts / ends.
+- `icons`: will highlight the placeholders with color and dashed underline. It will always display the icon.
+- `custom`: this is for if you want to use custom highlighting such as for example use a specific background color. It applies almost no styling (except the cursor style) to placeholders, so that they look like normal text. Prefix your own CSS rules with `.inline-editor-custom` so that they are only applied when the user selects this style. Example rule:
+    ```css
+    .inline-editor-custom .placeholder-value-editable {
+        color: white;
+        background-color: green;
+        border-radius: 5px;
+    }
+    ```
 
 When it is set to `False`, placeholders are only highlighted by their color and by being in italic.
 The icons are only shown, when the placeholder is hovered.

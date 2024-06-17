@@ -146,9 +146,12 @@ table tr td input.input-for-variable[type="checkbox"] {
     font-weight: bold;
 }
 
-/* Highlight inline editable entries in the page */
 .placeholder-value-any {
     cursor: pointer;
+}
+
+.inline-editor-icons  .placeholder-value-any,
+.inline-editor-simple .placeholder-value-any {
     color: var(--inline-editor-color);
     border-color: var(--inline-editor-color);
     font-style: italic;
@@ -160,6 +163,10 @@ table tr td input.input-for-variable[type="checkbox"] {
     display: none;
     width: 1em;
     height: 1em;
+}
+
+.inline-editor-icons  .placeholder-value-any .inline-editor-icon-span,
+.inline-editor-simple .placeholder-value-any .inline-editor-icon-span {
     margin: 0px 3px;
     vertical-align: text-top;
     fill: var(--inline-editor-color);
@@ -174,15 +181,15 @@ table tr td input.input-for-variable[type="checkbox"] {
     display: none !important;
 }
 
-.placeholder-value-editable:focus::after {
+.inline-editor-icons .placeholder-value-editable:focus::after {
     /* Source: https://pictogrammers.com/library/mdi/icon/pencil/ */
     content: url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0iZ3JlZW4iPjxwYXRoIGQ9Ik0yMC43MSw3LjA0QzIxLjEsNi42NSAyMS4xLDYgMjAuNzEsNS42M0wxOC4zNywzLjI5QzE4LDIuOSAxNy4zNSwyLjkgMTYuOTYsMy4yOUwxNS4xMiw1LjEyTDE4Ljg3LDguODdNMywxNy4yNVYyMUg2Ljc1TDE3LjgxLDkuOTNMMTQuMDYsNi4xOEwzLDE3LjI1WiIgLz48L3N2Zz4=");
-    width: 0em;
+    width: 1em;
     height: 1em;
     display: inline-block;
 }
 
-.placeholder-value-any:hover,
+.inline-editor-simple .placeholder-value-any:hover,
 .inline-editor-icons .placeholder-value-any:hover {
     border-bottom: 2px solid;
 }
@@ -230,7 +237,7 @@ DEBUG_STYLE = """
 }
 """
 
-def generate_generic_style_sheet(debug: bool, inline_editor_icons: bool) -> str:
+def generate_generic_style_sheet(debug: bool) -> str:
     style = BASIC_STYLE
     if debug:
         style += DEBUG_STYLE

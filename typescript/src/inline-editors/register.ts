@@ -1,11 +1,11 @@
-import { PluginConfig, InputType, TextboxPlaceholder, CheckboxPlaceholder, DropdownPlaceholder } from "../parse_settings";
+import { PluginConfig, InputType, TextboxPlaceholder, CheckboxPlaceholder, DropdownPlaceholder, VALID_INLINE_EDITOR_STYLES } from "../parse_settings";
 import { prepare_span_for_checkbox_editor } from "./checkbox";
 import { prepare_span_for_dropdown_editor } from "./dropdown";
 import { prepare_span_for_textbox_editor } from "./textbox";
 
 export const register_inline_value_editors = (config: PluginConfig) => {
     // Ensure that the correct class is set before the editors are created
-    set_inline_editor_icons_enabled(config.settings.inline_editor_icons);
+    set_inline_editor_style(config.settings.inline_editor_style);
 
     const placeholder_value_elements = document.querySelectorAll("span.placeholder-value.inline-editor-requested[data-placeholder]");
     for (const element of placeholder_value_elements) {
@@ -61,14 +61,15 @@ export const unregister_inline_value_editors = (config: PluginConfig) => {
     }
 }
 
-export const set_inline_editor_icons_enabled = (enabled: boolean) => {
-    // We add the class to the body, so that it will apply to all placeholders (at once)
-    if (enabled) {
-        document.body.classList.add("inline-editor-icons");
-        document.body.classList.remove("inline-editor-simple");
+export const set_inline_editor_style = (style: string) => {
+    if (VALID_INLINE_EDITOR_STYLES.includes(style)) {
+        // We add the class to the body, so that it will apply to all placeholders (at once)
+        for (const style_to_remove of VALID_INLINE_EDITOR_STYLES) {
+            document.body.classList.remove(`inline-editor-${style_to_remove}`);
+        }
+        document.body.classList.add(`inline-editor-${style}`);
     } else {
-        document.body.classList.add("inline-editor-simple");
-        document.body.classList.remove("inline-editor-icons");
+        console.error(`Tried to set inline editor style '${style}', but only ${VALID_INLINE_EDITOR_STYLES} are allowed`);
     }
 }
 

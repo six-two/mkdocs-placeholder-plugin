@@ -36,6 +36,34 @@ export const load_boolean_setting = (name: string, default_value: boolean): bool
     }
 }
 
+export const store_multiple_choice_setting = (name: string, value: string, choices: string[]) => {
+    if (choices.includes(value)) {
+        localStorage.setItem(`${SETTINGS_PREFIX}${name}`, value);
+    } else {
+        console.error(`Tried to store value '${value}' for setting '${name}', but only ${choices} are allowed`);
+    }
+}
+
+export const load_multiple_choice_setting = (name: string, default_value: string, allowed_values: string[]) => {
+    if (!allowed_values.includes(default_value)) {
+        console.warn(`Default value '${default_value}' for multiple choice setting ${name} is not in the list of allowed values. Allowed are: ${allowed_values}`);
+    }
+
+    const stored = localStorage.getItem(`${SETTINGS_PREFIX}${name}`);
+    logger.info(`Reading multiple choice setting '${name}' with value ${stored}`);
+    if (stored === null) {
+        return default_value;
+    } else if (allowed_values.includes(stored)) {
+        return stored;
+    } else {
+        // Unexpected state, warn user and fall back to default
+        console.warn(`Unexpected state for multiple choice setting. Should be null or one of ${allowed_values}, but was '${stored}'`);
+        return default_value;
+    }
+
+}
+
+
 // I changed the storage model: the real value is stored in the placeholder object instead of in localstorage -> easier and safer to access
 
 // We pass the whole placeholder instead of just a name, so that you can not accidentally call the wrong function or use an invalid placeholder name

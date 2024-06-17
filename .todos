@@ -9,10 +9,10 @@
 - per page options (like disabling the insertion of an placeholder input table at the top)
     - maybe only insert if no table is already defined on the page
 - idea: debug option / style that shows which placeholder changes will require a page reload
-- Improve behavior on really large pages (as created by print-page plugin)
-    - segment tables and only let them run in their own segment -> do now show a hunch of unnecessary placeholders that are referenced way farther down the site -> might be solved by inline editors
 - performance: add options to disable specific replace methods
 - refactor: try to convert HTML modification code to use markdown hooks (see https://github.com/six-two/mkdocs-placeholder-plugin/issues/6#issuecomment-2062028205)
 - inline placeholders:
     - edge case: how to handle editable placeholders in other placeholders? For editable placeholders in a read-only placeholder showing the individual inputs if the outer one is replaced with editable seems most logical
 - bug with `<https://xTESTx>`
+
+- bug with safari on ipad (onhover)

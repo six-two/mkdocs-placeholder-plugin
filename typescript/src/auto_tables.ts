@@ -1,9 +1,9 @@
 import { logger } from "./debug";
-import { register_inline_value_editors, set_inline_editor_icons_enabled, unregister_inline_value_editors } from "./inline-editors/register";
+import { register_inline_value_editors, set_inline_editor_style, unregister_inline_value_editors } from "./inline-editors/register";
 import { prepare_input_field } from "./inputs";
-import { InputTable, InputTableRow, Placeholder, PluginConfig } from "./parse_settings";
+import { InputTable, InputTableRow, Placeholder, PluginConfig, VALID_INLINE_EDITOR_STYLES } from "./parse_settings";
 import { create_dynamic_placeholder_element } from "./replacer";
-import { clear_settings, clear_state, store_boolean_setting } from "./state_manager";
+import { clear_settings, clear_state, store_boolean_setting, store_multiple_choice_setting } from "./state_manager";
 
 const TABLE_CELL_HEADINGS: Map<string, string> = new Map();
 TABLE_CELL_HEADINGS.set("name", "Name");
@@ -128,7 +128,7 @@ const fill_settings_content_container = (config: PluginConfig, settings_contents
     append_boolean_setting_checkbox(settings_contents, config.settings.debug, "debug", "Log JavaScript debug messages to console*", do_nothing);
     append_boolean_setting_checkbox(settings_contents, config.settings.highlight_placeholders, "highlight_placeholders", "Highlight placeholders (useful for debugging)", set_highlight_placeholders);
     append_boolean_setting_checkbox(settings_contents, config.settings.inline_editors, "inline_editors", "Allow editing placeholders directly in the page", set_inline_editors_enabled);
-    append_boolean_setting_checkbox(settings_contents, config.settings.inline_editor_icons, "inline_editor_icons", "Use icons and other styling to highlight inline editors", set_inline_editor_icons_enabled);
+    append_setting_dropdown(settings_contents, config.settings.inline_editor_style, VALID_INLINE_EDITOR_STYLES, "inline_editor_style", "Style to apply to inline placeholder editors", set_inline_editor_style);
     createChildElement(settings_contents, "i").textContent = "* You need to reload the page for these settings to take effect."
 
     const settings_button_bar = createChildElement(settings_contents, "div");
@@ -152,6 +152,24 @@ const append_boolean_setting_checkbox = (parent_element: HTMLElement, value: boo
     checkbox.addEventListener("change", () => {
         store_boolean_setting(name, checkbox.checked);
         custom_on_change(checkbox.checked);
+    });
+}
+
+const append_setting_dropdown = (parent_element: HTMLElement, value: string, allowed_values: string[], name: string, label_text: string, custom_on_change: (new_value: string) => void) => {
+    const label = createChildElement(parent_element, "label");
+    label.textContent = `${label_text} `;
+    const dropdown = createChildElement(label, "select") as HTMLSelectElement;
+    for (const style_name of allowed_values) {
+        const option_element = document.createElement("option");
+        option_element.text = style_name;
+        option_element.value = style_name;
+        dropdown.appendChild(option_element);
+    }
+    dropdown.value = value;
+
+    dropdown.addEventListener("change", () => {
+        store_multiple_choice_setting(name, dropdown.value, allowed_values);
+        custom_on_change(dropdown.value);
     });
 }
 
