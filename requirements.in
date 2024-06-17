@@ -1,5 +1,6 @@
 mkdocs-badges
 mkdocs-material
 mkdocs-spellcheck[all]
+mkdocs-git-revision-date-localized-plugin
 # For type checking:
 types-PyYAML

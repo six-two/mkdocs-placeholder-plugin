@@ -31,6 +31,7 @@ plugins:
     placeholder_extra_js: placeholder-extra.js
 - badges
 - search
+- git-revision-date-localized
 # - spellcheck:
 #     known_words: ../known_words.txt
 #     ignore_code: yes
