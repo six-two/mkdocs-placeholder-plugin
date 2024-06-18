@@ -178,8 +178,13 @@ table tr td input.input-for-variable[type="checkbox"] {
 .inline-editor-icons  .placeholder-value-any .inline-editor-icon-span,
 .inline-editor-simple .placeholder-value-any .inline-editor-icon-span {
     margin: 0px 3px;
-    vertical-align: text-top;
     fill: var(--inline-editor-color);
+}
+
+.inline-editor-icons  .placeholder-value-any .inline-editor-icon-span svg,
+.inline-editor-simple .placeholder-value-any .inline-editor-icon-span svg {
+    padding-top: 2px;
+    vertical-align: text-top;
 }
 
 .placeholder-value-editable:focus {
