@@ -1,3 +1,13 @@
+import base64
+
+# Used for the :after work around, since it can not contain CSS variables defined on the main page
+def pen_icon_inline_svg_url(color: str) -> str:
+    # Source: https://pictogrammers.com/library/mdi/icon/pencil/
+    svg = f'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="{color}"><path d="M20.71,7.04C21.1,6.65 21.1,6 20.71,5.63L18.37,3.29C18,2.9 17.35,2.9 16.96,3.29L15.12,5.12L18.87,8.87M3,17.25V21H6.75L17.81,9.93L14.06,6.18L3,17.25Z" /></svg>'
+    svg_base64_str = base64.b64encode(svg.encode()).decode()
+    return f"data:image/svg+xml;base64,{svg_base64_str}"
+
+
 BASIC_STYLE = """
 /* For the licensing of inline icons (data URLs) see https://pictogrammers.com/docs/general/license/,
    They should be under the Apache License 2.0 */
@@ -178,16 +188,28 @@ table tr td input.input-for-variable[type="checkbox"] {
 
 .inline-editor-icons .placeholder-value-editable:focus .inline-editor-icon-span,
 .inline-editor-simple .placeholder-value-editable:focus .inline-editor-icon-span {
-    display: none !important;
+    display: none;
 }
 
 .inline-editor-icons .placeholder-value-editable:focus::after {
     /* Source: https://pictogrammers.com/library/mdi/icon/pencil/ */
-    content: url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0iZ3JlZW4iPjxwYXRoIGQ9Ik0yMC43MSw3LjA0QzIxLjEsNi42NSAyMS4xLDYgMjAuNzEsNS42M0wxOC4zNywzLjI5QzE4LDIuOSAxNy4zNSwyLjkgMTYuOTYsMy4yOUwxNS4xMiw1LjEyTDE4Ljg3LDguODdNMywxNy4yNVYyMUg2Ljc1TDE3LjgxLDkuOTNMMTQuMDYsNi4xOEwzLDE3LjI1WiIgLz48L3N2Zz4=");
+    content: url("PEN_OK_URL");
     width: 1em;
     height: 1em;
     display: inline-block;
+    vertical-align: text-top;
+    margin-right: 2px;
+
 }
+
+.inline-editor-icons .placeholder-value-editable.validation-warn:focus::after {
+    content: url("PEN_WARN_URL");
+}
+
+.inline-editor-icons .placeholder-value-editable.validation-error:focus::after {
+    content: url("PEN_ERROR_URL");
+}
+
 
 /* https://itnext.io/finally-a-css-only-solution-to-hover-on-touchscreens-c498af39c31c */
 @media(hover: hover) and (pointer: fine) {
@@ -196,7 +218,7 @@ table tr td input.input-for-variable[type="checkbox"] {
         border-bottom: 2px solid;
     }
 
-    .inline-editor-simple .placeholder-value-any:hover .inline-editor-icon-span {
+    .inline-editor-simple .placeholder-value-any:hover:not(:focus) .inline-editor-icon-span {
         display: inline-block;
     }
 }
@@ -209,7 +231,7 @@ table tr td input.input-for-variable[type="checkbox"] {
 .inline-editor-icons .placeholder-value-any {
     border-bottom: 2px dotted;
     margin: 0px 3px;
-    padding: 0px 3px;
+    padding-left: 3px;
 }
 
 .inline-editor-simple .placeholder-value-any:focus,
@@ -217,7 +239,6 @@ table tr td input.input-for-variable[type="checkbox"] {
     border: 2px solid;
 }
 
-.inline-editor-simple .placeholder-value-any:focus .inline-editor-icon-span,
 .inline-editor-icons  .placeholder-value-any .inline-editor-icon-span {
     display: inline-block;
 }
@@ -233,7 +254,11 @@ table tr td input.input-for-variable[type="checkbox"] {
 .placeholder-value-checkbox.checked .checkbox-unchecked {
     display: none;
 }
-"""
+""" \
+    .replace("PEN_OK_URL", pen_icon_inline_svg_url("green")) \
+    .replace("PEN_WARN_URL", pen_icon_inline_svg_url("orange")) \
+    .replace("PEN_ERROR_URL", pen_icon_inline_svg_url("red")) \
+
 
 DEBUG_STYLE = """
 .placeholder-value {
