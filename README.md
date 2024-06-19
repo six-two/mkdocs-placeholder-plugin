@@ -46,11 +46,12 @@ The corresponding documentation is hosted at <https://dev.mkdocs-placeholder-plu
 
 ## Notable changes
 
-### Head
+### Version 0.5.0
 
-- Added inline editable placeholders (see [#6](https://github.com/six-two/mkdocs-placeholder-plugin/issues/6)) and enabled them by default.
-    If you want to disable them by default, add `inline_editors: false` to the `settings` attribute in your `placeholder-plugin.yaml`.
-    If you want to disable them and prevent users from enabling them, add `normal_is_alias_for: dynamic` to the `settings` attribute in your `placeholder-plugin.yaml`.
+- Added inline editable placeholders (see [#6](https://github.com/six-two/mkdocs-placeholder-plugin/issues/6)) and enabled them by default:
+    - If you want to disable them by default, add `inline_editors: false` to the `settings` attribute in your `placeholder-plugin.yaml`.
+    - If you want to disable them and prevent users from enabling them, add `normal_is_alias_for: dynamic` to the `settings` attribute in your `placeholder-plugin.yaml`.
+    - You can choose how inline placeholders look via the [`inline_editor_style` setting](https://mkdocs-placeholder-plugin.six-two.dev/configuration/#inline_editor_style).
 - You can now embed the placeholder settings editor anywhere if your page with `<div class="placeholder-settings-panel"></div>`.
 
 ### Version 0.4.1
@@ -166,11 +167,18 @@ This is just for me :)
     ```bash
     pyflakes src
     ```
+
+    Check npm code with podman:
     ```bash
     podman run -it --rm --workdir /typescript -v "$(pwd)/typescript:/typescript" localhost/placeholder-npm:latest npm run lint
     ```
+
+    Or with docker:
+    ```bash
+    docker run -it --rm --workdir /typescript -v "$(pwd)/typescript:/typescript" placeholder-npm:latest npm run lint
+    ```
 2. Update the changelog in this README file.
-3. Update version number in `setup.cfg`.
+3. Update version number in `./setup.cfg` and `typescript/src/api.ts`.
 4. Disable `debug_javascript` in `placeholder-plugin.yaml`.
 5. Build and update package.
 6. Create a commit for the release (`Version 0.X.Y`) and push it.
