@@ -46,6 +46,10 @@ The corresponding documentation is hosted at <https://dev.mkdocs-placeholder-plu
 
 ## Notable changes
 
+### Version 0.5.0-1
+
+- Version 0.5.0 accidentally shipped with old JavaScript code. This causes the JavaScript to crash with the error `Type mismatch: inline_editor_icons should be boolean, but is undefined`. If you encounter this issue, make sure to update to the latest version with `pip install -U mkdocs-placeholder-plugin` or pin the fixed version with `pip install mkdocs-placeholder-plugin==0.5.0-1`.
+
 ### Version 0.5.0
 
 - Added inline editable placeholders (see [#6](https://github.com/six-two/mkdocs-placeholder-plugin/issues/6)) and enabled them by default:
@@ -179,6 +183,7 @@ This is just for me :)
     ```
 2. Update the changelog in this README file.
 3. Update version number in `./setup.cfg` and `typescript/src/api.ts`.
+4. Run `./build.sh` to compile the latest JavaScript code and test that it works. **`python -m build` will only build the latest Python code,** and incompatibilities between Python and JS code can break the release.
 4. Disable `debug_javascript` in `placeholder-plugin.yaml`.
 5. Build and update package.
 6. Create a commit for the release (`Version 0.X.Y`) and push it.
@@ -188,6 +193,7 @@ This is just for me :)
     ```
 8. Update the `latest-release` branch, so that the documentation website gets updated:
     ```bash
+    git push
     git branch --force latest-release HEAD
     git push --tags origin latest-release
     ```

@@ -6,7 +6,7 @@ export const export_api_functions = (config: PluginConfig) => {
     // This is the simplest way to assign something to the window object without TypeScript complaining, so I keep it
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     (window as any).PlaceholderPlugin = {
-        "version": "0.5.0",
+        "version": "0.5.0+head",
         "settings": config.settings,
         "placeholders": config.placeholders,
         "debug_disable_reload": debug_disable_reload,
