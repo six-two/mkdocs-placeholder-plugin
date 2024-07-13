@@ -56,7 +56,7 @@ The corresponding documentation is hosted at <https://dev.mkdocs-placeholder-plu
     - If you want to disable them by default, add `inline_editors: false` to the `settings` attribute in your `placeholder-plugin.yaml`.
     - If you want to disable them and prevent users from enabling them, add `normal_is_alias_for: dynamic` to the `settings` attribute in your `placeholder-plugin.yaml`.
     - You can choose how inline placeholders look via the [`inline_editor_style` setting](https://mkdocs-placeholder-plugin.six-two.dev/configuration/#inline_editor_style).
-- You can now embed the placeholder settings editor anywhere if your page with `<div class="placeholder-settings-panel"></div>`.
+- You can now embed the placeholder settings editor anywhere in your page with `<div class="placeholder-settings-panel"></div>`.
 
 ### Version 0.4.1
 
