@@ -132,7 +132,7 @@ Save and apply values entered into textbox fields when the user changes focus aw
 ### auto_placeholder_tables
 
 When enabled the plugin will add an automatic input table to the top of every page.
-You can disable this if you manually want to specify them (or have them at very specific locations).
+You can disable this if you manually want to specify them (or have them at very specific locations) or rely entirely on inline editors.
 
 ### create_no_js_fallback
 
