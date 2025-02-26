@@ -32,15 +32,34 @@ const escapeHTML = (text: string): string => {
 }
 
 const inner_html_replace = (root_element: Element, search_regex: RegExp, replacement_value: string) => {
-    // User supplied input, HTML escape it before we inject it in the page
-    replacement_value = escapeHTML(replacement_value);
-
     if (!search_regex.global) {
         console.warn(`You should set the global flag for the regex. Context: replacing '${search_regex.source}' with '${replacement_value}'`);
     }
     const new_value = root_element.innerHTML.replace(search_regex, replacement_value);
     if (new_value != root_element.innerHTML) {
-        root_element.innerHTML = new_value;
+        // @TODO: Find the exact element that contains the placeholder(s) and only replace them
+
+        // First update all children
+        for (const child of root_element.childNodes) {
+            if (child.nodeType == Node.ELEMENT_NODE) {
+                let element = child as Element;
+                inner_html_replace(element, search_regex, replacement_value)
+            } else {
+                if (child.nodeValue) {
+                    child.nodeValue = child.nodeValue.replace(search_regex, replacement_value);
+                }
+            }
+        }
+
+        // If the element still contains the placeholder, then we need to replace it entirely
+        const new_value_after_updating_children = root_element.innerHTML.replace(search_regex, replacement_value);
+        if (new_value_after_updating_children != root_element.innerHTML) {
+            console.log("Need to innerhtml replace:", root_element)
+            root_element.innerHTML = new_value;
+        } else {
+            console.log("No longer need to innterhtml replace:", root_element);
+        }
+
         return 1;
     } else {
         return 0;
@@ -145,7 +164,9 @@ const inner_do_normal_replace = (root_element: Element, placeholder: Placeholder
         case "editable":
             return editable_replace(root_element, placeholder.regex_normal, placeholder, false);
         case "html":
-            return inner_html_replace(root_element, placeholder.regex_html, placeholder.expanded_value);
+            // User supplied input, HTML escape it before we inject it in the page
+            const replacement_value = escapeHTML(placeholder.expanded_value)
+            return inner_html_replace(root_element, placeholder.regex_html, replacement_value);
         case "static":
             return static_replace(root_element, placeholder.regex_static, placeholder.expanded_value);
         default:
