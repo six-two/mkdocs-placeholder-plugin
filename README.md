@@ -46,6 +46,10 @@ The corresponding documentation is hosted at <https://dev.mkdocs-placeholder-plu
 
 ## Notable changes
 
+### Version 0.5.1
+
+- Fixes innerHTML replacement method breaking functionality such as the search box (see [#9](https://github.com/six-two/mkdocs-placeholder-plugin/issues/9)).
+
 ### Version 0.5.0-1
 
 - Version 0.5.0 accidentally shipped with old JavaScript code. This causes the JavaScript to crash with the error `Type mismatch: inline_editor_icons should be boolean, but is undefined`. If you encounter this issue, make sure to update to the latest version with `pip install -U mkdocs-placeholder-plugin` or pin the fixed version with `pip install mkdocs-placeholder-plugin==0.5.0-1`.

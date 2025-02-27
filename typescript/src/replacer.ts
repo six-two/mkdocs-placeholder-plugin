@@ -36,10 +36,9 @@ const inner_html_replace = (root_element: Element, search_regex: RegExp, replace
         console.warn(`You should set the global flag for the regex. Context: replacing '${search_regex.source}' with '${replacement_value}'`);
     }
     const new_value = root_element.innerHTML.replace(search_regex, replacement_value);
+    // Only process this node if it or its children contain the placeholder
     if (new_value != root_element.innerHTML) {
-        // @TODO: Find the exact element that contains the placeholder(s) and only replace them
-
-        // First update all children
+        // First update/check all children (recursively)
         for (const child of root_element.childNodes) {
             if (child.nodeType == Node.ELEMENT_NODE) {
                 let element = child as Element;
@@ -54,10 +53,7 @@ const inner_html_replace = (root_element: Element, search_regex: RegExp, replace
         // If the element still contains the placeholder, then we need to replace it entirely
         const new_value_after_updating_children = root_element.innerHTML.replace(search_regex, replacement_value);
         if (new_value_after_updating_children != root_element.innerHTML) {
-            console.log("Need to innerhtml replace:", root_element)
             root_element.innerHTML = new_value;
-        } else {
-            console.log("No longer need to innterhtml replace:", root_element);
         }
 
         return 1;
