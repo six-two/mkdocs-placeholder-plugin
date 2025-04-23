@@ -37,4 +37,18 @@ xVALIDATOR_IPV4_ADDRESSx
 
 xVALIDATOR_FILE_WINDOWSx
 
+## Manual inputs
+
+IP4 Address:<br>
+<input class="some-custom-class-for-styling" data-input-for="VALIDATOR_IPV4_ADDRESS">
+
+Windows File name:<br>
+<input class="some-custom-class-for-styling" data-input-for="VALIDATOR_FILE_WINDOWS">
+
+
+<style>
+.some-custom-class-for-styling {
+    width: 100%;
+}
+</style>
 
