@@ -52,6 +52,7 @@ nav:
   - tests/mermaid_diagrams.md
   - tests/validators.md
   - tests/new-ts-code.md
+  - tests/auto-tables-wide.md
 
 extra_javascript:
 - development-warning.js
