@@ -1,7 +1,8 @@
 # Supported themes
 
 Personally I prefer Material for Mkdocs (`material`), so it is the default for this documentation and the best tested.
-But the following themes should also work and you can see this documentation built with that theme by clicking the link:
+But the following themes should also work.
+You can see this documentation built with each theme by clicking the link:
 
 - [material](/): a great theme ([Homepage](https://squidfunk.github.io/mkdocs-material/))
 - [mkdocs](/mkdocs/index.html): default theme of MkDocs

@@ -1,4 +1,3 @@
-
 # Tests: Empty automatic input table
 
 This should show a warning that the table is empty instead of an actual table.

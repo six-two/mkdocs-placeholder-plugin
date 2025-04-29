@@ -1,4 +1,5 @@
 mkdocs-badges
+mkdocs-languagetool-plugin
 mkdocs-material
 mkdocs-spellcheck[all]
 mkdocs-git-revision-date-localized-plugin

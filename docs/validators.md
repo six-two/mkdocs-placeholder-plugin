@@ -19,7 +19,7 @@ VALIDATOR_IPV4_ADDRESS:
   validators: ipv4_address
 ```
 
-When you then define an input element for the placeholder, it will change it's background to yellow if the validator generates a warning.
+When you then define an input element for the placeholder, it will change its background to yellow if the validator generates a warning.
 It changes to red if the validator detects an error.
 When warnings or errors exist, you can list them by hovering over the input filed.
 Try it out:
@@ -31,7 +31,7 @@ Try it out:
 
 You can also define your own validators.
 Each validator has a name and a collection of rules.
-The name is used in the error/warning messages so it should be something human readable.
+The name is used in the error/warning messages so it should be something human-readable.
 Each rule is checked and the list of the error messages is shown to the user.
 
 ### Rules
@@ -52,7 +52,7 @@ Each rule consists of the following fields:
 
 3. `severity` specifies how serious the rule is:
 
-    - `warn` will cause the background to turn yellow, but the value will be accepted anyways.
+    - `warn` will cause the background to turn yellow, but the value will be accepted.
     - `error` (the default value) will cause the background to turn red and the value will be rejected.
 
 4. `error_message` specifies the message shown.
@@ -101,7 +101,7 @@ Corresponding input element:
 ### Extend validators
 
 Starting with version 0.4.1 you can also extend (your own or any predefined) validators.
-This can be useful in reducing duplicate rules, since you can put common rules in a own validator and then reference it via the `import_rules_from` attribute from any validator.
+This can be useful in reducing duplicate rules, since you can put common rules in an own validator and then reference it via the `import_rules_from` attribute from any validator.
 It is also very useful if you want to tighten down predefined validators without having to recreate them (for example: only specific IP ranges).
 `import_rules_from` is transitive: If (`A` includes `B`) and (`B` includes `C`), then `A` will also include `C`.
 
@@ -133,7 +133,7 @@ validators:
 
 #### Example: expand predefined validator
 
-Expand the domains validator, so that it only accepts german web sites (ending with `.de`):
+Expand the `domain` validator, so that it only accepts German websites (ending with `.de`):
 
 ```yaml title="placeholder-plugin.yaml"
 validators:
@@ -159,7 +159,7 @@ Corresponding input element:
 ## Multiple validators
 
 You can specify multiple validators for a value.
-Of course you can use both predefined and custom validators.
+Of course, you can use both predefined and custom validators.
 Only the best matching validators will be used, so it is like a logical OR (meaning only one of them needs to match).
 If one validator accepts the input, but others do not, then the input will be accepted and no errors will be shown.
 If at least one validator only has warnings, only messages for the validators that match best (they do not have errors) will be shown.

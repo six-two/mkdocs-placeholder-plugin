@@ -19,7 +19,7 @@ This page shows how you can have extra wide placeholder to easily hold values li
 
 ## Generated with JavaScript
 
-If you have more columns than by default, then the contents will likely be off screen.
+If you have more columns than by default, then the contents will likely be off-screen.
 
 <div class="auto-input-table" data-columns="name,input,value,description"></div>
 

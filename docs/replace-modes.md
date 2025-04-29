@@ -66,6 +66,7 @@ If you have a placeholder that contains another placeholder (and `allow_nested` 
 This may cause the page to reload when you did not expect it.
 
 ### Example
+
 You have an element, that uses the InnerHTML or Direct method, and it references a dynamic placeholder.
 If you now change the value of the dynamic placeholder, the whole page needs to be reloaded.
 Why? Because the change triggered the change of the outer placeholder, that needs a reload to replace the page.

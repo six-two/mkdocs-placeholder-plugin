@@ -35,6 +35,14 @@ plugins:
 # - spellcheck:
 #     known_words: ../known_words.txt
 #     ignore_code: yes
+- languagetool:
+    enabled: !ENV [SPELLCHECK, false]
+    ignore_files:
+    - tests/**
+    ignore_rules:
+    - MORFOLOGIK_RULE_EN_US # data in HTML tags and parts of placeholders cause too many false positives 
+    - WHITESPACE_RULE # too many false positives from markdown syntax
+    - ARROWS # in migration section
 
 nav:
 - index.md

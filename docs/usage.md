@@ -40,7 +40,7 @@ placeholders:
 ```
 
 Ideally you only use capital letters and underscores in your placeholders.
-Other characters may be interpreted as markdown syntax or lead to syntax highlighting splitting the placeholder.
+Other characters may be interpreted as Markdown syntax or lead to syntax highlighting splitting the placeholder.
 If that happens, the placeholder replacement will fail.
 Leading and trailing underscores should not be used, since they are reserved for future features.
 
@@ -55,7 +55,7 @@ Hi, I am xNAMEx and I think that xPLUGINx is xRATINGx!
 
 ## Changing placeholder values
 
-By default an table with input fields for all editable placeholders used on the page is added to the top of each page.
+By default, a table with input fields for all editable placeholders used on the page is added to the top of each page.
 If the page has no placeholders, this table is hidden.
 You can disable the automatic insertion of tables by disabling the `auto_placeholder_tables` option (see [configuration](./configuration.md)).
 
@@ -94,7 +94,7 @@ The `data-columns` attribute specifies a list of columns to include in the table
 Valid column names for `data-columns` are:
 
 - `description`: Shows the placeholder's description (if available)
-- `description-or-name`: Shows the placeholders description. If none exists, the placeholders name is shown instead.
+- `description-or-name`: Shows the placeholder's description. If none exists, the placeholders name is shown instead.
 - `input`: Shows an input element, that can be used to change the placeholder's value
 - `name`: Shows the placeholder's name
 - `value`: Shows the placeholder's expanded value
@@ -139,7 +139,7 @@ You can apply the new value by changing the text in the text box and pressing `E
 #### Checkbox field
 
 You can also define placeholders that have only two different values.
-They can be represented by a check box.
+They can be represented by a checkbox.
 
 You can define them in your `placeholder-plugin.yaml` like this:
 ```yaml
@@ -154,7 +154,7 @@ placeholders:
 
 You can use the placeholder's value as you can use any other placeholder.
 If the checkbox is checked, the value defined under `values.checked` is used.
-Otherwise `values.unchecked` is used.
+Otherwise, `values.unchecked` is used.
 To determine, whether it is checked by default, you set `default` to `checked` or `unchecked`.
 If `default` is not specified or empty, `unchecked` is used.
 
@@ -203,7 +203,7 @@ You can also include the settings by injecting an element like the following in 
 <div class="placeholder-settings-panel"></div>
 ```
 
-My recommendation is putting in in a (collapsible) admonition like the following to easily show where is begins and ends and set it apart from the rest og the page:
+My recommendation is putting it in a (collapsible) admonition like the following to easily show where is begins and ends and set it apart from the rest of the page:
 
 ```markdown
 ???+ note "Placeholder settings"

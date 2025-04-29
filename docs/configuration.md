@@ -6,11 +6,11 @@ These settings are specified in your MkDocs configuration file (by default `mkdo
 
 Option | Type | Default value
 ---|---|---
-enabled | `bool` | `True`
-js_output_dir | `str` | `assets/javascripts/`
-placeholder_css | `str` | `assets/javascripts/placeholder-plugin.css`
-placeholder_extra_js | `str` | empty string
-placeholder_file | `str` | `placeholder-plugin.yaml`
+`enabled` | `bool` | `True`
+`js_output_dir` | `str` | `assets/javascripts/`
+`placeholder_css` | `str` | `assets/javascripts/placeholder-plugin.css`
+`placeholder_extra_js` | `str` | empty string
+`placeholder_file` | `str` | `placeholder-plugin.yaml`
 
 You can set these values like this:
 
@@ -42,7 +42,7 @@ It should not contain any files with the following names, since they may be over
 
 ### placeholder_css
 
-The path to the file, where the plugin will write its CSS (cascading style sheets) code to.
+The path to the file, where the plugin will write its CSS (Cascading Style Sheets) code to.
 There are three different setups you can do:
 
 1. Point it to an existing file with CSS code.
@@ -169,7 +169,7 @@ The available options are:
 
 - `simple`: will highlight the placeholders with color. When hovered it will show an underline and an icon, signifying the placeholder type and where the value starts / ends.
 - `icons`: will highlight the placeholders with color and dashed underline. It will always display the icon.
-- `custom`: this is for if you want to use custom highlighting such as for example use a specific background color. It applies almost no styling (except the cursor style) to placeholders, so that they look like normal text. You can include custom CSS in mkdocs and prefix your own CSS rules with `.inline-editor-custom` so that they are only applied when the user selects this style.
+- `custom`: this is for if you want to use custom highlighting such as for example use a specific background color. It applies almost no styling (except the cursor style) to placeholders, so that they look like normal text. You can include custom CSS in MkDocs and prefix your own CSS rules with `.inline-editor-custom` so that they are only applied when the user selects this style.
     Example rule:
     ```css
     .inline-editor-custom .placeholder-value-editable {
@@ -207,7 +207,7 @@ Valid values are:
 - `dynamic`: Use dynamic placeholders without inline editors.
 - `editable`: Use dynamic placeholders with inline editors.
 - `html`: Use InnerHTML replacement method. **Use this at your own risk**
-- `static`: Use the static replacement. Also not recommended.
+- `static`: Use the static replacement. Not recommended.
 
 ### replace_delay_millis
 

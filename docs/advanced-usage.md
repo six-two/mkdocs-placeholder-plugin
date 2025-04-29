@@ -35,7 +35,7 @@ RANDOM:
 ### allow_nested
 
 When set to `true` this allows placeholder substitution in the value of this placeholder.
-By default this is enabled for all placeholders, where users can not choose arbitrary values (checkboxes, dropdown menus, and readonly text fields).
+By default, this is enabled for all placeholders, where users can not choose arbitrary values (checkboxes, dropdown menus, and read-only text fields).
 
 ### default / default-function
 
@@ -103,7 +103,7 @@ Read-only fields can (and by default will) be hidden from placeholder input tabl
 
 Defaults to `false`.
 If this is set to `false`, only visible text is replaced, which means that the inner HTML replacement method is not allowed for this placeholder.
-If you set it to `true`, it may be replaced anywhere in the page's document object model (probably including scripts, element attributes (such as a link's href), etc) when using the inner HTML replacement method (`iPLACEHOLDER_NAMEi`).
+If you set it to `true`, it may be replaced anywhere in the page's document object model (including scripts, element attributes like a link's target, etc) when using the inner HTML replacement method (`iPLACEHOLDER_NAMEi`).
 
 !!! warning "Dangerous - may introduce security vulnerabilities"
     You can very easily create self-XSS vulnerabilities if you set this to `true`.
@@ -156,10 +156,10 @@ Internally the placeholder plugin is using a dependency graph for the placeholde
 Thus, if you were to update `FIRST_NAME`, the `EMAIL` placeholder would also be updated, since it depends on `FIRST_NAME`.
 You could even use `xEMAILx` in other variables (say `xMAILING_LISTx`).
 The only thing you should not do are recursive placeholders (placeholders referencing themselves) or dependency loops (A contains B contains C contains A).
-These can will lead to errors, since expanding them would result in a infinite loop.
+These can will lead to errors, since expanding them would result in an infinite loop.
 
 If you want to hide these fields in placeholder input tables, add the `read_only` field and set it to `true`.
-In this case you do not explicitly need to set `allow_nested`, since it is enabled by default for readonly placeholders:
+In this case you do not explicitly need to set `allow_nested`, since it is enabled by default for read-only placeholders:
 
 ```yaml
 EMAIL:
@@ -189,7 +189,7 @@ Class name | Element
 `placeholder-value-dropdown` | Dropdown placeholder with inline editor
 `placeholder-value-editable` | Textbox placeholder with inline editor
 `placeholder-value-any` | Any placeholder with inline editor (checkbox, dropdown, or textbox)
-`input-for-variable` | (non-inline) input element for an placeholder
+`input-for-variable` | (non-inline) input element for a placeholder
 `validation-none` | Inline editors and input elements without a validator
 `validation-ok` | Inline editors and input elements that pass validation successfully
 `validation-warn` | Inline editors and input elements that pass validation with warnings
@@ -197,7 +197,7 @@ Class name | Element
 `value-modified` | Inline editors and input elements for a textbox placeholder that has been modified and not yet saved
 
 For inline editors there are also `:focus` and `:hover` rules.
-The icons are created by the `::after` pseudo element (like `placeholder-value-any::after` and `placeholder-value-any:focus::after`).
+The icons are created by the `::after` pseudo-element (like `placeholder-value-any::after` and `placeholder-value-any:focus::after`).
 
 To overwrite the default rules, define a more specific rule by specifying that it applies only to span elements like the following:
 ```css
@@ -209,7 +209,7 @@ span.placeholder-value-static {
 Some other values you may want to overwrite are:
 
 - `span.placeholder-value-*:empty`: The placeholder shown when an inline editor has an empty value.
-    By default it is just a pink square.
+    By default, it is just a pink square.
 - `span.placeholder-value-*:hover`: Style when a user moves their mouse pointer over an inline editor.
 
 You can also overwrite the default colors for placeholders (and any other variables I may introduce in the future), for example with:
