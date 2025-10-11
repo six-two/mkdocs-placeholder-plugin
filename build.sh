@@ -44,18 +44,5 @@ fi
 [[ ! -d src/mkdocs_placeholder_plugin/assets/ ]] && mkdir src/mkdocs_placeholder_plugin/assets/
 cp typescript/build/placeholder.min.js* src/mkdocs_placeholder_plugin/assets/
 
-
-# Build python plugin
-# Use a virtual environment to not mess with system packages
-if [[ ! -f venv/bin/activate ]]; then
-    echo "[*] Creating virtual python environment"
-    python -m venv --clear --upgrade-deps ./venv
-fi
-
-echo "[*] Installing python packages"
-source venv/bin/activate
-pip install -r requirements.txt
-pip install .
-
-echo "[*] Starting web server"
-mkdocs serve "$@"
+poetry install
+poetry run mkdocs serve "$@"

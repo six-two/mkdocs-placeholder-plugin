@@ -19,18 +19,16 @@ cd ..
 cp typescript/build/placeholder.min.js* src/mkdocs_placeholder_plugin/assets/
 
 # install the dependencies
-python3 -m pip install -r requirements.txt
-# also install the latest (dev) version of this package
-python3 -m pip install .
+poetry install
 
 # Vercel prefers outputs to be in public/
-python3 -m mkdocs build -d public
+poetry run mkdocs build -d public
 
 # Files for download
 cp typescript/build/placeholder.min.js* public/
 
 build_with_theme() {
-    python3 -m mkdocs build -t "$1" -d public/"$1"
+    poetry run mkdocs build -t "$1" -d public/"$1"
 }
 
 # Build with other themes
