@@ -6,7 +6,7 @@ So it may look very chaotic ;)
 Variable | Value
 ---|---
 TEST | `xTESTx`
-LINK | [sLINKs](iLINKi)
+LINK | [sLINKs](x-placeholder-link://iLINKi)
 CHECKBOX | xCHECKBOXx
 Quoted string | xQUOTE_CHECKBOXxxTESTxxQUOTE_CHECKBOXx
 DROPDOWN | xDROPDOWNx
@@ -58,8 +58,6 @@ xTESTx
     The contents are xTESTx
 
 Direct link: <https://xTESTx>
-
-Link without protocol: [xVALIDATOR_URL_HTTPx](iVALIDATOR_URL_HTTPi)
 
 Text can be {--deleted xTESTx--} and replacement text {++added xTESTx++}. This can also be
 combined into {~~one xTESTx~>a single xTESTx~~} operation. {==Highlighting xTESTx==} is also

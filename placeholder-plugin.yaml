@@ -9,6 +9,7 @@ settings:
   # static_prefix: x
   # static_suffix: x
   create_no_js_fallback: false
+  # html_prefix_optional: "test://"
   # ## Tests for new editable field placeholder type
   # editable_prefix: EDIT_
   # editable_suffix: _END

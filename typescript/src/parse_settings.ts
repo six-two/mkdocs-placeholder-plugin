@@ -88,6 +88,7 @@ export interface PluginSettings {
     normal_suffix: string;
     editable_prefix: string;
     editable_suffix: string;
+    html_prefix_optional: string;
     html_prefix: string;
     html_suffix: string;
     static_prefix: string;
@@ -247,6 +248,7 @@ const parse_settings = (data: any): PluginSettings => {
         "editable_prefix": get_string_field("editable_prefix", data),
         "editable_suffix": get_string_field("editable_suffix", data),
         // How placeholders using the innerHTML method are marked
+        "html_prefix_optional": get_string_field("html_prefix_optional", data),
         "html_prefix": get_string_field("html_prefix", data),
         "html_suffix": get_string_field("html_suffix", data),
         // How placeholders using the direct/static replacement methodare marked
@@ -277,7 +279,7 @@ const parse_any_placeholder = (data: any, validator_map: Map<string,InputValidat
         // @TODO: editable
         "regex_dynamic": RegExp(escapeRegExp(settings.dynamic_prefix) + name + escapeRegExp(settings.dynamic_suffix), "g"),
         "regex_editable": RegExp(escapeRegExp(settings.editable_prefix) + name + escapeRegExp(settings.editable_suffix), "g"),
-        "regex_html": RegExp(escapeRegExp(settings.html_prefix) + name + escapeRegExp(settings.html_suffix), "g"),
+        "regex_html": RegExp("(:?" + escapeRegExp(settings.html_prefix_optional) + ")?" + escapeRegExp(settings.html_prefix) + name + escapeRegExp(settings.html_suffix), "g"),
         "regex_normal": RegExp(escapeRegExp(settings.normal_prefix) + name + escapeRegExp(settings.normal_suffix), "g"),
         "regex_static": RegExp(escapeRegExp(settings.static_prefix) + name + escapeRegExp(settings.static_suffix), "g"),
         // 

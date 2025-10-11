@@ -27,6 +27,7 @@ SETTINGS_FIELD_NAMES = {
     "editable_prefix",
     "editable_suffix",
     "expand_auto_tables",
+    "html_prefix_optional",
     "html_prefix",
     "html_suffix",
     "inline_editors",
@@ -53,6 +54,8 @@ class PlaceholderSettings(NamedTuple):
     editable_prefix: str
     editable_suffix: str
     expand_auto_tables: bool
+    # allow an optional prefix like 'x-placeholder-link://' that suppresses URL warnings
+    html_prefix_optional: str
     html_prefix: str
     html_suffix: str
     # default value for inline editors
@@ -90,6 +93,7 @@ def parse_settings(data: dict, location: str) -> PlaceholderSettings:
         editable_suffix=get_string(data, "editable_suffix", "e"),
         expand_auto_tables=get_bool(data, "expand_auto_tables", default=True),
         html_prefix=get_string(data, "html_prefix", "i"),
+        html_prefix_optional=get_string(data, "html_prefix_optional", "x-placeholder-link://"),
         html_suffix=get_string(data, "html_suffix", "i"),
         inline_editors=get_bool(data, "inline_editors", default=True),
         inline_editor_style=get_string(data, "inline_editor_style", "simple"),

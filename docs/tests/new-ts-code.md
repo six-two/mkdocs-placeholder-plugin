@@ -2,7 +2,7 @@
 
 Tests for features introduced in v0.3.0
 
-- [xLINKx](iLINKi)
+- [xLINKx](x-placeholder-link://iLINKi)
 - Password: xPASSWORDx
 - xALIAS_DROPDOWNx
 - xAx

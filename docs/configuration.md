@@ -87,6 +87,7 @@ dynamic_suffix | `str` | `d`
 editable_prefix | `str` | `e`
 editable_suffix | `str` | `e`
 expand_auto_tables | `bool` | `True`
+html_prefix_optional | `str` | `x-placeholder-link://`
 html_prefix | `str` | `i`
 html_suffix | `str` | `i`
 inline_editors | `bool` | `True`
@@ -112,6 +113,7 @@ settings:
     editable_prefix: e
     editable_suffix: e
     expand_auto_tables: true
+    html_prefix_optional: "x-placeholder-link://"
     html_prefix: i
     html_suffix: i
     inline_editors: true
@@ -198,6 +200,24 @@ The available options are:
 This defines the pattern that will be used to detect when you want to replace a placeholder (and with what [replacement method](./replace-modes.md)).
 When replacing placeholders, the site is searched for the following pattern: `<prefix><placeholder_name><suffix>`.
 For example if you use `normal_prefix: var_` and `normal_suffix: n`, then placeholders will need to use the format `var_NAMEn` instead of `xNAMEx`.
+
+### html_prefix_optional
+
+When MkDocs encounters a link during the build process that looks like `iLINKi`, it will print a warning by default:
+```
+INFO    -  Doc file 'tests/basic.md' contains an unrecognized relative link 'iLINKi', it was left as is.
+```
+
+You can disable these warnings genearlly with the following in your `mkdocs.yml`, but then it will not catch typos where you for example mistyped the name of a page:
+```yaml
+validation:
+  unrecognized_links: ignore
+```
+
+To solve this dilema, I added an optional prefix that will be removed when the placeholder is replaced.
+This prefix can be formatted like a URL / custom URL scheme to prevent MkDocs from raising a warning.
+Thus you can replacing something like `[Link](iLINKi)` with `[Link](x-placeholder-link://iLINKi)` and will not receive any warnings about invalid URLs.
+The `html_prefix_optional` value defines the optional prefix and defaults to `x-placeholder-link://`.
 
 ### normal_is_alias_for
 

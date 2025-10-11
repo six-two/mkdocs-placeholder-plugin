@@ -46,6 +46,10 @@ The corresponding documentation is hosted at <https://dev.mkdocs-placeholder-plu
 
 ## Notable changes
 
+### HEAD
+
+- Added `html_prefix_optional` setting to enable silencing warnings when using placeholders in link URLs (see [#12](https://github.com/six-two/mkdocs-placeholder-plugin/issues/12)).
+
 ### Version 0.5.1
 
 - Fixes innerHTML replacement method breaking functionality such as the search box (see [#9](https://github.com/six-two/mkdocs-placeholder-plugin/issues/9)).
