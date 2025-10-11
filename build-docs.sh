@@ -18,19 +18,29 @@ cd ..
 # Files for use by the plugin
 cp typescript/build/placeholder.min.js* src/mkdocs_placeholder_plugin/assets/
 
+is_installed() {
+    command -v "$1" &>/dev/null
+}
 
+poetryw() {
+    if is_installed poetry; then
+        poetry "$@"
+    else
+        python3 -m poetry "$@"
+    fi
+}
 
 # Build everything with vercel
 # Vercel installs python scripts in weird directories like /python312/bin that are not in the PATH
 export PATH="$PATH:$(python3 -m site --user-base)/bin"
-poetry install
-poetry run mkdocs build -d public
+poetryw install
+poetryw run mkdocs build -d public
 
 # Files for download
 cp typescript/build/placeholder.min.js* public/
 
 build_with_theme() {
-    poetry run mkdocs build -t "$1" -d public/"$1"
+    poetryw run mkdocs build -t "$1" -d public/"$1"
 }
 
 # Build with other themes

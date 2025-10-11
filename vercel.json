@@ -3,6 +3,6 @@
         "silent": true
     },
     "installCommand": "python3 -m pip install poetry",
-    "buildCommand": "bash +x ./build-docs.sh",
+    "buildCommand": "bash -x ./build-docs.sh",
     "outputDirectory": "public"
 }
