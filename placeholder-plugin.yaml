@@ -157,6 +157,7 @@ placeholders:
   VALIDATOR_URL_HTTP:
     default: "http://www.example.com/page?a=123&b=c#chapter-2"
     validators: url_http
+    replace_everywhere: true
   VALIDATOR_UUID:
     default: 123e4567-e89b-12d3-a456-426614174000
     validators: uuid

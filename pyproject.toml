@@ -1,3 +1,31 @@
+[project]
+name = "mkdocs-placeholder-plugin"
+version = "0.5.1"
+description = "Add dynamic placeholders to your mkdocs page"
+authors = [
+    {name = "six-two",email = "pip@six-two.dev"}
+]
+readme = "README.md"
+requires-python = ">=3.9"
+dependencies = [
+    "mkdocs (>=1.4.0)"
+]
+license = "MIT"
+homepage = "https://github.com/six-two/mkdocs-placeholder-plugin"
+repository = "https://github.com/six-two/mkdocs-placeholder-plugin"
+
+
 [build-system]
-requires = ["setuptools>=42"]
-build-backend = "setuptools.build_meta"
+requires = ["poetry-core>=2.0.0,<3.0.0"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.poetry.group.dev.dependencies]
+mkdocs-material = "^9.6.18"
+mypy = "^1.17.1"
+
+[tool.poetry.plugins."mkdocs.plugins"]
+placeholder = "mkdocs_placeholder_plugin.mkdocs:PlaceholderPlugin"
+
+[tool.mypy]
+files = ["src/mkdocs_placeholder_plugin/**/*.py"]
+ignore_missing_imports = true

@@ -59,6 +59,8 @@ xTESTx
 
 Direct link: <https://xTESTx>
 
+Link without protocol: [xVALIDATOR_URL_HTTPx](iVALIDATOR_URL_HTTPi)
+
 Text can be {--deleted xTESTx--} and replacement text {++added xTESTx++}. This can also be
 combined into {~~one xTESTx~>a single xTESTx~~} operation. {==Highlighting xTESTx==} is also
 possible {>>and comments can be added inline xTESTx<<}.
