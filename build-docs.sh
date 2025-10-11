@@ -18,10 +18,12 @@ cd ..
 # Files for use by the plugin
 cp typescript/build/placeholder.min.js* src/mkdocs_placeholder_plugin/assets/
 
-# install the dependencies
-poetry install
 
-# Vercel prefers outputs to be in public/
+
+# Build everything with vercel
+# Vercel installs python scripts in weird directories like /python312/bin that are not in the PATH
+export PATH="$PATH:$(python3 -m site --user-base)/bin"
+poetry install
 poetry run mkdocs build -d public
 
 # Files for download
