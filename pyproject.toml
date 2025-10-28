@@ -1,6 +1,6 @@
 [project]
 name = "mkdocs-placeholder-plugin"
-version = "0.5.1"
+version = "0.5.2.dev1"
 description = "Add dynamic placeholders to your mkdocs page"
 authors = [
     {name = "six-two",email = "pip@six-two.dev"}

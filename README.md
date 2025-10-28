@@ -46,7 +46,7 @@ The corresponding documentation is hosted at <https://dev.mkdocs-placeholder-plu
 
 ## Notable changes
 
-### HEAD
+### HEAD / 0.5.2.dev1
 
 - Added `html_prefix_optional` setting to enable silencing warnings when using placeholders in link URLs (see [#12](https://github.com/six-two/mkdocs-placeholder-plugin/issues/12)).
 
@@ -190,11 +190,15 @@ This is just for me :)
     docker run -it --rm --workdir /typescript -v "$(pwd)/typescript:/typescript" placeholder-npm:latest npm run lint
     ```
 2. Update the changelog in this README file.
-3. Update version number in `./setup.cfg` and `typescript/src/api.ts`.
-4. Run `./build.sh` to compile the latest JavaScript code and test that it works. **`python -m build` will only build the latest Python code,** and incompatibilities between Python and JS code can break the release.
+3. Update version number in `./pyproject.toml` and `typescript/src/api.ts`.
+4. Run `./build.sh` to compile the latest JavaScript code and test that it works. **`poetry build` will only build the latest Python code,** and incompatibilities between Python and JS code can break the release.
 4. Disable `debug_javascript` in `placeholder-plugin.yaml`.
-5. Build and update package.
-6. Create a commit for the release (`Version 0.X.Y`) and push it.
+5. Build and update package:
+    ```bash
+    poetry build
+    poetry publish
+    ```
+6. Create a commit for the release (`release: Version 0.X.Y`) and push it.
 7. Add a tag named `0.X.Y`:
     ```bash
     git tag 0.X.Y
@@ -206,7 +210,7 @@ This is just for me :)
     git push --tags origin latest-release
     ```
 
-### Updating python dependencies
+### @TODO: Update - Updating python dependencies
 
 If you don't have them, install `pip-tools`:
 ```bash
