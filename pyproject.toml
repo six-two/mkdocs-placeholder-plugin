@@ -1,6 +1,6 @@
 [project]
 name = "mkdocs-placeholder-plugin"
-version = "0.5.2.dev1"
+version = "0.5.2.dev3"
 description = "Add dynamic placeholders to your mkdocs page"
 authors = [
     {name = "six-two",email = "pip@six-two.dev"}
@@ -20,7 +20,13 @@ requires = ["poetry-core>=2.0.0,<3.0.0"]
 build-backend = "poetry.core.masonry.api"
 
 [tool.poetry]
-include = ["src/mkdocs_placeholder_plugin/assets/*", "LICENSE", "README.md"]
+include = [
+    { path = "src/mkdocs_placeholder_plugin/assets/placeholder-data.js", format = ["sdist", "wheel"] },
+    { path = "src/mkdocs_placeholder_plugin/assets/placeholder.min.js", format = ["sdist", "wheel"] },
+    { path = "src/mkdocs_placeholder_plugin/assets/placeholder.min.js.map", format = ["sdist", "wheel"] },
+    "LICENSE",
+    "README.md"
+]
 
 [tool.poetry.group.dev.dependencies]
 mkdocs-material = "^9.6.18"
