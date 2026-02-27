@@ -2,7 +2,7 @@
     "github": {
         "silent": true
     },
-    "installCommand": "python3 -m pip install poetry",
+    "installCommand": "python3 -m pip install --break-system-packages poetry",
     "buildCommand": "bash -x ./build-docs.sh",
     "outputDirectory": "public"
 }
