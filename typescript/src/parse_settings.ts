@@ -153,6 +153,16 @@ export interface DropdownPlaceholder extends BasePlaceholer {
     input_elements: HTMLSelectElement[];
 }
 
+export interface ComputedPlaceholder extends BasePlaceholer {
+    type: InputType;
+    // Names of placeholders this depends on
+    computed_depends_on: string[];
+    // Compiled function: receives dependency values as named parameters and returns a string
+    computed_function: (args: Record<string, string>) => string;
+    // Computed placeholders have no editable input elements
+    input_elements: HTMLElement[];
+}
+
 export interface DropdownOption {
     display_name: string;
     value: string;
@@ -168,9 +178,10 @@ export enum InputType {
     Textbox = "TEXTBOX",
     Checkbox = "CHECKBOX",
     Dropdown = "DROPDOWN",
+    Computed = "COMPUTED",
 }
 
-export type Placeholder = TextboxPlaceholder | CheckboxPlaceholder | DropdownPlaceholder;
+export type Placeholder = TextboxPlaceholder | CheckboxPlaceholder | DropdownPlaceholder | ComputedPlaceholder;
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const parse_config = (data: any): PluginConfig => {
@@ -205,11 +216,18 @@ export const parse_config = (data: any): PluginConfig => {
             checkboxes.set(placeholder.name, placeholder as CheckboxPlaceholder);
         } else if (placeholder.type == InputType.Dropdown) {
             dropdowns.set(placeholder.name, placeholder as DropdownPlaceholder);
+        } else if (placeholder.type == InputType.Computed) {
+            // Computed placeholders are handled by the DependencyGraph:
+            // their dependencies are registered as downlinks, and their values
+            // are evaluated during the graph's leaf-to-root recalculation.
         } else {
             console.warn("Unknown placeholder type:", placeholder.type);
         }
     }
 
+    // The DependencyGraph handles all dependency tracking and value computation,
+    // including computed placeholders (their functions are evaluated during
+    // the graph's recursive recalculation from leaves upward).
     const graph = new DependencyGraph(placeholder_map);
 
     return {
@@ -231,7 +249,7 @@ const parse_settings = (data: any): PluginSettings => {
     const expand_auto_tables_default = get_boolean_field("expand_auto_tables", data);
     const inline_editors = get_boolean_field("inline_editors", data);
     const default_inline_editor_style = get_string_field("inline_editor_style", data);
-    
+
     return {
         "apply_change_on_focus_change": load_boolean_setting("apply_change_on_focus_change", apply_change_on_focus_change_default),
         "debug": load_boolean_setting("debug", debug_default),
@@ -282,7 +300,7 @@ const parse_any_placeholder = (data: any, validator_map: Map<string,InputValidat
         "regex_html": RegExp("(:?" + escapeRegExp(settings.html_prefix_optional) + ")?" + escapeRegExp(settings.html_prefix) + name + escapeRegExp(settings.html_suffix), "g"),
         "regex_normal": RegExp(escapeRegExp(settings.normal_prefix) + name + escapeRegExp(settings.normal_suffix), "g"),
         "regex_static": RegExp(escapeRegExp(settings.static_prefix) + name + escapeRegExp(settings.static_suffix), "g"),
-        // 
+        //
         "default_tooltip": "", // have it empty by default, the different finish_parse_<type> functions will overwrite it if needed
         "description": get_string_field("description", data),
         "read_only": get_boolean_field("read_only", data),
@@ -308,6 +326,9 @@ const parse_any_placeholder = (data: any, validator_map: Map<string,InputValidat
         const placeholder = finish_parse_dropdown(parsed, data);
         load_dropdown_state(placeholder);
         return placeholder;
+    } else if (type == "computed") {
+        // Computed state is initialized by the DependencyGraph (leaf-to-root recalculation)
+        return finish_parse_computed(parsed, data);
     } else {
         throw new Error(`Unsupported placeholder type '${type}'`);
     }
@@ -412,4 +433,44 @@ const finish_parse_dropdown = (parsed: BasePlaceholer, data: any): DropdownPlace
     }
 }
 
+const finish_parse_computed = (parsed: BasePlaceholer, data: any): ComputedPlaceholder => {
+    const computed_depends_on: string[] = get_array_field("computed_depends_on", "string", data);
+    const function_body: string = get_string_field("computed_function", data);
+
+    if (computed_depends_on.length === 0) {
+        throw new Error(`Computed placeholder '${parsed.name}' has an empty depends_on list`);
+    }
+
+    // Build the compiled function: it receives an object with dependency values and returns a string
+    const compiled_function = (args: Record<string, string>): string => {
+        try {
+            // Build parameter list and values in the same order as computed_depends_on
+            const param_names = computed_depends_on;
+            const param_values = computed_depends_on.map(dep => args[dep] ?? "");
+            const fn = new (Function as any)(...param_names, function_body);
+            const result = fn(...param_values);
+            if (typeof result !== "string") {
+                throw new Error(`Computed function for '${parsed.name}' must return a string, but returned ${typeof result}: ${result}`);
+            }
+            return result;
+        } catch (error) {
+            throw new Error(`Failed to evaluate computed_function for placeholder '${parsed.name}': ${error}`);
+        }
+    };
+
+    const description = parsed.description ? `\nDescription: ${parsed.description}` : "";
+    const default_tooltip = `Placeholder name: ${parsed.name}${description}\nThis is a computed (read-only) placeholder. Its value is automatically derived from: ${computed_depends_on.join(", ")}`;
+
+    return {
+        ...parsed,
+        "default_tooltip": default_tooltip,
+        "computed_depends_on": computed_depends_on,
+        "computed_function": compiled_function,
+        "input_elements": [],
+        "type": InputType.Computed,
+        // current_value and expanded_value will be set by DependencyGraph during initialization
+        "current_value": "",
+        "expanded_value": "",
+    }
+}
 

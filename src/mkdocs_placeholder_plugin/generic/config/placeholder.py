@@ -19,6 +19,7 @@ TYPES_PRIMITIVE = [bool, float, int, str]
 # Only these fields are allowed in placeholders
 PLACEHOLDER_FIELD_NAMES = {
     "allow_nested",
+    "computed",
     "default",
     "default-function",
     "description",
@@ -27,12 +28,18 @@ PLACEHOLDER_FIELD_NAMES = {
     "values",
     "validators",
 }
+# Only these fields are allowed inside the 'computed' sub-object
+COMPUTED_FIELD_NAMES = {
+    "depends_on",
+    "function",
+}
 
 
 class InputType(Enum):
     Field = auto()
     Checkbox = auto()
     Dropdown = auto()
+    Computed = auto()
 
 class Placeholder(NamedTuple):
     """
@@ -60,6 +67,10 @@ class Placeholder(NamedTuple):
     input_type: InputType
     # The input must conform to one of the validators. This allows mixed input such as "IPv4 address or IPv6 address or Hostname"
     validator_list: list[Validator]
+    # For computed placeholders: list of placeholder names this depends on (in declaration order)
+    computed_depends_on: list[str]
+    # For computed placeholders: JavaScript function body that receives dependency values as named arguments
+    computed_function: str
 
 
 @add_problematic_data_to_exceptions
@@ -72,7 +83,7 @@ def parse_placeholders(data: dict, location: str, validators: dict[str,Validator
         # Check that the variable name matches expected format
         if not VARIABLE_NAME_REGEX.match(key):
             warning(f"Potentially problematic variable name: '{key}'. A valid name should only contain capital letters, digits, and underscores and it should start with a letter")
-        
+
         if JUST_UNDERSCORES.match(key):
             raise PlaceholderConfigError("You can not have a placeholder name that is just underscores!")
 
@@ -92,8 +103,25 @@ def parse_placeholders(data: dict, location: str, validators: dict[str,Validator
         else:
             raise PlaceholderConfigError(f"Expected a single value or object for key '{key}', but got type {type(value).__name__}")
 
+    # Validate computed placeholders: check that all depends_on names exist and detect circular deps
+    validate_computed_dependencies(placeholders, location)
 
     return placeholders
+
+
+def validate_computed_dependencies(placeholders: dict[str,Placeholder], location: str) -> None:
+    for name, ph in placeholders.items():
+        if ph.input_type != InputType.Computed:
+            continue
+        for dep in ph.computed_depends_on:
+            if dep not in placeholders:
+                raise PlaceholderConfigError(
+                    f"Computed placeholder '{name}': depends_on references unknown placeholder '{dep}'"
+                )
+            if dep == name:
+                raise PlaceholderConfigError(
+                    f"Computed placeholder '{name}': depends_on references itself"
+                )
 
 
 @add_problematic_data_to_exceptions
@@ -106,6 +134,11 @@ def parse_placeholder_dict(data: dict[str,Any], location: str, name: str, valida
     read_only = get_bool(data, "read_only", False)
     replace_everywhere = get_bool(data, "replace_everywhere", False)
     description = get_string(data, "description", default="")
+
+    # Handle computed placeholders
+    computed_data = data.get("computed")
+    if computed_data is not None:
+        return parse_computed_placeholder(data, computed_data, location, name, read_only, replace_everywhere, description)
 
     values = parse_values(data)
     default_value, default_function = parse_defaults(data, values)
@@ -134,6 +167,65 @@ def parse_placeholder_dict(data: dict[str,Any], location: str, name: str, valida
         values=values,
         input_type=input_type,
         validator_list=validator_list,
+        computed_depends_on=[],
+        computed_function="",
+    )
+
+
+def parse_computed_placeholder(data: dict[str,Any], computed_data: Any, location: str, name: str,
+                                read_only: bool, replace_everywhere: bool, description: str) -> Placeholder:
+    """
+    Parse a computed placeholder — one whose value is derived from other placeholders via a JS function.
+    """
+    if type(computed_data) != dict:
+        raise PlaceholderConfigError(f"Field 'computed': Expected a dict, got '{type(computed_data).__name__}'")
+
+    assert_no_unknown_fields(computed_data, COMPUTED_FIELD_NAMES)
+
+    # Disallow fields that don't make sense for computed placeholders
+    for forbidden in ("default", "default-function", "values", "validators"):
+        if forbidden in data:
+            raise PlaceholderConfigError(f"Field '{forbidden}' cannot be used together with 'computed'")
+
+    # Parse depends_on — accepts a single name string or a list of names
+    raw_depends_on = computed_data.get("depends_on")
+    if raw_depends_on is None:
+        raise PlaceholderConfigError("Field 'computed.depends_on' is required")
+    if isinstance(raw_depends_on, str):
+        depends_on = [raw_depends_on]
+    elif isinstance(raw_depends_on, list):
+        depends_on = []
+        for i, item in enumerate(raw_depends_on):
+            if not isinstance(item, str):
+                raise PlaceholderConfigError(f"Field 'computed.depends_on[{i}]': Expected a string, got '{type(item).__name__}'")
+            depends_on.append(item)
+    else:
+        raise PlaceholderConfigError(f"Field 'computed.depends_on': Expected a string or list of strings, got '{type(raw_depends_on).__name__}'")
+
+    if not depends_on:
+        raise PlaceholderConfigError("Field 'computed.depends_on' must not be empty")
+
+    # Parse the function body
+    computed_function = get_string(computed_data, "function", allow_empty_string=False)
+
+    # computed placeholders are implicitly read_only
+    effective_read_only = True
+    if "read_only" in data and not read_only:
+        warning(f"Placeholder '{name}': computed placeholders are always read_only; ignoring read_only=false")
+
+    return Placeholder(
+        allow_nested=False,
+        name=name,
+        default_value="",
+        default_function="",
+        description=description,
+        replace_everywhere=replace_everywhere,
+        read_only=effective_read_only,
+        values={},
+        input_type=InputType.Computed,
+        validator_list=[],
+        computed_depends_on=depends_on,
+        computed_function=computed_function,
     )
 
 

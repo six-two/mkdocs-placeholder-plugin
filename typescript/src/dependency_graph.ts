@@ -1,5 +1,5 @@
 import { logger } from "./debug";
-import { Placeholder } from "./parse_settings";
+import { ComputedPlaceholder, InputType, Placeholder } from "./parse_settings";
 import { safe_replace_multiple_placeholders_in_string } from "./replacer";
 import { clear_state } from "./state_manager";
 
@@ -107,31 +107,42 @@ export class DependencyGraph {
     }
 
     update_placeholder_downlinks(placeholder: Placeholder) {
-        if (!placeholder.allow_nested) {
-            // By definition, non-recursive placeholders can not rely on other placeholders
-            logger.debug(`${placeholder.name} can not contain nested placeholders`)
-            return;
-        }
-
         // Step 1: remove all old downlinks
         const node = this.get_node(placeholder);
         for (const old_downlink of node.downlinks) {
-            old_downlink.remove_uplink(node)
+            old_downlink.remove_uplink(node);
         }
         node.downlinks = [];
-        
-        // Step 2: parse placeholder's value (again)
-        for (const other_node of this.nodes.values()) {
-            // No placeholder should directly be able to contain itself -> ignoring this case.
-            // This should lead to the placeholder's name appearing in it's text, which was probably intended
-            if (other_node != node) {
-                if (string_contains_placeholder(placeholder.current_value, other_node.placeholder)) {
-                    // This placeholders value contains a reference to the other node's placeholder
-                    //  -> This node depends on the other node
-                    node.downlinks.push(other_node);
-                    other_node.uplinks.push(node);
+
+        // Step 2: set new downlinks based on placeholder type
+        if (placeholder.type === InputType.Computed) {
+            // Computed placeholders have explicit dependencies declared in computed_depends_on
+            const comp = placeholder as ComputedPlaceholder;
+            for (const dep_name of comp.computed_depends_on) {
+                const dep_node = this.nodes.get(dep_name);
+                if (dep_node) {
+                    node.downlinks.push(dep_node);
+                    dep_node.uplinks.push(node);
+                } else {
+                    console.error(`Computed placeholder '${comp.name}': dependency '${dep_name}' not found in graph`);
                 }
             }
+        } else if (placeholder.allow_nested) {
+            // Nested placeholders: scan the value string for references to other placeholders
+            for (const other_node of this.nodes.values()) {
+                // No placeholder should directly be able to contain itself -> ignoring this case.
+                // This should lead to the placeholder's name appearing in it's text, which was probably intended
+                if (other_node != node) {
+                    if (string_contains_placeholder(placeholder.current_value, other_node.placeholder)) {
+                        // This placeholder's value contains a reference to the other node's placeholder
+                        //  -> This node depends on the other node
+                        node.downlinks.push(other_node);
+                        other_node.uplinks.push(node);
+                    }
+                }
+            }
+        } else {
+            logger.debug(`${placeholder.name} has no dependencies (not nested, not computed)`);
         }
     }
 
@@ -217,11 +228,31 @@ class GraphNode {
     }
 
     recalculate_expanded_value(recursive: boolean) {
-        let expanded_value = this.placeholder.current_value;
-        if (this.placeholder.allow_nested) {
-            expanded_value = safe_replace_multiple_placeholders_in_string(expanded_value, this.downlinks.map(n => n.placeholder));
+        if (this.placeholder.type === InputType.Computed) {
+            // Computed placeholders: re-evaluate the function using dependency values from downlinks
+            const comp = this.placeholder as ComputedPlaceholder;
+            const args: Record<string, string> = {};
+            for (const downlink of this.downlinks) {
+                args[downlink.placeholder.name] = downlink.placeholder.current_value;
+            }
+            try {
+                const result = comp.computed_function(args);
+                comp.current_value = result;
+                comp.expanded_value = result;
+                logger.debug(`Computed placeholder '${comp.name}' evaluated to: '${result}'`);
+            } catch (error) {
+                console.error(`Error evaluating computed placeholder '${comp.name}':`, error);
+                comp.current_value = "COMPUTED_ERROR";
+                comp.expanded_value = "COMPUTED_ERROR";
+            }
+        } else {
+            // Regular placeholders: expand nested placeholder references via string substitution
+            let expanded_value = this.placeholder.current_value;
+            if (this.placeholder.allow_nested) {
+                expanded_value = safe_replace_multiple_placeholders_in_string(expanded_value, this.downlinks.map(n => n.placeholder));
+            }
+            this.placeholder.expanded_value = expanded_value;
         }
-        this.placeholder.expanded_value = expanded_value;
 
         if (recursive) {
             // Recalculate all uplink nodes in recursive too

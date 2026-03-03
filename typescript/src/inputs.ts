@@ -219,8 +219,10 @@ export const on_placeholder_change = (config: PluginConfig, placeholder: Placeho
                 input_element.value = ph.current_value;
                 validate_textbox_input_field(ph, input_element);
             }
+        } else if (placeholder.type == InputType.Computed) {
+            // Computed placeholders have no editable input_elements, nothing to update here
         } else {
-            console.warn(`Placeholder ${placeholder.name} has unexpected type '${placeholder.type}'`);            
+            console.warn(`Placeholder ${placeholder.name} has unexpected type '${placeholder.type}'`);
         }
 
         // @TODO Not needed as long as the dropdown display name is static
