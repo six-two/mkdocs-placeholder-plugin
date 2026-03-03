@@ -79,6 +79,13 @@ def placeholder_to_serializable_dict(placeholder: Placeholder) -> dict:
         else:
             placeholder_data["default_value"] = placeholder.default_value
 
+    elif placeholder.input_type == InputType.Computed:
+        placeholder_data.update({
+            "type": "computed",
+            "computed_depends_on": placeholder.computed_depends_on,
+            "computed_function": placeholder.computed_function,
+        })
+
     else:
         raise Exception(f"Unexpected input type: {placeholder.input_type}")
 

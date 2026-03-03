@@ -91,7 +91,7 @@ export const load_checkbox_state = (placeholder: CheckboxPlaceholder): void => {
             placeholder.current_is_checked = placeholder.checked_by_default;
         }
     }
-    
+
     // Now we update the actual value based on the state
     placeholder.current_value = placeholder.current_is_checked? placeholder.value_checked : placeholder.value_unchecked;
 }
@@ -160,7 +160,7 @@ export const load_dropdown_state = (placeholder: DropdownPlaceholder): void => {
             placeholder.current_index = placeholder.default_index;
         }
     }
-    
+
     // Now we update the actual value based on the state
     placeholder.current_value = placeholder.options[placeholder.current_index].value;
 }
@@ -207,7 +207,7 @@ export const load_textbox_state = (placeholder: TextboxPlaceholder): void => {
         } catch (error) {
             // This will be called if the placeholder's custom function fails
             console.error(`Error while loading default textbox state for placeholder ${placeholder.name}:`, error);
-            placeholder.current_value = "DEFAULT_FUNCTION_ERROR";            
+            placeholder.current_value = "DEFAULT_FUNCTION_ERROR";
         }
     } else {
         throw new Error(`Either 'default_value' or 'default_function' needs to be set for placeholder ${placeholder.name}`);

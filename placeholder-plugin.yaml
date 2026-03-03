@@ -330,3 +330,32 @@ placeholders:
   #   validators:
   #   - name: Will cause error
   #     rules: []
+
+  # COMPUTED PLACEHOLDER EXAMPLE
+  # ENV selects the target environment via a dropdown
+  ENV:
+    description: Target environment
+    default: testing
+    values:
+      testing: testing
+      staging: staging
+      production: production
+
+  # SERVER_IP is automatically derived from ENV using a computed placeholder
+  SERVER_IP:
+    description: Server IP address (computed from ENV)
+    computed:
+      depends_on: ENV
+      function: |
+        if (ENV === "testing")    return "1.2.3.4";
+        if (ENV === "staging")    return "3.4.5.6";
+        if (ENV === "production") return "9.10.11.12";
+        return "unknown";
+
+  # Example with multiple dependencies
+  CONNECTION_STRING:
+    description: Full connection string (computed from ENV and SERVER_IP)
+    computed:
+      depends_on: [ENV, SERVER_IP]
+      function: |
+        return "https://" + SERVER_IP + "/" + ENV + "/api";

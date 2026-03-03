@@ -89,3 +89,15 @@ On the client run:
 xDEMO_HTTP_CLIENT_COMMANDx
 ```
 
+## Computed placeholders demo
+
+Computed placeholders automatically derive their value from other placeholders.
+Change the **Environment** dropdown below and watch the other fields update instantly without a page reload.
+
+Environment | <input data-input-for="ENV">
+
+Variable | Computed value
+---|---
+Server IP | xSERVER_IPx
+Connection string | xCONNECTION_STRINGx
+
