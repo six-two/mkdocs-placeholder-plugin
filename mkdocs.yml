@@ -61,6 +61,7 @@ nav:
   - tests/validators.md
   - tests/new-ts-code.md
   - tests/auto-tables-wide.md
+  - tests/computed.md
 
 extra_javascript:
 - development-warning.js

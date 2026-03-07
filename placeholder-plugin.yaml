@@ -359,3 +359,84 @@ placeholders:
       depends_on: [ENV, SERVER_IP]
       function: |
         return "https://" + SERVER_IP + "/" + ENV + "/api";
+
+  # Placeholders for the demo page
+  VALUE_TO_ENCODE: <s>'" This is a test value
+  VALUE_BASE64:
+    computed:
+      depends_on: VALUE_TO_ENCODE
+      function: return btoa(VALUE_TO_ENCODE)
+  VALUE_URL:
+    computed:
+      depends_on: VALUE_TO_ENCODE
+      function: return encodeURI(VALUE_TO_ENCODE)
+  VALUE_HEX:
+    computed:
+      depends_on: VALUE_TO_ENCODE
+      function: |
+        const bytes = new TextEncoder().encode(VALUE_TO_ENCODE);
+        return [...bytes]
+          .map(b => b.toString(16).padStart(2,"0"))
+          .join("");
+  VALUE_HTML:
+    computed:
+      depends_on: VALUE_TO_ENCODE
+      function: |
+        const div = document.createElement("div");
+        div.textContent = VALUE_TO_ENCODE;
+        return div.innerHTML;
+
+  TIMESTAMP_FOR_FILENAME:
+    description: Timestamp with dashes and underscores, so that it can safely be used in timestamps
+    computed:
+      depends_on: false
+      function:
+        return new Date().toISOString().replace('T','_').replace(/:/g,'-').slice(0,19);
+
+  RANDOM_UUID:
+    description: Random UUID
+    computed:
+      depends_on: []
+      function:
+        return crypto.randomUUID();
+
+  MULTIPLE_RANDOM_UUIDS:
+    computed:
+      depends_on: RANDOM_UUID
+      function: return RANDOM_UUID + " " + RANDOM_UUID + " " + RANDOM_UUID
+
+  ERROR_A:
+    computed:
+      depends_on: RANDOM_UUID
+      function: throw new Error("Function fails")
+
+  ERROR_B:
+    computed:
+      depends_on: RANDOM_UUID
+      function: return UNKNOWN_VARIABLE
+
+  ERROR_B:
+    computed:
+      depends_on: RANDOM_UUID
+      function: return UNKNOWN_VARIABLE
+
+  ## This would be hard to fix:
+  # ERROR_C:
+  #   computed:
+  #     depends_on: false
+  #     function: while (1) {}
+
+  # CYCLE_A:
+  #   computed:
+  #     depends_on: CYCLE_B
+  #     function: return CYCLE_B + "_" + CYCLE_B
+
+  # CYCLE_B:
+  #   computed:
+  #     depends_on: CYCLE_A
+  #     function: return CYCLE_A + "_" + CYCLE_A
+
+  # CYCLE_C:
+  #   computed:
+  #     depends_on: CYCLE_C
+  #     function: return CYCLE_C + "_" + CYCLE_C

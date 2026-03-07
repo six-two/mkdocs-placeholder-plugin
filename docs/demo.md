@@ -91,13 +91,17 @@ xDEMO_HTTP_CLIENT_COMMANDx
 
 ## Computed placeholders demo
 
-Computed placeholders automatically derive their value from other placeholders.
-Change the **Environment** dropdown below and watch the other fields update instantly without a page reload.
+Computed placeholders automatically derive their value from other placeholders using your own JavaScript function.
+This allows you to do more complex operations, such as comparing or encoding values and much more.
 
-Environment | <input data-input-for="ENV">
+For example you can enter text here: <input data-input-for="VALUE_TO_ENCODE">
 
-Variable | Computed value
----|---
-Server IP | xSERVER_IPx
-Connection string | xCONNECTION_STRINGx
+After you press enter, the placeholders below get updated:
 
+Encoding scheme | Value
+--- | ---
+Original value | xVALUE_TO_ENCODEx
+Hex | xVALUE_HEXx
+Base64 | xVALUE_BASE64x
+URL | xVALUE_URLx
+HTML | xVALUE_HTMLx

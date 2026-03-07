@@ -46,8 +46,9 @@ The corresponding documentation is hosted at <https://dev.mkdocs-placeholder-plu
 
 ## Notable changes
 
-### HEAD / 0.5.2.dev1
+### HEAD / future 0.6.0
 
+- Added computed placeholders that can calculate values using arbitrary JavaScript code. Thanks to @alexandrevilain for the PR (#13)
 - Added `html_prefix_optional` setting to enable silencing warnings when using placeholders in link URLs (see [#12](https://github.com/six-two/mkdocs-placeholder-plugin/issues/12)).
 
 ### Version 0.5.1
