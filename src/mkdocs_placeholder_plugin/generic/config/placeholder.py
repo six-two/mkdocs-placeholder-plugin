@@ -76,6 +76,7 @@ class Placeholder(NamedTuple):
 @add_problematic_data_to_exceptions
 def parse_placeholders(data: dict, location: str, validators: dict[str,Validator]) -> dict[str,Placeholder]:
     placeholders: dict[str,Placeholder] = {}
+    all_placeholder_names = data.keys()
 
     if type(data) != dict:
         raise PlaceholderConfigError(f"[placeholder] Config file error: Expected root element of type 'dict', but got '{type(data).__name__}'")
@@ -94,12 +95,12 @@ def parse_placeholders(data: dict, location: str, validators: dict[str,Validator
         if isinstance(value, dict):
             # New style entry with attributes
             # debug(f"dict: {value}")
-            placeholders[key] = parse_placeholder_dict(value, f"{location}:{key}", key, validators)
+            placeholders[key] = parse_placeholder_dict(value, f"{location}:{key}", key, validators, all_placeholder_names)
         elif type(value) in TYPES_PRIMITIVE:
             # Old config style, will only set name and default_value
             # For consistency's sake, we also parse it wit the parse_palceholder_dict() function
             # debug(f"primitive: {value}")
-            placeholders[key] = parse_placeholder_dict({"default": value}, f"{location}:{key}", key, validators)
+            placeholders[key] = parse_placeholder_dict({"default": value}, f"{location}:{key}", key, validators, all_placeholder_names)
         else:
             raise PlaceholderConfigError(f"Expected a single value or object for key '{key}', but got type {type(value).__name__}")
 
@@ -113,19 +114,14 @@ def validate_computed_dependencies(placeholders: dict[str,Placeholder], location
     for name, ph in placeholders.items():
         if ph.input_type != InputType.Computed:
             continue
+        visited_placeholders = ph.computed_depends_on
         for dep in ph.computed_depends_on:
-            if dep not in placeholders:
-                raise PlaceholderConfigError(
-                    f"Computed placeholder '{name}': depends_on references unknown placeholder '{dep}'"
-                )
-            if dep == name:
-                raise PlaceholderConfigError(
-                    f"Computed placeholder '{name}': depends_on references itself"
-                )
+            # @TODO: Check for real cyclic dependencies
+            pass
 
 
 @add_problematic_data_to_exceptions
-def parse_placeholder_dict(data: dict[str,Any], location: str, name: str, validators: dict[str,Validator]) -> Placeholder:
+def parse_placeholder_dict(data: dict[str,Any], location: str, name: str, validators: dict[str,Validator], all_placeholder_names: list[str]) -> Placeholder:
     """
     Parse a dictionary that contains the information for a single placeholder.
     """
@@ -137,8 +133,8 @@ def parse_placeholder_dict(data: dict[str,Any], location: str, name: str, valida
 
     # Handle computed placeholders
     computed_data = data.get("computed")
-    if computed_data is not None:
-        return parse_computed_placeholder(data, computed_data, location, name, read_only, replace_everywhere, description)
+    if computed_data:
+        return parse_computed_placeholder(data, computed_data, location, name, read_only, replace_everywhere, description, all_placeholder_names)
 
     values = parse_values(data)
     default_value, default_function = parse_defaults(data, values)
@@ -173,7 +169,7 @@ def parse_placeholder_dict(data: dict[str,Any], location: str, name: str, valida
 
 
 def parse_computed_placeholder(data: dict[str,Any], computed_data: Any, location: str, name: str,
-                                read_only: bool, replace_everywhere: bool, description: str) -> Placeholder:
+                                read_only: bool, replace_everywhere: bool, description: str, all_placeholder_names: list[str]) -> Placeholder:
     """
     Parse a computed placeholder — one whose value is derived from other placeholders via a JS function.
     """
@@ -190,8 +186,10 @@ def parse_computed_placeholder(data: dict[str,Any], computed_data: Any, location
     # Parse depends_on — accepts a single name string or a list of names
     raw_depends_on = computed_data.get("depends_on")
     if raw_depends_on is None:
-        raise PlaceholderConfigError("Field 'computed.depends_on' is required")
-    if isinstance(raw_depends_on, str):
+        raise PlaceholderConfigError("Field 'computed.depends_on' is required. If the placeholder does not depend on any inputs use 'false' or '[]'")
+    elif raw_depends_on == False:
+        depends_on = []
+    elif isinstance(raw_depends_on, str):
         depends_on = [raw_depends_on]
     elif isinstance(raw_depends_on, list):
         depends_on = []
@@ -202,8 +200,12 @@ def parse_computed_placeholder(data: dict[str,Any], computed_data: Any, location
     else:
         raise PlaceholderConfigError(f"Field 'computed.depends_on': Expected a string or list of strings, got '{type(raw_depends_on).__name__}'")
 
-    if not depends_on:
-        raise PlaceholderConfigError("Field 'computed.depends_on' must not be empty")
+    # Check for basic errors in depends_on (invalid placeholders or self)
+    for dependency in depends_on:
+        if dependency not in all_placeholder_names:
+            raise PlaceholderConfigError(f"Computed placeholder '{name}': depends_on references unknown placeholder '{dependency}'")
+        if dependency == name:
+            raise PlaceholderConfigError(f"Computed placeholder '{name}': depends_on references itself")
 
     # Parse the function body
     computed_function = get_string(computed_data, "function", allow_empty_string=False)

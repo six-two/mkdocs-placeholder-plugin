@@ -437,10 +437,6 @@ const finish_parse_computed = (parsed: BasePlaceholer, data: any): ComputedPlace
     const computed_depends_on: string[] = get_array_field("computed_depends_on", "string", data);
     const function_body: string = get_string_field("computed_function", data);
 
-    if (computed_depends_on.length === 0) {
-        throw new Error(`Computed placeholder '${parsed.name}' has an empty depends_on list`);
-    }
-
     // Build the compiled function: it receives an object with dependency values and returns a string
     const compiled_function = (args: Record<string, string>): string => {
         try {
