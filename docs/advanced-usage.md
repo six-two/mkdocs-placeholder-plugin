@@ -126,6 +126,8 @@ See the [usage page](usage.md#checkbox-field).
 
 ## Combining fields
 
+### Nesting placeholders
+
 Sometimes certain combinations of placeholders are often used.
 For example you may have an email address that consists of three different parts:
 
@@ -167,6 +169,62 @@ EMAIL:
   read_only: true
 ```
 
+### Computed placeholders
+
+If you want to perform more advanced functions, such as performing math on placeholders, encoding their values, comparing them or similar actions you have to use computed placeholders.
+They consist of a list of input placeholders and a JavaScript function.
+When the page is first loaded or any of the input placeholders change, then the function is called with the new values of the placeholders.
+
+For example say you have two numbers that you want to add together:
+```yaml
+NUMBER_A:
+  default: 1
+  validators: float
+NUMBER_B:
+  default: -0.1
+  validators: float
+
+```
+
+You can create a placeholder that does exactly that:
+```yaml
+SUM:
+  computed:
+    depends_on: [NUMBER_A, NUMBER_B]
+    function: |
+      const a = parseFloat(NUMBER_A);
+      const b = parseFloat(NUMBER_B);
+      const sum = a + b;
+      return sum.toString();
+```
+
+Because placeholder values are always strings, you first need to convert them back to numbers using `parseFloat`.
+The you can add `a` and `b` together.
+Finally, you need to convert it back to a string before `return`-ing it.
+
+You can also create computed placeholders that do not depend on other placeholders.
+This can for example be used to show general information (like the current date) or generate random values:
+
+```yaml
+RANDOM_UUID:
+  description: Random UUID
+  computed:
+    depends_on: []
+    function: return crypto.randomUUID();
+```
+
+#### Live demo
+
+Variable | Value
+---|---
+A | <input data-input-for="NUMBER_A">
+B | <input data-input-for="NUMBER_B">
+A + B | xSUMx
+
+This random UUID changes every time you load the page:
+```
+xRANDOM_UUIDx
+```
 
 ## Placeholder input tables
 

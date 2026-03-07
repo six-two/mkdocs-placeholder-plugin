@@ -12,7 +12,7 @@ This plugin allows you to use placeholders in your website that can be dynamical
 - Uses localStorage, so you (probably) don't need a cookie banner. Data will persist across visits unless the user's browser is configured to clear the data (private browsing mode)
 - You can automatically add inputs for all placeholders used on a page.
 - You can edit values directly in the page (inline editors).
-
+- Flexible: [Computed placeholders](./advanced-usage.md#computed-placeholders) allow you to run custom code when specific inputs change.
 
 ## Versioning
 

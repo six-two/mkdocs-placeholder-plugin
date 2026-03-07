@@ -386,6 +386,24 @@ placeholders:
         div.textContent = VALUE_TO_ENCODE;
         return div.innerHTML;
 
+  # Placeholders for advanced function preview
+  NUMBER_A:
+    default: 1
+    validators: float
+  NUMBER_B:
+    default: -0.1
+    validators: float
+  SUM:
+    computed:
+      depends_on: [NUMBER_A, NUMBER_B]
+      function: |
+        const a = parseFloat(NUMBER_A);
+        const b = parseFloat(NUMBER_B);
+        const sum = a + b;
+        return sum.toString();
+
+  # End Placeholders for advanced function preview
+
   TIMESTAMP_FOR_FILENAME:
     description: Timestamp with dashes and underscores, so that it can safely be used in timestamps
     computed:
