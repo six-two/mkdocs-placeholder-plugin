@@ -97,7 +97,7 @@ def must_not_match(regex_string: str, error_message: str) -> ValidatorRule:
 def ensure_validator_presets_loaded():
     # Load the classes, since they register the values on load
     # I trt to silence the linter error, but somehow it is not working
-    from . import ip_address, internet, files, network # noqa: F401
+    from . import ip_address, internet, files, network, basic # noqa: F401
 
 class ValidationResults(NamedTuple):
     validator_name: str
