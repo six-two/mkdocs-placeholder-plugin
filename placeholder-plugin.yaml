@@ -125,6 +125,18 @@ placeholders:
   VALIDATOR_HOSTNAME:
     default: examplesrv01
     validators: hostname
+  VALIDATOR_INT:
+    default: -1
+    validators: int
+  VALIDATOR_UINT:
+    default: 13
+    validators: uint
+  VALIDATOR_FLOAT:
+    default: -0.1
+    validators: float
+  VALIDATOR_UFLOAT:
+    default: 1.5
+    validators: ufloat
   VALIDATOR_IPV4_ADDRESS:
     default: 127.0.0.1
     validators: ipv4_address
