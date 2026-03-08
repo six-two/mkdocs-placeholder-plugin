@@ -456,17 +456,31 @@ placeholders:
   #     depends_on: false
   #     function: while (1) {}
 
-  CYCLE_A:
-    computed:
-      depends_on: CYCLE_B
-      function: return CYCLE_B + "_" + CYCLE_B
+  # CYCLE_A:
+  #   default: Contains xCYCLE_Bx
+  #   allow_nested: true
 
-  CYCLE_B:
-    computed:
-      depends_on: CYCLE_A
-      function: return CYCLE_A + "_" + CYCLE_A
+  # CYCLE_A:
+  #   computed:
+  #     depends_on: CYCLE_B
+  #     function: return CYCLE_B + "_" + CYCLE_B
+
+  # CYCLE_B:
+  #   computed:
+  #     depends_on: CYCLE_A
+  #     function: return CYCLE_A + "_" + CYCLE_A
+
+  # CYCLE_B:
+  #   default: xCYCLE_Ax sRANDOM_UUIDs something else
+  #   allow_nested: true
+
 
   # CYCLE_C:
   #   computed:
   #     depends_on: CYCLE_C
   #     function: return CYCLE_C + "_" + CYCLE_C
+
+  # CYCLE_D:
+  #   default: Contains xCYCLE_Dx
+  #   allow_nested: true
+

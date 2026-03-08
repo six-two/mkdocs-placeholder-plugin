@@ -15,6 +15,7 @@ def build_regexes(config: PlaceholderConfig) -> dict[str, re.Pattern]:
     prefix_string = "[" + "|".join([re.escape(x) for x in prefix_options]) + "]"
     suffix_string = "[" + "|".join([re.escape(x) for x in suffix_options]) + "]"
 
+    # Technically this also matches mismatched placeholders like sNAMEx, but I don't think it should cause problems
     return {name: re.compile(prefix_string + re.escape(name) + suffix_string)
             for name in config.placeholders.keys()}
 
@@ -47,6 +48,14 @@ class DependencyGraph:
     def ensure_no_cycles_exist(self):
         visited: set[str] = set()
         for name in self.placeholders:
+            if name in self.dep_graph[name]:
+                raise PlaceholderConfigErrorWithData(
+                    f"Placeholder {name} depends on itself",
+                    self.location,
+                    # Return a list of all involved placeholders and what they depend on
+                    {"name": name, "default_value": self.placeholders[name].default_value, "allow_nested": self.placeholders[name].allow_nested}
+                )
+
             if name not in visited:
                 self._dfs(name, [name], visited, set())
 
