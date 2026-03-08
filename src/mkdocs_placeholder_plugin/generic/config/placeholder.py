@@ -7,7 +7,6 @@ from .validator import Validator
 from ..validators import assert_matches_one_validator, VALIDATOR_PRESETS
 from .parser_utils import assert_no_unknown_fields, add_problematic_data_to_exceptions, get_bool, get_string
 
-
 # Should only contain letters, numbers, and underscores (hopefully prevents them from being broken up by syntax highlighting)
 # Should not begin with a number (this prevents placeholders like `1`)
 # Should not begin or end with a underscore (they are reserved for internal purposes like state tracking)
@@ -104,20 +103,7 @@ def parse_placeholders(data: dict, location: str, validators: dict[str,Validator
         else:
             raise PlaceholderConfigError(f"Expected a single value or object for key '{key}', but got type {type(value).__name__}")
 
-    # Validate computed placeholders: check that all depends_on names exist and detect circular deps
-    validate_computed_dependencies(placeholders, location)
-
     return placeholders
-
-
-def validate_computed_dependencies(placeholders: dict[str,Placeholder], location: str) -> None:
-    for name, ph in placeholders.items():
-        if ph.input_type != InputType.Computed:
-            continue
-        visited_placeholders = ph.computed_depends_on
-        for dep in ph.computed_depends_on:
-            # @TODO: Check for real cyclic dependencies
-            pass
 
 
 @add_problematic_data_to_exceptions

@@ -456,15 +456,15 @@ placeholders:
   #     depends_on: false
   #     function: while (1) {}
 
-  # CYCLE_A:
-  #   computed:
-  #     depends_on: CYCLE_B
-  #     function: return CYCLE_B + "_" + CYCLE_B
+  CYCLE_A:
+    computed:
+      depends_on: CYCLE_B
+      function: return CYCLE_B + "_" + CYCLE_B
 
-  # CYCLE_B:
-  #   computed:
-  #     depends_on: CYCLE_A
-  #     function: return CYCLE_A + "_" + CYCLE_A
+  CYCLE_B:
+    computed:
+      depends_on: CYCLE_A
+      function: return CYCLE_A + "_" + CYCLE_A
 
   # CYCLE_C:
   #   computed:

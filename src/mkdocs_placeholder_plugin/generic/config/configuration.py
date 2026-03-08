@@ -151,8 +151,15 @@ def parse_configuration(data: dict, location: str) -> PlaceholderConfig:
     placeholder_data = get_dict(data, "placeholders")
     placeholders = parse_placeholders(placeholder_data, f"{location}.placeholders", merged_validators)
 
-    return PlaceholderConfig(
+    config = PlaceholderConfig(
         placeholders=placeholders,
         settings=settings,
         validators=merged_validators,
     )
+
+    # Only once everything has been parsed can be check for cyclic dependencies in placeholders.
+    # This will throw an error if cycles exist
+    from .cyclic_dependency_detector import DependencyGraph
+    DependencyGraph(config, f"{location} (dependency graph)").ensure_no_cycles_exist()
+
+    return config
