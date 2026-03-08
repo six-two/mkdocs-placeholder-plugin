@@ -45,4 +45,6 @@ fi
 cp typescript/build/placeholder.min.js* src/mkdocs_placeholder_plugin/assets/
 
 poetry install
+
+export NO_MKDOCS_2_WARNING=1 # Hide Material's warning about mkdocs v2
 poetry run mkdocs serve "$@"
