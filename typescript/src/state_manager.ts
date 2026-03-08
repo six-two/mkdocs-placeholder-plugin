@@ -128,7 +128,7 @@ const is_valid_index = (placeholder: DropdownPlaceholder, index: number): boolea
     try {
         const item = placeholder.options[index];
         return item != undefined && item != null;
-    } catch (error) {
+    } catch {
         return false;
     }
 }
@@ -201,7 +201,7 @@ export const load_textbox_state = (placeholder: TextboxPlaceholder): void => {
             try {
                 // store the function result, since it may be different with each invocation (such as a randomly generated password)
                 store_textbox_state(placeholder, result);
-            } catch (error) {
+            } catch {
                 console.warn(`Default function for placeholder '${placeholder.name}' returned invalid value: '${result}'`);
             }
         } catch (error) {

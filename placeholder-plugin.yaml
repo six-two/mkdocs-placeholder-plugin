@@ -484,3 +484,5 @@ placeholders:
   #   default: Contains xCYCLE_Dx
   #   allow_nested: true
 
+  ERROR_E:
+    default-function: throw new Error("This function is intentionally broken")

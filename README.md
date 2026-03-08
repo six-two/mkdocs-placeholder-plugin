@@ -213,16 +213,10 @@ This is just for me :)
     git push --tags origin latest-release
     ```
 
-### @TODO: Update - Updating python dependencies
+### Updating python dependencies
 
-If you don't have them, install `pip-tools`:
 ```bash
-python3 -m pip install pip-tools
-```
-
-Then update `requirements.txt`:
-```bash
-pip-compile -U
+poetry update
 ```
 
 ### Updating npm dependencies
@@ -231,12 +225,11 @@ These are only used for the build process, so keeping them up to date is not tha
 
 Start a container with nodeJS:
 ```bash
-podman run -it --rm -v "$(pwd)/typescript:/mnt" node:latest bash
+docker run -it --rm -v "$(pwd)/typescript:/typescript" -w /typescript node:latest bash
 ```
 
 In the container run the following commands to update the `typescript/package*.json` files on the host:
 ```bash
-cd /mnt
 npm i -g npm-check-updates
 ncu -u
 npm i --package-lock-only
@@ -244,6 +237,5 @@ npm i --package-lock-only
 
 Then rebuild the docker image on the host:
 ```bash
-cd typescript/
-podman build --tag placeholder-npm .
+podman build --tag placeholder-npm typescript/
 ```

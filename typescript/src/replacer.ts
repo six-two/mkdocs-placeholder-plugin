@@ -41,7 +41,7 @@ const inner_html_replace = (root_element: Element, search_regex: RegExp, replace
         // First update/check all children (recursively)
         for (const child of root_element.childNodes) {
             if (child.nodeType == Node.ELEMENT_NODE) {
-                let element = child as Element;
+                const element = child as Element;
                 inner_html_replace(element, search_regex, replacement_value)
             } else {
                 if (child.nodeValue) {
@@ -161,8 +161,7 @@ const inner_do_normal_replace = (root_element: Element, placeholder: Placeholder
             return editable_replace(root_element, placeholder.regex_normal, placeholder, false);
         case "html":
             // User supplied input, HTML escape it before we inject it in the page
-            const replacement_value = escapeHTML(placeholder.expanded_value)
-            return inner_html_replace(root_element, placeholder.regex_html, replacement_value);
+            return inner_html_replace(root_element, placeholder.regex_html, escapeHTML(placeholder.expanded_value));
         case "static":
             return static_replace(root_element, placeholder.regex_static, placeholder.expanded_value);
         default:

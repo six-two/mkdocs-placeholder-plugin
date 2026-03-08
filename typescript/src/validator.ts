@@ -208,7 +208,7 @@ const parse_rule = (data: any, validator_id: string): ValidatorRule => {
                     return result;
                 }
             } catch (error) {
-                throw new Error(`Failed to evaluate match_function '${match_function_body}' of validator ${validator_id}: ${error}`);
+                throw new Error(`Failed to evaluate match_function '${match_function_body}' of validator ${validator_id}`, { cause: error });
             }
         };
     }

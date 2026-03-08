@@ -353,7 +353,7 @@ const finish_parse_textbox = (parsed: BasePlaceholer, data: any, validator_map: 
                     return result;
                 }
             } catch (error) {
-                throw new Error(`Failed to evaluate default_function '${default_js_code}' of placeholder ${parsed.name}: ${error}`);
+                throw new Error(`Failed to evaluate default_function '${default_js_code}' of placeholder ${parsed.name}`, { cause: error });
             }
         }
     }
@@ -433,6 +433,7 @@ const finish_parse_dropdown = (parsed: BasePlaceholer, data: any): DropdownPlace
     }
 }
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const finish_parse_computed = (parsed: BasePlaceholer, data: any): ComputedPlaceholder => {
     const computed_depends_on: string[] = get_array_field("computed_depends_on", "string", data);
     const function_body: string = get_string_field("computed_function", data);
@@ -443,14 +444,14 @@ const finish_parse_computed = (parsed: BasePlaceholer, data: any): ComputedPlace
             // Build parameter list and values in the same order as computed_depends_on
             const param_names = computed_depends_on;
             const param_values = computed_depends_on.map(dep => args[dep] ?? "");
-            const fn = new (Function as any)(...param_names, function_body);
+            const fn = new Function(...param_names, function_body);
             const result = fn(...param_values);
             if (typeof result !== "string") {
                 throw new Error(`Computed function for '${parsed.name}' must return a string, but returned ${typeof result}: ${result}`);
             }
             return result;
         } catch (error) {
-            throw new Error(`Failed to evaluate computed_function for placeholder '${parsed.name}': ${error}`);
+            throw new Error(`Failed to evaluate computed_function for placeholder '${parsed.name}'`, { cause: error });
         }
     };
 
