@@ -445,11 +445,6 @@ placeholders:
       depends_on: RANDOM_UUID
       function: return UNKNOWN_VARIABLE
 
-  ERROR_B:
-    computed:
-      depends_on: RANDOM_UUID
-      function: return UNKNOWN_VARIABLE
-
   ## This would be hard to fix:
   # ERROR_C:
   #   computed:

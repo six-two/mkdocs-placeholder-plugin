@@ -1,4 +1,9 @@
 #!/usr/bin/env bash
+#@TODO: remove? removed script this relies on serveral years ago:
+# commit 5aa598cf3e2bf8d76358f6780df7dfeea604d879
+# Author: six-two <git@six-two.dev>
+# Date:   Tue May 2 17:48:03 2023 +0200
+#     More cleanup, moved some files to static directory
 
 # If something fails, exit immediately
 set -e
@@ -15,7 +20,7 @@ python3 -m mkdocs build
 # Remove the placeholder JavaScript code
 rm site/assets/javascripts/placeholder-plugin.js
 
-# Try to replace the plcaeholders in all HTML files
+# Try to replace the placeholders in all HTML files
 mkdocs-placeholder-replace-static.py -p placeholder-plugin.yaml -b site "**/*.html"
 
 # Serve the results, so that you can manually verify that it looks as expected

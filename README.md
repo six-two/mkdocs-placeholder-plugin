@@ -6,6 +6,9 @@
 
 This plugin allows you to have placeholders in your site, that can be dynamically replaced at runtime using JavaScript (see [demo page](https://mkdocs-placeholder-plugin.six-two.dev/demo/)).
 
+## Note on Zensical, MkDocs 1.x, ProperDocs, etc
+
+To make it easy to keep it up to date for all my plugins, I hosted my [intentions of what platforms to support](https://six-two.dev/plugin-support-for-mkdocs-and-forks/) on my website.
 
 ## Documentation
 
@@ -45,6 +48,10 @@ If you want to use the latest development version (may be broken/buggy from time
 The corresponding documentation is hosted at <https://dev.mkdocs-placeholder-plugin.six-two.dev>.
 
 ## Notable changes
+
+### Future Version 0.7.0
+
+- Removed dependency declaration of `mkdocs`
 
 ### Version 0.6.0
 

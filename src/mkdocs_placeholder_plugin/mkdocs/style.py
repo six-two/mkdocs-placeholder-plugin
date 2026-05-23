@@ -27,7 +27,7 @@ MATERIAL_STYLE = """
 def generate_mkdocs_style_sheet(theme_name: str, debug: bool):
     generic_style = generate_generic_style_sheet(debug)
     
-    if theme_name == "material":
+    if theme_name in ["material", "materialx", "ansible"]:
         # MkDocs for Material screws up the look of imput elements (makes them look really bad)
         # So I implemented some rough fixes that should fit in with the users color choices
         return generic_style + MATERIAL_STYLE
