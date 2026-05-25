@@ -51,6 +51,7 @@ The corresponding documentation is hosted at <https://dev.mkdocs-placeholder-plu
 
 ### Future Version 0.7.0
 
+- Added standalone script `markdown-placeholder-standalone`
 - Removed dependency declaration of `mkdocs`
 
 ### Version 0.6.0

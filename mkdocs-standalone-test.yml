@@ -1,0 +1,89 @@
+site_name: Placeholder Standalone Test
+repo_url: https://github.com/six-two/mkdocs-placeholder-plugin
+repo_name: mkdocs-placeholder-plugin
+
+# Newly added config options
+docs_dir: docs.bak
+extra_css:
+- assets/stylesheets/placeholders.css
+extra_javascript:
+- assets/javascripts/placeholder-combined.js
+- development-warning.js
+
+theme:
+  name: material
+  # name: mkdocs
+  # name: readthedocs
+  palette:
+    # Palette toggle for light mode
+    - scheme: default
+      toggle:
+        icon: material/brightness-7
+        name: Switch to dark mode
+    # Palette toggle for dark mode
+    - scheme: slate
+      primary: green
+      toggle:
+        icon: material/brightness-4
+        name: Switch to light mode
+  icon:
+    repo: fontawesome/brands/github
+  features:
+  - navigation.sections
+  - content.code.copy
+  - navigation.footer
+  # For testing issue 7
+  - navigation.instant
+plugins:
+# - placeholder:
+#     placeholder_extra_js: placeholder-extra.js
+- badges
+- search
+
+nav:
+- index.md
+- usage.md
+- demo.md
+- configuration.md
+- advanced-usage.md
+- replace-modes.md
+- validators.md
+- themes.md
+- "Tests":
+  - tests/basic.md
+  - tests/auto-tables.md
+  - tests/auto-table-empty.md
+  - tests/mermaid_diagrams.md
+  - tests/validators.md
+  - tests/new-ts-code.md
+  - tests/auto-tables-wide.md
+  - tests/computed.md
+
+markdown_extensions:
+  # Message/error/warning boxes
+  - admonition
+  - pymdownx.details
+  # Different formatting options
+  - pymdownx.critic
+  - pymdownx.caret
+  - pymdownx.keys
+  - pymdownx.mark
+  - pymdownx.tilde
+  # For search exclusion
+  - attr_list
+  # For mermaid diagrams
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format
+  # for tabs
+  - pymdownx.tabbed:
+      alternate_style: true
+
+# For MkDocs 1.5 do not warn me about absolute links or `iLINKi`
+validation:
+  absolute_links: ignore
+
+watch:
+- placeholder-plugin.yaml

@@ -14,6 +14,8 @@ license = "MIT"
 homepage = "https://github.com/six-two/mkdocs-placeholder-plugin"
 repository = "https://github.com/six-two/mkdocs-placeholder-plugin"
 
+[project.scripts]
+markdown-placeholder-standalone = "mkdocs_placeholder_plugin.generic.standalone_cli:main"
 
 [build-system]
 requires = ["poetry-core>=2.0.0,<3.0.0"]
