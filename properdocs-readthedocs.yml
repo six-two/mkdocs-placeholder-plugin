@@ -3,31 +3,8 @@ repo_url: https://github.com/six-two/mkdocs-placeholder-plugin
 repo_name: mkdocs-placeholder-plugin
 
 theme:
-  name: materialx
-  # name: mkdocs
-  # name: readthedocs
+  name: readthedocs
   highlightjs: false
-  palette:
-    # Palette toggle for light mode
-    - scheme: default
-      toggle:
-        icon: material/brightness-7
-        name: Switch to dark mode
-    # Palette toggle for dark mode
-    - scheme: slate
-      primary: green
-      toggle:
-        icon: material/brightness-4
-        name: Switch to light mode
-  icon:
-    repo: fontawesome/brands/github
-  features:
-  - navigation.sections
-  - content.code.copy
-  - navigation.footer
-  # For testing issue 7
-  - navigation.instant
-
 plugins:
 - placeholder:
     placeholder_extra_js: placeholder-extra.js

@@ -1,3 +1,5 @@
+Backlog: These will probably never be implemented, unless I suddenly find a bunch of extra time :/
+
 - Optional extra buttons for the global placeholder state (reset, import, export)
 - Static replacement on a per placeholder basis
 - Implement proper exception handling for TypeScript code to recover from / compartmentalize non-critical errors.
@@ -14,8 +16,6 @@
 - inline placeholders:
     - edge case: how to handle editable placeholders in other placeholders? For editable placeholders in a read-only placeholder showing the individual inputs if the outer one is replaced with editable seems most logical
 - bug with `<https://xTESTx>`
-- BUG: inline editors not showing with mkdocs theme in listings: http://localhost:8000/mkdocs/demo/. Maybe caused by this: https://github.com/highlightjs/highlight.js/wiki/security
 
 Before release:
 - Document and test standalone script
-- investigate why /mkdocs/ and /readthedocs/ are broken (text in code replaced entirely)

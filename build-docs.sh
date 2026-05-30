@@ -47,7 +47,8 @@ poetryw run properdocs build -d public
 cp typescript/build/placeholder.min.js* public/
 
 build_with_theme() {
-    poetryw run properdocs build -t "$1" -d public/"$1"
+    cat properdocs.yml | perl -0777 -pe 's/^theme:.*?(?=^\S|\z)/theme:\n  name: '"$1"'\n  highlightjs: false\n/sm' > "properdocs-$1.yml"
+    poetryw run properdocs build -f "properdocs-$1.yml" -d "public/$1"
 }
 
 # Build with other themes
