@@ -10,6 +10,8 @@ This plugin allows you to have placeholders in your site, that can be dynamicall
 
 To make it easy to keep it up to date for all my plugins, I hosted my [intentions of what platforms to support](https://six-two.dev/plugin-support-for-mkdocs-and-forks/) on my website.
 
+This plugin has a [standalone script](https://mkdocs-placeholder-plugin.six-two.dev/standalone-cli/), that should work with **any Markdown based static website generator**.
+
 ## Documentation
 
 This README is just a short intro to the package.

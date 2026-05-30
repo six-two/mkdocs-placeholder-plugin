@@ -7,20 +7,27 @@
 # Switch to the directory of this file
 cd "$( dirname "${BASH_SOURCE[0]}" )"
 
+is_installed() {
+    command -v "$1" &>/dev/null
+}
+
 # Bundle/transpile the JavaScript file(s). This is similar to `build.sh`
-cd typescript/
-npm install
-npm run build
-cd ..
+if is_installed npm; then
+    cd typescript/
+    npm install
+    npm run build
+    cd ..
+elif [[ "$NO_NPM" == 1 ]]; then
+    echo "[-] npm not installed, skipped updating JavaScript"
+else
+    echo "[!] npm not installed, run with NO_NPM=1 to skip this"
+    exit 1
+fi
 
 # Copy the JavaScript build output to the expected locations
 [[ ! -d src/mkdocs_placeholder_plugin/assets/ ]] && mkdir src/mkdocs_placeholder_plugin/assets/
 # Files for use by the plugin
 cp typescript/build/placeholder.min.js* src/mkdocs_placeholder_plugin/assets/
-
-is_installed() {
-    command -v "$1" &>/dev/null
-}
 
 poetryw() {
     if is_installed poetry; then
@@ -34,13 +41,13 @@ poetryw() {
 # Vercel installs python scripts in weird directories like /python312/bin that are not in the PATH
 export PATH="$PATH:$(python3 -m site --user-base)/bin"
 poetryw install
-poetryw run mkdocs build -d public
+poetryw run properdocs build -d public
 
 # Files for download
 cp typescript/build/placeholder.min.js* public/
 
 build_with_theme() {
-    poetryw run mkdocs build -t "$1" -d public/"$1"
+    poetryw run properdocs build -t "$1" -d public/"$1"
 }
 
 # Build with other themes

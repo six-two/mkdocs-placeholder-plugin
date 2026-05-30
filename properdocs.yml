@@ -3,7 +3,7 @@ repo_url: https://github.com/six-two/mkdocs-placeholder-plugin
 repo_name: mkdocs-placeholder-plugin
 
 theme:
-  name: material
+  name: materialx
   # name: mkdocs
   # name: readthedocs
   palette:

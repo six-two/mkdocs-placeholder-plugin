@@ -8,7 +8,7 @@ authors = [
 readme = "README.md"
 requires-python = ">=3.9"
 dependencies = [
-    "mkdocs (>=1.4.0)"
+#    "mkdocs (>=1.4.0)"
 ]
 license = "MIT"
 homepage = "https://github.com/six-two/mkdocs-placeholder-plugin"
@@ -31,7 +31,7 @@ include = [
 ]
 
 [tool.poetry.group.dev.dependencies]
-mkdocs-material = "^9.6.18"
+properdocs = "^1.6.7"
 mypy = "^1.17.1"
 mkdocs-badges = "^0.5.0"
 mkdocs-languagetool-plugin = "^0.1.0"
@@ -40,6 +40,15 @@ mkdocs-git-revision-date-localized-plugin = "^1.4.7"
 # For type checking:
 types-PyYAML = "^6.0.12.20250915"
 
+
+
+[tool.poetry.group.demo.dependencies]
+mkdocs-materialx = "^10.1.6"
+properdocs-theme-mkdocs = "^1.6.7"
+
+
+[tool.poetry.group.group.dependencies]
+properdocs-theme-readthedocs = "^1.6.5"
 
 [tool.poetry.plugins."mkdocs.plugins"]
 placeholder = "mkdocs_placeholder_plugin.mkdocs:PlaceholderPlugin"
