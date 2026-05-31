@@ -11,7 +11,7 @@ extra_javascript:
 - development-warning.js
 
 theme:
-  name: material
+  name: materialx
   # name: mkdocs
   # name: readthedocs
   palette:
