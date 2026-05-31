@@ -16,12 +16,12 @@ rm -r docs.bak
 cp -r docs docs.bak
 
 if [[ "$MODE" == split ]]; then
-    markdown-placeholder-standalone --docs docs.bak/ --placeholder-extra-js placeholder-extra.js --phase markdown
+    markdown-placeholder-standalone docs.bak/ --placeholder-extra-js placeholder-extra.js --phase markdown
     properdocs build -f properdocs-standalone-test.yml
-    markdown-placeholder-standalone --docs site/ --placeholder-extra-js placeholder-extra.js --phase html
+    markdown-placeholder-standalone site/ --placeholder-extra-js placeholder-extra.js --phase html
 else
     properdocs build -f properdocs-standalone-test.yml
-    markdown-placeholder-standalone --docs site/ --placeholder-extra-js placeholder-extra.js --phase both
+    markdown-placeholder-standalone site/ --placeholder-extra-js placeholder-extra.js --phase both
 fi
 
 python3 -m http.server --directory site/

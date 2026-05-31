@@ -8,6 +8,7 @@ This plugin allows you to use placeholders in your website that can be dynamical
 
 ## Features
 
+- Can be used with [any static site generator](standalone-cli.md), not just ProperDocs/MkDocs
 - Easy to create input fields for users to change placeholder values.
 - Uses localStorage, so you (probably) don't need a cookie banner. Data will persist across visits unless the user's browser is configured to clear the data (private browsing mode)
 - You can automatically add inputs for all placeholders used on a page.

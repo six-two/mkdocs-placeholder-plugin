@@ -55,6 +55,7 @@ nav:
 - replace-modes.md
 - validators.md
 - themes.md
+- standalone-cli.md
 - "Tests":
   - tests/basic.md
   - tests/auto-tables.md

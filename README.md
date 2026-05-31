@@ -5,12 +5,12 @@
 ![Python versions](https://img.shields.io/pypi/pyversions/mkdocs-placeholder-plugin)
 
 This plugin allows you to have placeholders in your site, that can be dynamically replaced at runtime using JavaScript (see [demo page](https://mkdocs-placeholder-plugin.six-two.dev/demo/)).
+It also has a [standalone script](https://mkdocs-placeholder-plugin.six-two.dev/standalone-cli/), that should work with **any static website generator**, not just ProperDocs/MkDocs.
 
 ## Note on Zensical, MkDocs 1.x, ProperDocs, etc
 
 To make it easy to keep it up to date for all my plugins, I hosted my [intentions of what platforms to support](https://six-two.dev/plugin-support-for-mkdocs-and-forks/) on my website.
-
-This plugin has a [standalone script](https://mkdocs-placeholder-plugin.six-two.dev/standalone-cli/), that should work with **any Markdown based static website generator**.
+As noted above, a [standalone script](https://mkdocs-placeholder-plugin.six-two.dev/standalone-cli/) that should work with every site generator exists for this plugin.
 
 ## Documentation
 
